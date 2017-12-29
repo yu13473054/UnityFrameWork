@@ -5,7 +5,7 @@ using LuaFramework;
 public class StartUpCommand : ControllerCommand {
 
     public override void Execute(IMessage message) {
-        if (!Util.CheckEnvironment()) return;
+        if (!MyUtils.CheckEnvironment()) return;
 
         GameObject gameMgr = GameObject.Find("GlobalGenerator");
         if (gameMgr != null) {
@@ -19,10 +19,10 @@ public class StartUpCommand : ControllerCommand {
         AppFacade.Instance.AddManager<UIMgr>(ManagerName.Panel);
         AppFacade.Instance.AddManager<SoundMgr>(ManagerName.Sound);
         AppFacade.Instance.AddManager<TimerMgr>(ManagerName.Timer);
-        AppFacade.Instance.AddManager<NetworkManager>(ManagerName.Network);
+        AppFacade.Instance.AddManager<NetworkMgr>(ManagerName.Network);
         AppFacade.Instance.AddManager<ResMgr>(ManagerName.Resource);
         AppFacade.Instance.AddManager<ThreadManager>(ManagerName.Thread);
-        AppFacade.Instance.AddManager<ObjectPoolManager>(ManagerName.ObjectPool);
-        AppFacade.Instance.AddManager<GameManager>(ManagerName.Game);
+        AppFacade.Instance.AddManager<PoolMgr>(ManagerName.ObjectPool);
+        AppFacade.Instance.AddManager<GameMain>(ManagerName.Game);
     }
 }

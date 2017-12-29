@@ -3,15 +3,15 @@
 -- Author: Elijah Frederickson
 -- Version: 1.0
 -- Copyright (C) 2012 LoDC
--- 
+--
 -- Description:
--- ROBLOX has an event library in its RbxUtility library, but it isn't pure Lua. 
+-- ROBLOX has an event library in its RbxUtility library, but it isn't pure Lua.
 -- It originally used a BoolValue but now uses BindableEvent. I wanted to write
 -- it in pure Lua, so here it is. It also contains some new features.
--- 
--- 
+--
+--
 -- API:
--- 
+--
 -- EventLib
 --   new([name])
 --     aliases: CreateEvent
@@ -49,29 +49,29 @@
 --   WaitForWaiters(event)
 --     notes: waits for all waiters to finish. Called in Fire() to make sure that all
 --       the waiting threads are done before settings self.args to nil
---   
+--
 -- Event
 --   [All EventLib functions]
 --   EventName
 --     Property, defaults to "<Unknown Event>"
 --   <Private fields>
---     handlers, waiter, args, waiters, executing, 
--- 
+--     handlers, waiter, args, waiters, executing,
+--
 -- Connection
 --   Disconnect
 --     aliases: disconnect
 --     returns: the result of [Event].Disconnect
--- 
+--
 -- Basic usage (there are some tests on the bottom):
---  local EventLib = require'EventLib' 
+--  local EventLib = require'EventLib'
 -- For ROBLOX use: repeat wait() until _G.EventLib local EventLib = _G.EventLib
---  
+--
 --  local event = EventLib:new()
 --  local con = event:Connect(function(...) print(...) end)
 --  event:Fire("test") --> 'test' is print'ed
 --  con:disconnect()
 --  event:Fire("test") --> nothing happens: no connections
--- 
+--
 -- Supported versions/implementations of Lua:
 -- Lua 5.1, 5.2
 -- SharpLua 2
@@ -99,9 +99,9 @@ _M._AUTHOR = "Elijah Frederickson"
 _M._COPYRIGHT = "Copyright (C) 2012 LoDC"
 
 local function spawn(f)
-    return coroutine.resume(coroutine.create(function()
+    return coroutine.resume(coroutine.create( function()
         f()
-    end))
+    end ))
 end
 _M.Spawn = spawn
 _M.spawn = spawn
@@ -156,7 +156,7 @@ end
 
 function _M:Fire(...)
     assert(self ~= nil and type(self) == "table", "Invalid Event (make sure you're using ':' not '.')")
-    self.args = { ... }
+    self.args = { ...}
     self.executing = true
     --[[
     if self.waiter then
@@ -167,18 +167,18 @@ function _M:Fire(...)
     end]]
     self.waiter = false
     local i = 0
-assert(self.handlers, "no handler table")
+    assert(self.handlers, "no handler table")
     for k, v in pairs(self.handlers) do
         i = i + 1
-        spawn(function() 
-            v(unpack(self.args)) 
+        spawn( function()
+            v(unpack(self.args))
             i = i - 1
             if i == 0 then self.executing = false end
-        end)
+        end )
     end
     self:WaitForWaiters()
     self.args = nil
-    --self.executing = false
+    -- self.executing = false
 end
 _M.Simulate = _M.Fire
 _M.fire = _M.Fire
@@ -192,11 +192,11 @@ function _M:Wait()
         coroutine.yield()
         return unpack(self.args)
     end)
-    
+
     table.insert(self.waiters, c)
     coroutine.resume(c)
     ]]
-    
+
     while self.waiter or not self.args do if wait then wait() end end
     self.waiters = self.waiters - 1
     return unpack(self.args)
@@ -244,41 +244,43 @@ if false then
     e:fire("arg1", 5, { })
     -- Would work in a ROBLOX Script, but not on Lua 5.1...
     if script ~= nil and failhorribly then
-        spawn(function() print("Wait() results", e:wait()) print"|- done waiting!" end)
+        spawn( function() print("Wait() results", e:wait()) print "|- done waiting!" end)
     end
     e:fire(nil, "x")
     print("Disconnected events index:", e:disconnect(f))
-    print("Couldn't disconnect an already disconnected handler?", e2:disconnect()==nil)
+    print("Couldn't disconnect an already disconnected handler?", e2:disconnect() == nil)
     print("Connections:", e:ConnectionCount())
     assert(e:ConnectionCount() == 0 and e:ConnectionCount() == #e.handlers)
     e:connect(f)
-    e:connect(function() print"Throwing error... " error("...") end)
+    e:connect( function() print "Throwing error... " error("...") end)
     e:fire("Testing throwing an error...")
     e:disconnect()
     e:Simulate()
     f("plain function call")
     assert(e:ConnectionCount() == 0)
-    
+
     if wait then
-        e:connect(function() wait(2, true) print'fired after waiting' end)
+        e:connect( function() wait(2, true) print 'fired after waiting' end)
         e:Fire()
         e:WaitForCompletion()
-        print'Done!'
+        print 'Done!'
     end
-    
+
     local failhorribly = false
-    if failhorribly then -- causes an eternal loop in the WaitForCompletion call
-        e:connect(function() e:WaitForCompletion() print'done with connected function' end)
+    if failhorribly then
+        -- causes an eternal loop in the WaitForCompletion call
+        e:connect( function() e:WaitForCompletion() print 'done with connected function' end)
         e:Fire()
-        print'done'
+        print 'done'
     end
-    
+
     e:Destroy()
     assert(not e.EventName and not e.Fire and not e.Connect)
 end
 
-if shared and Instance then -- ROBLOX support
-    shared.EventLib = _M 
+if shared and Instance then
+    -- ROBLOX support
+    shared.EventLib = _M
     _G.EventLib = _M
 end
 

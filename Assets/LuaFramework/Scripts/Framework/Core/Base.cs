@@ -5,11 +5,11 @@ using System.Collections.Generic;
 
 public class Base : MonoBehaviour {
     private AppFacade m_Facade;
-    private NetworkManager m_NetMgr;
+    private NetworkMgr m_NetMgr;
     private SoundMgr m_SoundMgr;
     private TimerMgr m_TimerMgr;
     private ThreadManager m_ThreadMgr;
-    private ObjectPoolManager m_ObjectPoolMgr;
+    private PoolMgr _mPoolMgr;
 
     /// <summary>
     /// 注册消息
@@ -40,10 +40,10 @@ public class Base : MonoBehaviour {
         }
     }
 
-    protected NetworkManager NetManager {
+    protected NetworkMgr NetMgr {
         get {
             if (m_NetMgr == null) {
-                m_NetMgr = facade.GetManager<NetworkManager>(ManagerName.Network);
+                m_NetMgr = facade.GetManager<NetworkMgr>(ManagerName.Network);
             }
             return m_NetMgr;
         }
@@ -76,12 +76,12 @@ public class Base : MonoBehaviour {
         }
     }
 
-    protected ObjectPoolManager ObjPoolManager {
+    protected PoolMgr ObjPoolMgr {
         get {
-            if (m_ObjectPoolMgr == null) {
-                m_ObjectPoolMgr = facade.GetManager<ObjectPoolManager>(ManagerName.ObjectPool);
+            if (_mPoolMgr == null) {
+                _mPoolMgr = facade.GetManager<PoolMgr>(ManagerName.ObjectPool);
             }
-            return m_ObjectPoolMgr;
+            return _mPoolMgr;
         }
     }
 }

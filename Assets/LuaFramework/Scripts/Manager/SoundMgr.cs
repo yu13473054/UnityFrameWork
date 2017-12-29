@@ -4,23 +4,12 @@ using System.Collections.Generic;
 
 namespace LuaFramework {
     public class SoundMgr : MonoBehaviour {
+        #region 初始化
         private static SoundMgr _inst;
         public static SoundMgr Inst
         {
             get { return _inst; }
         }
-
-        private Dictionary<int, int> _androidMusicDic = new Dictionary<int, int>();
-        private AudioSource _bgmAS;
-//        private int _bgmMusicId;
-        private AudioSource[] _channelAS;
-
-        /// <summary>
-        /// 战斗音效的字典
-        /// </summary>
-        private Dictionary<string, AudioClip> _audioBattleDics;
-        public List<string> DownloadSongsList = new List<string>();
-
         public static void Init()
         {
             if (_inst)
@@ -36,11 +25,24 @@ namespace LuaFramework {
                 audio.loop = false;
             }
             go.AddComponent<AudioListener>();
-            go.AddComponent<SoundMgr>();
-
             GameObject child = go.AddChild();
             child.name = "BGM";
+
+            go.AddComponent<SoundMgr>();
+
         }
+        #endregion
+
+        private Dictionary<int, int> _androidMusicDic = new Dictionary<int, int>();
+        private AudioSource _bgmAS;
+//        private int _bgmMusicId;
+        private AudioSource[] _channelAS;
+
+        /// <summary>
+        /// 战斗音效的字典
+        /// </summary>
+        private Dictionary<string, AudioClip> _audioBattleDics;
+        public List<string> DownloadSongsList = new List<string>();
 
         void Awake()
         {

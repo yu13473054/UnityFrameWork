@@ -1,17 +1,17 @@
 
 --输出日志--
 function log(str)
-    Util.Log(str);
+    Debug.Log(str);
 end
 
 --错误日志--
 function logError(str) 
-	Util.LogError(str);
+	Debug.LogError(str);
 end
 
 --警告日志--
 function logWarn(str) 
-	Util.LogWarning(str);
+	Debug.LogWarning(str);
 end
 
 --查找对象--

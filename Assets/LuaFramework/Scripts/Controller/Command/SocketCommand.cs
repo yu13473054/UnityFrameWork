@@ -10,7 +10,7 @@ public class SocketCommand : ControllerCommand {
         if (data == null) return;
         KeyValuePair<int, ByteBuffer> buffer = (KeyValuePair<int, ByteBuffer>)data;
         switch (buffer.Key) {
-            default: Util.CallMethod("Network", "OnSocket", buffer.Key, buffer.Value); break;
+            default: MyUtils.CallMethod("Network", "OnSocket", buffer.Key, buffer.Value); break;
         }
 	}
 }

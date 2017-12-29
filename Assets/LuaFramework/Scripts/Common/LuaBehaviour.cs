@@ -11,19 +11,19 @@ namespace LuaFramework {
         private Dictionary<string, LuaFunction> buttons = new Dictionary<string, LuaFunction>();
 
         protected void Awake() {
-            Util.CallMethod(name, "Awake", gameObject);
+            MyUtils.CallMethod(name, "Awake", gameObject);
         }
 
         protected void Start() {
-            Util.CallMethod(name, "Start");
+            MyUtils.CallMethod(name, "Start");
         }
 
         protected void OnClick() {
-            Util.CallMethod(name, "OnClick");
+            MyUtils.CallMethod(name, "OnClick");
         }
 
         protected void OnClickEvent(GameObject go) {
-            Util.CallMethod(name, "OnClick", go);
+            MyUtils.CallMethod(name, "OnClick", go);
         }
 
         /// <summary>
@@ -70,9 +70,9 @@ namespace LuaFramework {
             ClearClick();
 #if ASYNC_MODE
             string abName = name.ToLower().Replace("panel", "");
-            ResMgr.Inst.UnloadAssetBundle(abName + AppConst.ExtName);
+            ResMgr.Inst.UnloadAB(abName + AppConst.ExtName);
 #endif
-            Util.ClearMemory();
+            MyUtils.ClearMemory();
             Debug.Log("~" + name + " was destroy!");
         }
     }

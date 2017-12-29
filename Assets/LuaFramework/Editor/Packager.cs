@@ -55,9 +55,11 @@ public class Packager {
     /// <summary>
     /// 生成绑定素材
     /// </summary>
-    public static void BuildAssetResource(BuildTarget target) {
-        if (Directory.Exists(Util.DataPath())) {
-            Directory.Delete(Util.DataPath(), true);
+    public static void BuildAssetResource(BuildTarget target)
+    {
+        string bundleDir = Application.streamingAssetsPath;
+        if (Directory.Exists(bundleDir)) {
+            Directory.Delete(bundleDir, true);
         }
         string streamPath = Application.streamingAssetsPath;
         if (Directory.Exists(streamPath)) {
@@ -71,9 +73,6 @@ public class Packager {
             HandleLuaBundle();
         } else {
             HandleLuaFile();
-        }
-        if (AppConst.ExampleMode) {
-            HandleExampleBundle();
         }
         string resPath = "Assets/" + AppConst.AssetDir;
         BuildPipeline.BuildAssetBundles(resPath, maps.ToArray(), BuildAssetBundleOptions.None, target);
@@ -226,7 +225,7 @@ public class Packager {
             string ext = Path.GetExtension(file);
             if (file.EndsWith(".meta") || file.Contains(".DS_Store")) continue;
 
-            string md5 = Util.md5file(file);
+            string md5 = MyUtils.md5file(file);
             string value = file.Replace(resPath, string.Empty);
             sw.WriteLine(value + "|" + md5);
         }
@@ -300,10 +299,6 @@ public class Packager {
 
     [MenuItem("LuaFramework/Build Protobuf-lua-gen File")]
     public static void BuildProtobufFile() {
-        if (!AppConst.ExampleMode) {
-            UnityEngine.Debug.LogError("若使用编码Protobuf-lua-gen功能，需要自己配置外部环境！！");
-            return;
-        }
         string dir = AppDataPath + "/Lua/3rd/pblua";
         paths.Clear(); files.Clear(); Recursive(dir);
 

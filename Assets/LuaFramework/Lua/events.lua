@@ -15,12 +15,10 @@ function Event.AddListener(event,handler)
 	if not handler or type(handler) ~= "function" then
 		error("handler parameter in addlistener function has to be function, " .. type(handler) .. " not right")
 	end
-
 	if not events[event] then
 		--create the Event with name
 		events[event] = EventLib:new(event)
 	end
-
 	--conn this handler
 	events[event]:connect(handler)
 end

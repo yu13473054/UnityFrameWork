@@ -5,12 +5,22 @@ using LuaInterface;
 namespace LuaFramework {
     public class LuaMgr : MonoBehaviour
     {
+        #region 初始化
         private static LuaMgr _inst;
-
         public static LuaMgr Inst
         {
             get { return _inst; }
         }
+        public static void Init()
+        {
+            if (_inst)
+            {
+                return;
+            }
+            GameObject go = new GameObject("LuaMgr");
+            go.AddComponent<LuaMgr>();
+        }
+        #endregion
 
         private LuaState _lua;
         private LuaLoader _loader;
@@ -82,12 +92,12 @@ namespace LuaFramework {
         /// 初始化Lua代码加载路径
         /// </summary>
         void InitLuaPath() {
-            if (AppConst.DebugMode) {
+            if (GameMain.Inst._developMode) {
                 string rootPath = AppConst.FrameworkRoot;
                 _lua.AddSearchPath(rootPath + "/Lua");
                 _lua.AddSearchPath(rootPath + "/ToLua/Lua");
             } else {
-                _lua.AddSearchPath(Util.DataPath() + "lua");
+                _lua.AddSearchPath(MyUtils.ResDir() + "lua");
             }
         }
 
@@ -96,23 +106,23 @@ namespace LuaFramework {
         /// </summary>
         void InitLuaBundle() {
             if (_loader.beZip) {
-                _loader.AddBundle("lua/lua.unity3d");
-                _loader.AddBundle("lua/lua_math.unity3d");
-                _loader.AddBundle("lua/lua_system.unity3d");
-                _loader.AddBundle("lua/lua_system_reflection.unity3d");
-                _loader.AddBundle("lua/lua_unityengine.unity3d");
-                _loader.AddBundle("lua/lua_common.unity3d");
-                _loader.AddBundle("lua/lua_logic.unity3d");
-                _loader.AddBundle("lua/lua_view.unity3d");
-                _loader.AddBundle("lua/lua_controller.unity3d");
-                _loader.AddBundle("lua/lua_misc.unity3d");
+                _loader.AddBundle("lua/lua"+AppConst.ExtName);
+                _loader.AddBundle("lua/lua_math"+AppConst.ExtName);
+                _loader.AddBundle("lua/lua_system"+AppConst.ExtName);
+                _loader.AddBundle("lua/lua_system_reflection"+AppConst.ExtName);
+                _loader.AddBundle("lua/lua_unityengine"+AppConst.ExtName);
+                _loader.AddBundle("lua/lua_common"+AppConst.ExtName);
+                _loader.AddBundle("lua/lua_logic"+AppConst.ExtName);
+                _loader.AddBundle("lua/lua_view"+AppConst.ExtName);
+                _loader.AddBundle("lua/lua_controller"+AppConst.ExtName);
+                _loader.AddBundle("lua/lua_misc"+AppConst.ExtName);
 
-                _loader.AddBundle("lua/lua_protobuf.unity3d");
-                _loader.AddBundle("lua/lua_3rd_cjson.unity3d");
-                _loader.AddBundle("lua/lua_3rd_luabitop.unity3d");
-                _loader.AddBundle("lua/lua_3rd_pbc.unity3d");
-                _loader.AddBundle("lua/lua_3rd_pblua.unity3d");
-                _loader.AddBundle("lua/lua_3rd_sproto.unity3d");
+                _loader.AddBundle("lua/lua_protobuf"+AppConst.ExtName);
+                _loader.AddBundle("lua/lua_3rd_cjson"+AppConst.ExtName);
+                _loader.AddBundle("lua/lua_3rd_luabitop"+AppConst.ExtName);
+                _loader.AddBundle("lua/lua_3rd_pbc"+AppConst.ExtName);
+                _loader.AddBundle("lua/lua_3rd_pblua"+AppConst.ExtName);
+                _loader.AddBundle("lua/lua_3rd_sproto"+AppConst.ExtName);
             }
         }
 

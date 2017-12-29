@@ -19,7 +19,7 @@ ProtocalType = {
 --当前使用的协议类型--
 TestProtoType = ProtocalType.BINARY;
 
-Util = LuaFramework.Util;
+Util = LuaFramework.MyUtils;
 AppConst = LuaFramework.AppConst;
 LuaHelper = LuaFramework.LuaHelper;
 ByteBuffer = LuaFramework.ByteBuffer;

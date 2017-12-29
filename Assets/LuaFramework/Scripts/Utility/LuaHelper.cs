@@ -39,8 +39,8 @@ namespace LuaFramework {
         /// <summary>
         /// 网络管理器
         /// </summary>
-        public static NetworkManager GetNetManager() {
-            return AppFacade.Instance.GetManager<NetworkManager>(ManagerName.Network);
+        public static NetworkMgr GetNetManager() {
+            return AppFacade.Instance.GetManager<NetworkMgr>(ManagerName.Network);
         }
 
         /// <summary>

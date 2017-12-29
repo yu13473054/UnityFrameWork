@@ -5,8 +5,8 @@ using System.Collections.Generic;
 namespace LuaFramework {
 
     public delegate void TimerEleCallBack(TimerElement element);
-
     public class TimerMgr : MonoBehaviour {
+        #region 初始化
         private static TimerMgr _inst;
         public static TimerMgr Inst
         {
@@ -15,14 +15,13 @@ namespace LuaFramework {
                 return _inst;
             }
         }
-
-        //初始化的时候调用
         public static void Init()
         {
             if (_inst != null) return;
             GameObject go = new GameObject("TimerMgr");
             go.AddComponent<TimerMgr>();
         }
+        #endregion 
 
         private List<TimerElement> _timerList;
         private Stack<TimerElement> _elementPool;

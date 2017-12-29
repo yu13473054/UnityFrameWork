@@ -25,6 +25,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Collections;
 using System.Text;
+using LuaFramework;
 
 namespace LuaInterface
 {
@@ -209,11 +210,11 @@ namespace LuaInterface
                         int tmp = pos + 1;
                         sb.Append("\n\tno file '").Append(fileName, tmp, fileName.Length - tmp).Append(".lua' in ").Append("lua_");
                         tmp = sb.Length;
-                        sb.Append(fileName, 0, pos).Replace('/', '_', tmp, pos).Append(".unity3d");
+                        sb.Append(fileName, 0, pos).Replace('/', '_', tmp, pos).Append(AppConst.ExtName);
                     }
                     else
                     {                        
-                        sb.Append("\n\tno file '").Append(fileName).Append(".lua' in ").Append("lua.unity3d");
+                        sb.Append("\n\tno file '").Append(fileName).Append(".lua' in ").Append("lua").Append(AppConst.ExtName);
                     }                    
                 }
 

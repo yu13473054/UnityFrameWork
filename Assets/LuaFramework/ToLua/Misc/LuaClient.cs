@@ -78,7 +78,6 @@ public class LuaClient : MonoBehaviour
     {
         if (!Directory.Exists(LuaConst.zbsDir))
         {
-            Debugger.LogWarning("ZeroBraneStudio not install or LuaConst.zbsDir not right");
             return;
         }
 
