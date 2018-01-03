@@ -6,6 +6,7 @@ TagManager:
   tags:
   - GuiCamera
   - GameManager
+  - RootCanvas
   layers:
   - Default
   - TransparentFX
