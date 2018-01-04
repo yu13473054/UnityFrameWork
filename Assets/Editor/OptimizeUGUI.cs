@@ -7,8 +7,6 @@ using UnityEngine.UI;
 
 public class OptimazeUGUI : MonoBehaviour
 {
-
-
     private const string kUILayerName = "UI";
 
     private const string kStandardSpritePath = "UI/Skin/UISprite.psd";
@@ -81,7 +79,7 @@ public class OptimazeUGUI : MonoBehaviour
         itemTransform.localScale = Vector3.one;
     }
 
-    private static void PlaceUIElementRoot(GameObject element, MenuCommand menuCommand)
+    public static void PlaceUIElementRoot(GameObject element, MenuCommand menuCommand)
     {
         GameObject parent = menuCommand.context as GameObject;
         if (parent == null || parent.GetComponentInParent<Canvas>() == null)
@@ -124,6 +122,7 @@ public class OptimazeUGUI : MonoBehaviour
         GameObject go = DefaultControls.CreateRawImage(GetStandardResources());
         go.GetComponent<RawImage>().raycastTarget = false;
         PlaceUIElementRoot(go, menuCommand);
+
     }
 
 
