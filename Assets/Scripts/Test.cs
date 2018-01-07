@@ -3,45 +3,50 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using UnityEngine;
+using UnityEngine.UI;
 using Debug = UnityEngine.Debug;
 
 public class Test : MonoBehaviour
 {
 
-    public PolygonColliderImage _img;
+    public ScrollRect _scroll;
+    public VerticalLayoutGroup _group;
+    public ToggleGroup _toggleGroup;
 
-	// Use this for initialization
+    public Button _btn;
+
 	void Start ()
 	{
-        UnityEngine.Object obj = Resources.Load("LoginPanel");
+        _btn.onClick.AddListener(OnBgClick);
 
-	    GameObject parent = GameObject.Find("Canvas");
+        for (int i = 0; i < 2; i++)
+        {
+            GameObject go = UIMgr.Inst.AddPrefab("Tab", _group.transform);
+            Toggle toggle = go.GetComponent<Toggle>();
+            toggle.isOn = i == 0;
+            toggle.group = _toggleGroup;
+        }
 
-	    GameObject go  = Instantiate(obj) as GameObject;
-        go.transform.SetParent(parent.transform,false);
-        go.transform.localPosition = Vector3.zero;
+        _scroll.onValueChanged.AddListener(OnScroll);
+    }
 
+    private void OnScroll(Vector2 pos)
+    {
+        Debug.Log(pos);
+    }
 
-        
-//        _img.
+    private void OnBgClick()
+    {
+        GameObject go = UIMgr.Inst.AddPrefab("Tab", _group.transform);
+        Toggle toggle = go.GetComponent<Toggle>();
+        toggle.group = _toggleGroup;
 
-
-//	    Stopwatch sw = new Stopwatch();
-//        sw.Start();
-//	    Type type = typeof (BB);
-//	    string n = type.Name;
-//	    string name = type.FullName;
-//        sw.Stop();
-//        Debug.Log(sw.ElapsedMilliseconds+"   "+sw.ElapsedTicks);
-//	    Debug.Log(name+"    "+n+"    "+type.ToString());
-//	    type = typeof (CC);
-//        Debug.Log(name+"    "+n+"    "+type.ToString());
-
+        Debug.Log("1111111     "+((RectTransform)_group.transform).rect);
     }
 
     // Update is called once per frame
-	void Update () {
-		
-	}
+	void Update ()
+	{
+    }
 }
 

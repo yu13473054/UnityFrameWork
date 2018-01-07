@@ -277,7 +277,7 @@ public class GameMain : MonoBehaviour
 //        LuaMgr.Inst.InitStart();
 
 
-        UIMgr.Inst.CreatePanel("LoginPanel");
+        UIMgr.Inst.CreatePanel("NoticePanel");
 
 
         //            LuaMgr.Inst.DoFile("Logic/Game");         //加载游戏

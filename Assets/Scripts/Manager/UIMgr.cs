@@ -91,6 +91,19 @@ public class UIMgr : MonoBehaviour
         //#endif
     }
 
+    public GameObject AddPrefab(string prefabName, Transform parent = null)
+    {
+        GameObject go = Instantiate(ResMgr.Inst.GetPrefab(prefabName));
+        go.transform.localPosition = Vector3.zero;
+        go.transform.localScale = Vector3.one;
+        go.transform.localRotation = Quaternion.identity;
+        if (parent)
+        {
+            go.transform.SetParent(parent,false);
+        }
+        return go;
+    }
+
     /// <summary>
     /// 关闭面板
     /// </summary>

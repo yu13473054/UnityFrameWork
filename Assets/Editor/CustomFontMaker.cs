@@ -107,7 +107,7 @@ public class CustomFontMaker : EditorWindow
                     charList.Add(info);
                 }
             }
-            else if (line.IndexOf("scaleW=") != -1)
+            else if (line.IndexOf("scaleW=", StringComparison.Ordinal) != -1)
             {
                 Regex reg2 = new Regex(@"common lineHeight=(?<lineHeight>\d+)\s+.*scaleW=(?<scaleW>\d+)\s+scaleH=(?<scaleH>\d+)");
                 Match match = reg2.Match(line);

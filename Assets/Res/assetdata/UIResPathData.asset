@@ -17,8 +17,13 @@ MonoBehaviour:
     _res_develop: UI/Prefabs_ui/LoginPanel.prefab
     _res_public: LoginPanel
     _abName: Prefabs_ui
-  - _resName: LoginPane1
+  - _resName: NoticePanel
     _tagName: 
-    _res_develop: UI/Prefabs_ui/LoginPane1.prefab
-    _res_public: LoginPane1
+    _res_develop: UI/Prefabs_ui/NoticePanel.prefab
+    _res_public: NoticePanel
     _abName: Prefabs_ui
+  - _resName: Tab
+    _tagName: 
+    _res_develop: UI/Prefabs_ui/notice/Tab.prefab
+    _res_public: Tab
+    _abName: notice

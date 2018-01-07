@@ -1,4 +1,4 @@
-using System;
+ï»¿using System;
 using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
@@ -7,7 +7,7 @@ public delegate void LoadTableDelegate(Dictionary<string, Dictionary<string, obj
 
 public class DatabaseMgr : MonoBehaviour
 {
-    #region ³õÊ¼»¯
+    #region åˆå§‹åŒ–
     private static DatabaseMgr _inst;
     public static DatabaseMgr Inst
     {
@@ -25,8 +25,8 @@ public class DatabaseMgr : MonoBehaviour
     }
     #endregion
 
-    private Dictionary<string, Dictionary<string, object>> _cacheData;//ÊÂÏÈ»º´æµÄÊı¾İ
-    private Dictionary<string, Dictionary<string, object>> _tmpData;//ËæÓÃËæÈ¡µÄÊı¾İ
+    private Dictionary<string, Dictionary<string, object>> _cacheData;//äº‹å…ˆç¼“å­˜çš„æ•°æ®
+    private Dictionary<string, Dictionary<string, object>> _tmpData;//éšç”¨éšå–çš„æ•°æ®
 
     public LoadTableDelegate _cacheDelegate;
 
@@ -44,11 +44,11 @@ public class DatabaseMgr : MonoBehaviour
     }
 
     /// <summary>
-    /// ÊÂÏÈ»º´æÒ»Ğ©Êı¾İ£¬·ÀÖ¹ÔÚµÚÒ»´Î»ñÈ¡µ½Êı¾İÊ±£¬ÓĞ¿¨¶Ù
+    /// äº‹å…ˆç¼“å­˜ä¸€äº›æ•°æ®ï¼Œé˜²æ­¢åœ¨ç¬¬ä¸€æ¬¡è·å–åˆ°æ•°æ®æ—¶ï¼Œæœ‰å¡é¡¿
     /// </summary>
     void CacahData()
     {
-        //Ìí¼ÓĞèÒªÊÂÏÈ¼ÓÔØµÄÎ¯ÍĞ
+        //æ·»åŠ éœ€è¦äº‹å…ˆåŠ è½½çš„å§”æ‰˜
         //_cacheDelegate += LoadUIResPathData;
 
         if (_cacheDelegate != null)
@@ -78,7 +78,7 @@ public class DatabaseMgr : MonoBehaviour
         return resTable;
     }
 
-    #region ×ÊÔ´Â·¾¶
+    #region èµ„æºè·¯å¾„
     void LoadUIResPathData(Dictionary<string, Dictionary<string, object>> dic)
     {
         string tableName = typeof(UIResPathData).Name;
@@ -106,7 +106,7 @@ public class DatabaseMgr : MonoBehaviour
         resTable.TryGetValue(string.Format("{0}_{1}", resName, tagName), out result);
         if (result==null)
         {
-            Debug.LogErrorFormat("»ñÈ¡ÎÄ¼şÊ§°Ü£ºresName = {0}, tagName = {1}", resName, tagName);
+            Debug.LogErrorFormat("è·å–æ–‡ä»¶å¤±è´¥ï¼šresName = {0}, tagName = {1}", resName, tagName);
             return null;
         }
         return result as UIResPathProperty;

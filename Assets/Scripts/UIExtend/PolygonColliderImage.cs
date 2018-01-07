@@ -8,26 +8,21 @@ using UnityEditor;
 public class PolygonColliderImage : Image
 {
     private PolygonCollider2D _polygon = null;
-    private PolygonCollider2D polygon
+
+    protected override void Awake()
     {
-        get
-        {
-            if (_polygon == null)
-                _polygon = GetComponent<PolygonCollider2D>();
-            return _polygon;
-        }
+        base.Awake();
+        _polygon = GetComponent<PolygonCollider2D>();
     }
-    protected PolygonColliderImage() : base()
-    {
-//        useLegacyMeshGeneration = true;
-    }
-//    protected override void OnPopulateMesh(VertexHelper vh)
-//    {
-//        vh.Clear();
-//    }
+
     public override bool IsRaycastLocationValid(Vector2 screenPoint, Camera eventCamera)
     {
-        return polygon.OverlapPoint(eventCamera.ScreenToWorldPoint(screenPoint));
+        Vector3 worldPos;
+        if (!RectTransformUtility.ScreenPointToWorldPointInRectangle(rectTransform, screenPoint, eventCamera, out worldPos))
+        {
+            return false;
+        }
+        return _polygon.OverlapPoint(worldPos);
     }
 
 #if UNITY_EDITOR
@@ -60,7 +55,7 @@ public class PolygonColliderImage : Image
         transform.localPosition = Vector3.zero;
         float w = (rectTransform.sizeDelta.x * 0.5f) + 0.1f;
         float h = (rectTransform.sizeDelta.y * 0.5f) + 0.1f;
-        polygon.points = new Vector2[]
+        _polygon.points = new Vector2[]
         {
             new Vector2(-w,-h),
             new Vector2(w,-h),
