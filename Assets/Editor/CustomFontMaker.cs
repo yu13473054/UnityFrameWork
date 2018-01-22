@@ -12,33 +12,7 @@ using Object = UnityEngine.Object;
 
 public class CustomFontMaker : EditorWindow
 {
-//    private Font _font;
-//    private TextAsset _xmlText;
-//
-////    [MenuItem("Window/CustomFontMaker")]
-//    static void AddWindow()
-//    {
-//        //创建窗口
-//        Rect wr = new Rect(0, 0, 500, 500);
-//        CustomFontMaker window = (CustomFontMaker)EditorWindow.GetWindowWithRect(typeof(CustomFontMaker), wr, true, "自定义字体");
-//        window.Show();
-//
-//    }
-//
-//    void OnGUI()
-//    {
-//        _font = EditorGUILayout.ObjectField("字体", _font, typeof(Font), true) as Font;
-//        _xmlText = EditorGUILayout.ObjectField("文字XML配置", _xmlText, typeof(TextAsset), true) as TextAsset;
-//        Debug.Log(_xmlText);
-//
-//        if (GUILayout.Button("创建字体", GUILayout.Width(200)))
-//        {
-////            this.CreateFont();
-//        }
-//    }
-
-
-    [MenuItem("Assets/CreateBMFont")]
+    [MenuItem("Assets/Create/BMFont",false,610)]
     static void CreateFont()
     {
         Object obj = Selection.activeObject;
@@ -46,20 +20,31 @@ public class CustomFontMaker : EditorWindow
         if (!fntPath.EndsWith(".fnt"))
         {
             // 不是字体文件 
-            Debug.LogError("The Selected Object Is Not A .fnt file!");
+            Debug.LogError("请选择.fnt文件");
             return;
         }
 
-        string customFontPath = fntPath.Replace(".fnt", ".fontsettings");
-        if (!File.Exists(customFontPath))
+        //创建对应的material
+        string fontMaterialPath = fntPath.Replace(".fnt", ".mat");
+        Material material = AssetDatabase.LoadAssetAtPath<Material>(fontMaterialPath);
+        if (!material)
         {
-            Debug.LogError("The fontsettings Is Not A  file!");
-            return;
+            material = new Material(Shader.Find("GUI/Text Shader"));
+            AssetDatabase.CreateAsset(material, fontMaterialPath);
+            AssetDatabase.Refresh();
         }
+        //创建font
+        string customFontPath = fntPath.Replace(".fnt", ".fontsettings");
+        Font customFont = AssetDatabase.LoadAssetAtPath<Font>(customFontPath);
+        if (!customFont)
+        {
+            customFont = new Font();
+            AssetDatabase.CreateAsset(customFont, customFontPath);
+            AssetDatabase.Refresh();
+        }
+        customFont.material = material;
 
-        Debug.Log(fntPath);
         StreamReader reader = new StreamReader(new FileStream(fntPath, FileMode.Open));
-
         List<CharacterInfo> charList = new List<CharacterInfo>();
 
         Regex reg = new Regex(@"char id=(?<id>\d+)\s+x=(?<x>\d+)\s+y=(?<y>\d+)\s+width=(?<width>\d+)\s+height=(?<height>\d+)\s+xoffset=(?<xoffset>(-|\d)+)\s+yoffset=(?<yoffset>(-|\d)+)\s+xadvance=(?<xadvance>\d+)\s+");
@@ -83,27 +68,23 @@ public class CustomFontMaker : EditorWindow
                     var xoffset = System.Convert.ToInt32(match.Groups["xoffset"].Value);
                     var yoffset = System.Convert.ToInt32(match.Groups["yoffset"].Value);
                     var xadvance = System.Convert.ToInt32(match.Groups["xadvance"].Value);
-                    Debug.Log("ID" + id);
-
 
                     CharacterInfo info = new CharacterInfo();
                     info.index = id;
-
-                    float uvx = 1f* x / scaleW;  
-                    float uvy = 1f * y / scaleH;  
+                    float uvx = 1f * x / scaleW;  
+                    float uvy = 1 - 1f * y / scaleH;  
                     float uvw = 1f * width / scaleW;  
-                    float uvh = 1f * height / scaleH;  
-                    
+                    float uvh = 1f * height / scaleH;
                     info.uvBottomLeft = new Vector2(uvx, uvy);  
                     info.uvBottomRight = new Vector2(uvx + uvw, uvy);  
-                    info.uvTopLeft = new Vector2(uvx, uvy + uvh);  
-                    info.uvTopRight = new Vector2(uvx + uvw, uvy + uvh);  
+                    info.uvTopLeft = new Vector2(uvx, uvy - uvh);  
+                    info.uvTopRight = new Vector2(uvx + uvw, uvy - uvh);  
 
                     info.minX = xoffset;  
-                    info.minY = yoffset;   // 这样调出来的效果是ok的，原理未知  
+                    info.minY = yoffset;   
                     info.maxX = width;  
-                    info.maxY = -height; // 同上，不知道为什么要用负的，可能跟unity纹理uv有关  
-                    info.advance = xadvance;  
+                    info.maxY = -height; 
+                    info.advance = xadvance + 3;  
                     charList.Add(info);
                 }
             }
@@ -117,13 +98,26 @@ public class CustomFontMaker : EditorWindow
                     scaleH = System.Convert.ToInt32(match.Groups["scaleH"].Value);
                 }
             }
+            else if (line.IndexOf("file=", StringComparison.Ordinal) != -1)
+            {
+                Regex reg2 = new Regex("page id=(?<id>\\d+)\\s+file=\\\"(?<file>.*)\\\"");
+                Match match = reg2.Match(line);
+                if (match != Match.Empty)
+                {
+                    string fileName = match.Groups["file"].Value;
+                    string fntName = Selection.activeObject.name + ".fnt";
+                    string texPath = fntPath.Replace(fntName, fileName);
+                    Texture texture = AssetDatabase.LoadAssetAtPath<Texture>(texPath);
+                    material.mainTexture = texture;
+                }
+            }
             line = reader.ReadLine();
         }
-
-        Font customFont = AssetDatabase.LoadAssetAtPath<Font>(customFontPath);
+        reader.Close();
         customFont.characterInfo = charList.ToArray();
+        AssetDatabase.DeleteAsset(fntPath);
         AssetDatabase.SaveAssets();
         AssetDatabase.Refresh();
-        Debug.Log(customFont);
+        Debug.Log("创建Custom Font成功！");
     }
 }
