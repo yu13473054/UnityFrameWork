@@ -60,7 +60,7 @@ public class NetworkMgr : MonoBehaviour
     /// </summary>
     public object[] CallMethod(string func, params object[] args)
     {
-        return MyUtils.CallMethod("Network", func, args);
+        return CommonUtils.CallMethod("Network", func, args);
     }
 
     ///------------------------------------------------------------------------------------

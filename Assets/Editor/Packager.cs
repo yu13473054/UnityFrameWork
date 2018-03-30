@@ -156,8 +156,8 @@ public class Packager {
         if (!Directory.Exists(luaPath)) {
             Directory.CreateDirectory(luaPath); 
         }
-        string[] luaPaths = { AppDataPath + "/Lua/lua/", 
-                              AppDataPath + "/Lua/Tolua/Lua/" };
+        string[] luaPaths = { AppDataPath + "/Lua/", 
+                              AppDataPath + "/Tolua/Lua/" };
 
         for (int i = 0; i < luaPaths.Length; i++) {
             paths.Clear(); files.Clear();
@@ -202,7 +202,7 @@ public class Packager {
             string ext = Path.GetExtension(file);
             if (file.EndsWith(".meta") || file.Contains(".DS_Store")) continue;
 
-            string md5 = MyUtils.Md5file(file);
+            string md5 = CommonUtils.Md5file(file);
             string value = file.Replace(resPath, string.Empty);
             sw.WriteLine(value + "|" + md5);
         }

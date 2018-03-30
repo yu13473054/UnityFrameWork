@@ -97,7 +97,7 @@ public class LuaMgr : MonoBehaviour
     /// </summary>
     void InitLuaPath()
     {
-        if (GameMain.Inst._developMode)
+        if (GameMain.Inst.ResourceMode!=0)
         {
             string rootPath = Application.dataPath;
             _lua.AddSearchPath(rootPath + "/Lua");
@@ -105,7 +105,7 @@ public class LuaMgr : MonoBehaviour
         }
         else
         {
-            _lua.AddSearchPath(MyUtils.ResDir() + "lua");
+            _lua.AddSearchPath(CommonUtils.ResDir() + "lua");
         }
     }
 
@@ -150,6 +150,11 @@ public class LuaMgr : MonoBehaviour
             return func.LazyCall(args);
         }
         return null;
+    }
+
+    public LuaFunction GetFunction(string func)
+    {
+        return _lua.GetFunction(func);
     }
 
     public void LuaGC()

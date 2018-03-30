@@ -35,23 +35,55 @@ public class ResMgr : MonoBehaviour
 
         _bundles = new Dictionary<string, AssetBundleInfo>();
         //加载ab依赖关系文件
-        if (GameMain.Inst._developMode)
+        if (GameMain.Inst.ResourceMode!=0)
         {
 
         }
         else
         {
-            _rootAB = AssetBundle.LoadFromFile(MyUtils.ResFullPath(AppConst.AssetDir, ""));
+            _rootAB = AssetBundle.LoadFromFile(CommonUtils.ResFullPath(AppConst.AssetDir, ""));
             _rootManifest = _rootAB.LoadAsset<AssetBundleManifest>("AssetBundleManifest");
         }
     }
 
+    public T LoadAsset<T>(string assetName, string abName, string editorPath) where T : UnityEngine.Object
+    {
+        if (GameMain.Inst.ResourceMode == 0)
+#if UNITY_EDITOR
+            return UnityEditor.AssetDatabase.LoadAssetAtPath<T>(editorPath);
+#else
+            return null;
+#endif
+        else
+            return LoadAsset<T>(abName, assetName);
+    }
+
+    public T LoadAsset<T>(string ABName, string assetName) where T : UnityEngine.Object
+    {
+        // 加载AssetBundle
+        AssetBundle ab = LoadAB(ABName);
+        if (ab == null)
+        {
+            return default(T);
+        }
+
+        // 读取assetbundle里的这个文件
+        T asset = ab.LoadAsset<T>(assetName);
+        if (asset == null)
+        {
+            Debug.LogError("<ResMgr> 找不到Asset :" + assetName);
+            return default(T);
+        }
+
+        return asset;
+    }
+
     public T GetData<T>() where T : UnityEngine.Object
     {
-        if (GameMain.Inst._developMode)
+        if (GameMain.Inst.ResourceMode!=0)
         {
 #if UNITY_EDITOR
-            T data = UnityEditor.AssetDatabase.LoadAssetAtPath<T>(MyUtils.ResFullPath(AppConst.DataDir + typeof(T).Name, ".asset"));
+            T data = UnityEditor.AssetDatabase.LoadAssetAtPath<T>(CommonUtils.ResFullPath(AppConst.DataDir + typeof(T).Name, ".asset"));
             if (!data)
             {
                 Debug.LogErrorFormat("表格不存在，表格名称：{0}", typeof(T).Name);
@@ -70,13 +102,13 @@ public class ResMgr : MonoBehaviour
     public GameObject GetPrefab(string name)
     {
         UIResPathProperty property = DatabaseMgr.Inst.GetUIResPathProperty(name);
-        if (GameMain.Inst._developMode)
+        if (GameMain.Inst.ResourceMode!=0)
         {
 #if UNITY_EDITOR
-            GameObject  go = UnityEditor.AssetDatabase.LoadAssetAtPath<GameObject>(MyUtils.ResFullPath(property._res_develop));
+            GameObject  go = UnityEditor.AssetDatabase.LoadAssetAtPath<GameObject>(CommonUtils.ResFullPath(property._res_develop));
             if (!go)
             {
-                Debug.LogErrorFormat("获取prefab失败：{0}, 资源路径：{1}", name, MyUtils.ResFullPath(property._res_develop));
+                Debug.LogErrorFormat("获取prefab失败：{0}, 资源路径：{1}", name, CommonUtils.ResFullPath(property._res_develop));
             }
 
             return go;
@@ -106,7 +138,7 @@ public class ResMgr : MonoBehaviour
     /// <returns></returns>
     public AssetBundle LoadAB(string abName)
     {
-        abName = MyUtils.ConstraintABName(abName);
+        abName = CommonUtils.ConstraintABName(abName);
         AssetBundleInfo abInfo = null;
         if (!_bundles.ContainsKey(abName))
         {
@@ -114,7 +146,7 @@ public class ResMgr : MonoBehaviour
             _bundles.Add(abName, abInfo);
 
             LoadDependencies(abName);//加载该ab包的依赖包
-            string resPath = MyUtils.ResFullPath(abName);
+            string resPath = CommonUtils.ResFullPath(abName);
             Debug.LogFormat("正在加载ab包：{0}", resPath);
             AssetBundle ab_tmp = AssetBundle.LoadFromFile(resPath); //关联数据的素材绑定
             abInfo.AB = ab_tmp;
@@ -160,16 +192,14 @@ public class ResMgr : MonoBehaviour
         for (int i = 0; i < dependencies.Length; i++)
         {
             string depName = dependencies[i];
-            LoadAB(depName);
-            //新加进来的ab包，都被abName的包所依赖
+            //第一次load的依赖包，不需要增加引用计数
             if (_bundles.ContainsKey(depName))
             {
                 _bundles[depName].ReferenceChange();//增加一引用计数
             }
             else
             {
-                Debug.LogError("没有ab包使用该依赖！");
-                return;
+                LoadAB(depName);
             }
         }
     }
@@ -201,7 +231,7 @@ public class ResMgr : MonoBehaviour
     /// <param name="unloadAll"></param>
     public void UnloadAB(string abName, bool unloadAll = false)
     {
-        abName = MyUtils.ConstraintABName(abName);
+        abName = CommonUtils.ConstraintABName(abName);
         if (_bundles.ContainsKey(abName))
         {
             //卸载指定ab包
@@ -232,6 +262,11 @@ public class ResMgr : MonoBehaviour
 
     }
 
+    public GameObject LoadPrefab(string uiName)
+    {
+        return null;
+    }
+
     public void LoadPrefab(string abName, string[] assetNames, LuaFunction func)
     {
         abName = abName.ToLower();
@@ -252,7 +287,7 @@ public class AssetBundleInfo
 
     public AssetBundleInfo()
     {
-        _referencedCount = 0;
+        _referencedCount = 1;
     }
 
     public void ReferenceChange(int value = 1)

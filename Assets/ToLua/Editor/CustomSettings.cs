@@ -145,7 +145,7 @@ public static class CustomSettings
         _GT(typeof(RectTransform)),
         _GT(typeof(Text)),
 
-        _GT(typeof(MyUtils)),
+        _GT(typeof(CommonUtils)),
         _GT(typeof(AppConst)),
         _GT(typeof(LuaHelper)),
         _GT(typeof(ByteBuffer)),
@@ -154,7 +154,7 @@ public static class CustomSettings
         _GT(typeof(GameMain)),
         _GT(typeof(LuaMgr)),
         _GT(typeof(UIMgr)),
-        _GT(typeof(SoundMgr)),
+        _GT(typeof(AudioMgr)),
         _GT(typeof(TimerMgr)),
         _GT(typeof(ThreadManager)),
         _GT(typeof(NetworkMgr)),
