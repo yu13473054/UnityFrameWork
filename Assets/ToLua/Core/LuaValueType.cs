@@ -90,7 +90,7 @@ namespace LuaInterface
                 return names[type];
             }
 
-            return "UnKnownType";
+            return "UnKnownType:" + ConstStringTable.GetNumIntern(type);
         }
     }
 }

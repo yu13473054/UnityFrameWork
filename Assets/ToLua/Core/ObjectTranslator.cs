@@ -117,6 +117,10 @@ namespace LuaInterface
                     RemoveObject(o, udata);
                 }
 
+                if (LogGC)
+                {
+                    Debugger.Log("gc object {0}, id {1}", o, udata);
+                }
             }
         }
 
@@ -137,6 +141,10 @@ namespace LuaInterface
                     RemoveObject(o, udata);
                 }
 
+                if (LogGC)
+                {
+                    Debugger.Log("destroy object {0}, id {1}", o, udata);
+                }
             }
         }
 
@@ -191,6 +199,10 @@ namespace LuaInterface
                 //一定不能Remove, 因为GC还可能再来一次
                 objects.Destroy(udata);     
 
+                if (LogGC)
+                {
+                    Debugger.Log("destroy object {0}, id {1}", o, udata);
+                }
             }
 
             UnityEngine.Object.Destroy(obj);

@@ -322,7 +322,7 @@ public class UIInMenuEditor {
     static void AddUIPolygonRaycast(MenuCommand menuCommand)
     {
         GameObject go = new GameObject("UIPolygonRaycast");
-        UIPolygonRaycast obj = go.AddComponent<UIPolygonRaycast>();
+        go.AddComponent<UIPolygonRaycast>();
 
         PlaceUIElementRoot(menuCommand, go);
     }
@@ -343,8 +343,8 @@ public class UIInMenuEditor {
         obj.raycastTarget = false;
         obj.text = "new text";
         obj.fontSize = 20;
-        obj.resizeTextForBestFit = true;
-        obj.resizeTextMaxSize = obj.fontSize;
+//        obj.resizeTextForBestFit = true;
+//        obj.resizeTextMaxSize = obj.fontSize;
     }
     private static void PlaceUIElementRoot(MenuCommand menuCommand, GameObject go)
     {

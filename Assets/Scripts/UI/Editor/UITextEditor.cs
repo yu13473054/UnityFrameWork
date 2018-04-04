@@ -8,7 +8,7 @@ using System.Collections;
 public class UITextEditor : UnityEditor.UI.TextEditor
 {
     private SerializedProperty _localizationIDProperty;
-    private float _lastFontSize;
+//    private float _lastFontSize;
     private int _lastTextID = 0;
 
     protected override void OnEnable()
@@ -36,15 +36,15 @@ public class UITextEditor : UnityEditor.UI.TextEditor
                 }
             }
         }
-        if (txt.resizeTextForBestFit)
-        {
-            if (_lastFontSize != txt.fontSize)
-            {
-
-                txt.resizeTextMaxSize = txt.fontSize;
-                _lastFontSize = txt.fontSize;
-            }
-        }
+//        if (txt.resizeTextForBestFit)
+//        {
+//            if (_lastFontSize != txt.fontSize)
+//            {
+//
+//                txt.resizeTextMaxSize = txt.fontSize;
+//                _lastFontSize = txt.fontSize;
+//            }
+//        }
         this.serializedObject.ApplyModifiedProperties();
         base.OnInspectorGUI();
 	}

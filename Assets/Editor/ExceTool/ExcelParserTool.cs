@@ -2,42 +2,37 @@
 using System.Collections.Generic;
 using System.Data;
 using System.IO;
-using System.Reflection;
+using System.Text;
 using Excel;
 using UnityEditor;
 using UnityEngine;
-using Object = UnityEngine.Object;
 
 public class ExcelParserTool
 {
-    private static string TableDir = "/配置表";
-    private static string ExcelDirPath = System.Environment.CurrentDirectory + TableDir;
+    const int StartRow = 4;
+    private static string ExcelDirPath = System.Environment.CurrentDirectory + "/配置表";
+    private static string TxtDir = Application.dataPath + "/Data";
+    private static string LuaDir = Application.dataPath + "/Lua/logic";
 
-    private static string PropertyDirPath = Application.dataPath + "/Scripts/DataBase/Property";
-    private static string ExporterDirPath = Application.dataPath + "/Editor/ExceTool/Exporter";
-    private static string AssetDataDirPath = "Assets/Res/AssetData";
+    class TableInfo
+    {
+        public DataTable dataTable;
+        public int colCount;
+        public int rowCount;
+        public string fileName;
+    }
 
-    [MenuItem("表格数据/生成数据结构文件")]
+    static List<TableInfo> tableList = new List<TableInfo>();
+
+    [MenuItem("Tools/生成数据")]
     public static void GenerateDataStructure()
     {
-        if (!Directory.Exists(ExcelDirPath))
-        {
-            Directory.CreateDirectory(ExcelDirPath);
-        }
-        if (!Directory.Exists(PropertyDirPath))
-        {
-            Directory.CreateDirectory(PropertyDirPath);
-        }
-        if (!Directory.Exists(ExporterDirPath))
-        {
-            Directory.CreateDirectory(ExporterDirPath);
-        }
+        tableList.Clear();
 
-        //清理之前的Property数据文件
-        ClearOldFiles(PropertyDirPath);
-        //清理之前的Exporter数据文件
-        ClearOldFiles(ExporterDirPath);
-
+        Directory.CreateDirectory(ExcelDirPath);
+        Directory.CreateDirectory(TxtDir);
+        Directory.CreateDirectory(LuaDir);
+        AssetDatabase.Refresh();
         //获得所有的excel文件
         string[] files = Directory.GetFiles(ExcelDirPath, "*.xlsx");
         for (int i = 0; i < files.Length; i++)
@@ -45,59 +40,34 @@ public class ExcelParserTool
             string singleFile = files[i];
             string fileName = Path.GetFileNameWithoutExtension(singleFile);
             EditorUtility.DisplayProgressBar("正在生成数据结构", Path.GetFullPath(singleFile), (i + 1) * 1f / files.Length);
-            ParserSingleFile(singleFile, fileName);
+            //解析Excel并保存
+            TableInfo tableInfo = ParserSingleFile(singleFile, fileName);
+            if (tableInfo != null) tableList.Add(tableInfo);
         }
+        //创建txt文件
+        CreateTxt();
         AssetDatabase.Refresh();
+        //创建lua文件
+        CreateLuaFile();
+        AssetDatabase.Refresh();
+
         EditorUtility.ClearProgressBar();
         Debug.Log("所有Excel文件对应的解析文件创建完成");
     }
 
-    [MenuItem("表格数据/解析生成程序使用的数据文件")]
-    public static void ParseDataToFile()
-    {
-        if (!Directory.Exists(AssetDataDirPath))
-        {
-            Directory.CreateDirectory(AssetDataDirPath);
-        }
-        ClearOldFiles(AssetDataDirPath);
-
-        string[] excelExporters = Directory.GetFiles(ExporterDirPath, "*.cs");
-        for (int i = 0; i < excelExporters.Length; i++)
-        {
-            string exporterName = Path.GetFileNameWithoutExtension(excelExporters[i]);
-            string propertyName = exporterName.Replace("Exporter", "Data");
-            EditorUtility.DisplayProgressBar("正在导出数据...", propertyName, (i + 1) * 1f / excelExporters.Length);
-            MethodInfo method = Type.GetType(exporterName).GetMethod("ReadExcel");
-            Object result = (Object) method.Invoke(null,null);
-            AssetDatabase.CreateAsset(result,string.Format("{0}/{1}.asset", AssetDataDirPath, propertyName));
-        }
-        AssetDatabase.Refresh();
-        EditorUtility.ClearProgressBar();
-        Debug.Log("Excel数据导出成功！！");
-    }
-
-    static void ClearOldFiles(string dirPath)
-    {
-        string[] files = Directory.GetFiles(dirPath);
-        for (int i = 0; i < files.Length; i++)
-        {
-            File.Delete(files[i]);
-        }
-    }
-
-    static void ParserSingleFile(string filePath, string fileName)
+    static TableInfo ParserSingleFile(string filePath, string fileName)
     {
         FileStream stream = null;
         try
         {
             stream = File.Open(filePath, FileMode.Open, FileAccess.Read, FileShare.Read);
         }
-        catch (System.Exception ex)
+        catch (System.Exception)
         {
             string err = string.Format("读取配置表[{0}]失败, 检查是否用Excel打开了这个配置表", fileName);
             EditorUtility.DisplayDialog("", err, "失败");
             Debug.LogError(err);
-            return;
+            return null;
         }
         using (stream)
         {
@@ -110,172 +80,207 @@ public class ExcelParserTool
             if (wookSheet == null)
             {
                 Debug.LogError("Excel中没有Sheet");
-                return;
-            }
-            string propertyName = wookSheet.TableName.Substring(0, 1).ToUpper() + wookSheet.TableName.Substring(1);
-            List<string> keys = new List<string>();
-            List<string> typeChecks = new List<string>();
-            List<string> values = new List<string>();
-            int columnCount = wookSheet.Columns.Count;
-            for (int index = 0; index < columnCount; index++)
-            {
-                string keyText = wookSheet.Rows[0][index].ToString();
-                if (!keyText.Equals(string.Empty))
-                {
-                    keys.Add(keyText.ToLower());
-                    typeChecks.Add(wookSheet.Rows[1][index].ToString());
-                    values.Add(wookSheet.Rows[2][index].ToString());
-                }
+                return null;
             }
 
-            CreatCSFile(propertyName, keys, typeChecks, values);
-            CreatExporter(fileName, wookSheet.TableName, propertyName, keys, typeChecks, values);
+            string tableName = wookSheet.TableName.Substring(0, 1).ToUpper() + wookSheet.TableName.Substring(1);
+
+            //获取内容数量
+            int columnCount;
+            int rowCount;
+            GetValidCount(wookSheet, out columnCount, out rowCount);
+            if (columnCount == 0) return null;
+            return new TableInfo()
+            {
+                dataTable = wookSheet,
+                colCount = columnCount,
+                rowCount = rowCount,
+                fileName = tableName
+            };
         }
     }
 
-    private static void CreatCSFile(string csPrefix, List<string> keys, List<string> typeChecks, List<string> values)
+    //获取表格中有效的行列数
+    static void GetValidCount(DataTable wookSheet, out int colCount, out int rowCount)
     {
-        string scriptPath = PropertyDirPath + "/" + csPrefix + "Data.cs";
-        FileStream fs = new FileStream(scriptPath, FileMode.Create, FileAccess.Write);
-        StreamWriter sr = new StreamWriter(fs);
-
-        //命名空间的引入
-        sr.WriteLine("using System;");
-        sr.WriteLine("using System.Collections.Generic;");
-        sr.WriteLine("using UnityEngine;");
-        sr.WriteLine();
-        //创建ScriptableObject代码
-        sr.WriteLine("public class {0}Data : ScriptableObject", csPrefix);
-        sr.WriteLine("{");
-        sr.WriteLine("\tpublic List<{0}Property> _properties = new List<{0}Property>();", csPrefix);
-        sr.WriteLine("}");
-        sr.WriteLine();
-        //创建单个对象的解析类
-        sr.WriteLine("[Serializable]");
-        sr.WriteLine("public class {0}Property", csPrefix);
-        sr.WriteLine("{");
-
-        for (int i = 0; i < keys.Count; i++)
+        colCount = wookSheet.Columns.Count;
+        rowCount = wookSheet.Rows.Count;
+        for (int i = 0; i < colCount; i++)
         {
-            //默认为int
-            string valueType = "int";
-
-            string checkName = typeChecks[i].ToLower();
-
-            if (checkName.Contains("list"))
+            var value = wookSheet.Rows[0][i].ToString();
+            if (string.IsNullOrEmpty(value))
             {
-                if (checkName.Contains("int"))
-                    valueType = "int[]";
-                else if (checkName.Contains("float"))
-                    valueType = "float[]";
-                else if (checkName.Contains("string"))
-                    valueType = "string[]";
+                colCount = i;
+                break;
+            }
+
+        }
+        for (int i = StartRow; i < rowCount; i++)
+        {
+            var value = wookSheet.Rows[i][0].ToString();
+            if (string.IsNullOrEmpty(value))
+            {
+                rowCount = i;
+                break;
+            }
+        }
+    }
+
+    private static void CreateTxt()
+    {
+        for (int k = 0; k < tableList.Count; k++)
+        {
+            TableInfo tableInfo = tableList[k];
+            EditorUtility.DisplayProgressBar("正在生成Txt文件", tableInfo.fileName+".txt", (k + 1) * 1f / tableList.Count);
+            StringBuilder sb = new StringBuilder();
+            DataRow typeRow = tableInfo.dataTable.Rows[0];
+            //记录字段名称
+            DataRow fieldRow = tableInfo.dataTable.Rows[1];
+            for (int i = 0; i < tableInfo.colCount; i++)
+            {
+                string type = typeRow[i].ToString().Trim().ToLower();
+                if(type.Contains("none")) continue;//注释用字段，不导入txt文件中
+                string value = fieldRow[i].ToString().Trim();
+                if (string.IsNullOrEmpty(value))
+                {
+                    Debug.LogError(tableInfo.fileName+"表格中字段名不能为空！");
+                    return;
+                }
+                sb.Append(value);
+                sb.Append(i == tableInfo.colCount - 1 ? "\n" : "\t");
+            }
+            //记录内容
+            for (int i = 4; i < tableInfo.rowCount; i++)
+            {
+                DataRow rowValue = tableInfo.dataTable.Rows[i];
+                //记录每行的值
+                for (int j = 0; j < tableInfo.colCount; j++)
+                {
+                    string type = typeRow[j].ToString().Trim().ToLower();
+                    if (type.Contains("none")) continue;//注释用字段，不导入txt文件中
+                    string value = rowValue[j].ToString().Trim();
+                    //内容空的时候，设置默认值
+                    if (string.IsNullOrEmpty(value))
+                    {
+                        if (type.Contains("list"))
+                            value = "";
+                        else
+                        {
+                            if (type.Contains("int") || type.Contains("float"))
+                                value = "0";
+                            else
+                                value = "";
+                        }
+                    }
+                    //保存内容
+                    sb.Append(value);
+                    if (j != tableInfo.colCount - 1)
+                        sb.Append("\t");
+                }
+                //换行
+                if (i != tableInfo.rowCount - 1)
+                    sb.Append("\n");
+            }
+
+            File.WriteAllText(TxtDir+ tableInfo.fileName+".txt",sb.ToString());
+        }
+    }
+
+    private static void CreateLuaFile()
+    {
+        StringBuilder sb = new StringBuilder();
+        //获取模板文件中的内容
+        string templateText = File.ReadAllText(Application.dataPath + "/Editor/ExceTool/Template/DataTemplate.lua");
+        string[] structTexts = templateText.Split(new [] { "***********" }, StringSplitOptions.None);
+        //去掉模板内容中的首尾换行
+        structTexts[1] = structTexts[1].TrimStart();
+        for (int i = 2; i < structTexts.Length; i++)
+        {
+            structTexts[i] = structTexts[i].Trim();
+        }
+
+        //保存文件头
+        sb.Append(structTexts[0]);
+        for (int i = 0; i < tableList.Count; i++)
+        {
+            TableInfo tableInfo = tableList[i];
+            //字段名，首字母小写
+            string localFieldName = "_"+tableInfo.fileName.Substring(0, 1).ToLower() + tableInfo.fileName.Substring(1);
+            string fileName = tableInfo.fileName + ".txt";
+            string abName = "data";
+            //方法体
+            string funcText = structTexts[1].Replace("#0#", localFieldName)
+                        .Replace("#1#", tableInfo.fileName)
+                        .Replace("#2#", fileName)
+                        .Replace("#3#", abName);
+
+            DataTable table = tableInfo.dataTable;
+
+            DataRow typeRow = table.Rows[0];
+
+            //主键：表格中第一列不为"none"的为主键
+            string type = "";
+            for (int j = 0; j < tableInfo.colCount; j++)
+            {
+                type = typeRow[j].ToString().ToLower();
+                if(!type.Contains("none")) break;
+            }
+            string key;
+            if (type.Contains("list"))
+            {
+                Debug.LogErrorFormat("{0}表中的主键不能为数组！请检查",tableInfo.fileName);
+                continue;
             }
             else
             {
-                valueType = keys[i];
+                if (type.Contains("int") || type.Contains("float"))
+                    //tonumber( tableHandler:GetValue( records, 0 ) )
+                    key = structTexts[2].Replace("#0#",structTexts[3].Replace("#0#","0"));
+                else
+                    //tableHandler:GetValue( records, 0 )
+                    key = structTexts[3].Replace("#0#", "0");
             }
-            sr.WriteLine("\tpublic {0} _{1};", valueType, GetValueType(values[i]));
+            funcText = funcText.Replace("#4#", key);
+
+            //字段赋值
+            StringBuilder fieldValueSb = new StringBuilder();
+            for (int j = 0; j < tableInfo.colCount; j++)
+            {
+                string fieldValue;
+                type = table.Rows[0][j].ToString().ToLower();
+                string fieldName = table.Rows[1][j].ToString().Substring(0, 1).ToLower() +
+                                   table.Rows[1][j].ToString().Substring(1);
+                //解析List
+                if (type.Contains("list"))
+                {
+                    string boolValue;
+                    if (type.Contains("int") || type.Contains("float"))
+                        boolValue = "true";
+                    else
+                        boolValue = "false";
+                    //样式：levels = ToArray(tableHandler:GetValue( records, 2 ), false),
+                    fieldValue = structTexts[5].Replace("#0#", fieldName).Replace("#1#", structTexts[3].Replace("#0#", j.ToString())).Replace("#2#", boolValue);
+                }
+                //解析常规
+                else
+                {
+                    if (type.Contains("int") || type.Contains("float"))
+                        //样式：descID = tonumber( tableHandler:GetValue( records, 1 ) ),
+                        fieldValue = structTexts[4].Replace("#0#",fieldName).Replace("#1#", structTexts[2].Replace("#0#", structTexts[3].Replace("#0#", j.ToString())));
+                    else
+                        //样式：desc = tableHandler:GetValue( records, 1 ),
+                        fieldValue = structTexts[4].Replace("#0#",fieldName).Replace("#1#", structTexts[3].Replace("#0#", j.ToString()));
+                }
+                if (j != 0) fieldValueSb.Append("\t\t\t");
+                fieldValueSb.Append(fieldValue);
+                if (j != tableInfo.colCount-1) fieldValueSb.Append("\n");
+            }
+            funcText = funcText.Replace("#5#", fieldValueSb.ToString());
+
+            sb.Append(funcText);
         }
-
-        sr.WriteLine("}");
-        sr.Close();
-        fs.Close();
-    }
-
-    private static void CreatExporter(string fileName, string tableName, string propertyName, List<string> keys, List<string> typeChecks, List<string> values)
-    {
-        string editorPath = ExporterDirPath + "/" + propertyName + "Exporter.cs";
-        FileStream exporFs = new FileStream(editorPath, FileMode.Create, FileAccess.Write);
-        StreamWriter exporSw = new StreamWriter(exporFs);
-
-        exporSw.WriteLine("using System.Collections.Generic;");
-        exporSw.WriteLine("using UnityEngine;");
-        exporSw.WriteLine("using UnityEditor;");
-        exporSw.WriteLine("using Excel;");
-        exporSw.WriteLine("using System.IO;");
-        exporSw.WriteLine("using System.Data;");
-        exporSw.WriteLine();
-        exporSw.WriteLine("public class {0}Exporter", propertyName);
-        exporSw.WriteLine("{");
-        exporSw.WriteLine();
-        exporSw.WriteLine("\tpublic static {0}Data ReadExcel()", propertyName);
-        exporSw.WriteLine("\t{");
-        exporSw.WriteLine("\t\tstring excelName = System.Environment.CurrentDirectory + \"{0}/{1}.xlsx\";", TableDir, fileName);
-        exporSw.WriteLine("\t\tFileStream stream = File.Open(excelName, FileMode.Open, FileAccess.Read, FileShare.Read);");
-        exporSw.WriteLine("\t\tIExcelDataReader excelReader = ExcelReaderFactory.CreateOpenXmlReader(stream);");
-        exporSw.WriteLine("\t\tDataSet result = excelReader.AsDataSet();");
-        exporSw.WriteLine();
-        exporSw.WriteLine("\t\tSystem.Data.DataTable wookSheet = result.Tables[\"{0}\"];", tableName);
-        exporSw.WriteLine("\t\tint startRow = 5;");
-        exporSw.WriteLine("\t\tint endRow = wookSheet.Rows.Count;");
-        exporSw.WriteLine("\t\tint columnCount = wookSheet.Columns.Count;");
-        exporSw.WriteLine();
-        exporSw.WriteLine("\t\tList<string> keys = new List<string>();");
-        exporSw.WriteLine("\t\tfor (int index = 0; index < columnCount; index++)");
-        exporSw.WriteLine("\t\t{");
-        exporSw.WriteLine("\t\t\tstring keyText = wookSheet.Rows[2][index].ToString();");
-        exporSw.WriteLine("\t\t\tif (!keyText.Equals(string.Empty))");
-        exporSw.WriteLine("\t\t\tkeys.Add(keyText);");
-        exporSw.WriteLine("\t\t}");
-        exporSw.WriteLine("\t\tvar headerColumns = ExcelHelper.GetColumnsHeader(wookSheet, keys);");
-        exporSw.WriteLine("\t\t{0}Data Data = ScriptableObject.CreateInstance<{0}Data>();", propertyName);
-
-        exporSw.WriteLine("\t\tfor (int row = startRow; row < endRow; row++)");
-        exporSw.WriteLine("\t\t{");
-        exporSw.WriteLine("\t\t\tstring checkStr = ExcelHelper.GetSheetValue(wookSheet, row, headerColumns[keys[0]]);");
-        exporSw.WriteLine("\t\t\tif(checkStr.Equals(string.Empty))");
-        exporSw.WriteLine("\t\t\t\tcontinue;");
-        exporSw.WriteLine("\t\t\t{0}Property property = new {0}Property();", propertyName);
-        for (int index = 0; index < values.Count; index++)
-        {
-            exporSw.WriteLine("\t\t\tproperty._{0} = {1}", GetValueType(values[index]), GetKeyType(keys[index], typeChecks[index], values[index]));
-        }
-
-        exporSw.WriteLine("\t\t\tData._properties.Add(property);");
-        exporSw.WriteLine("\t\t}");
-        exporSw.WriteLine("\t\treturn Data;");
-        exporSw.WriteLine("\t}");
-        exporSw.WriteLine("}");
-        exporSw.Close();
-        exporFs.Close();
-    }
-
-    public static string GetKeyType(string keyName, string checkName, string columnName)
-    {
-        //默认为int
-        string valueType = "";
-        //先小写
-        checkName = checkName.ToLower();
-        //如果第二列没有List标志
-        if (checkName.Contains("list"))
-        {
-            if (checkName.Contains("int"))
-                return string.Format("StrParser.ParseDecIntList(ExcelHelper.GetSheetValue(wookSheet, row, headerColumns[\"{0}\"]), 0);", columnName);
-            else if (checkName.Contains("float"))
-                return string.Format("StrParser.ParseFloatList(ExcelHelper.GetSheetValue(wookSheet, row, headerColumns[\"{0}\"]), 0f);", columnName);
-            else if (checkName.Contains("string"))
-                return string.Format("StrParser.ParseStrList(ExcelHelper.GetSheetValue(wookSheet, row, headerColumns[\"{0}\"]), new string[0]);", columnName);
-        }
-        else
-        {
-            if (keyName.Equals("int"))
-                return string.Format("StrParser.ParseDecInt(ExcelHelper.GetSheetValue(wookSheet, row, headerColumns[\"{0}\"]), 0);", columnName);
-            else if (keyName.Equals("float"))
-                return string.Format("StrParser.ParseFloat(ExcelHelper.GetSheetValue(wookSheet, row, headerColumns[\"{0}\"]), 0f);", columnName);
-            else if (keyName.Equals("string"))
-                return string.Format("StrParser.ParseStr(ExcelHelper.GetSheetValue(wookSheet, row, headerColumns[\"{0}\"]), string.Empty);", columnName);
-        }
-
-        return valueType;
-    }
-
-    public static string GetValueType(string value)
-    {
-        //连续两个字母都为大写则全部小写
-        if (value.Length > 1 && !(char.IsUpper(value.ToCharArray()[0]) && char.IsUpper(value.ToCharArray()[1])))
-            return value.Substring(0, 1).ToLower() + value.Substring(1);
-
-        return value.ToLower();
+        EditorUtility.DisplayProgressBar("正在生成Lua文件", "Data.Lua", 1);
+        //存储内容
+        File.WriteAllText(LuaDir+"Data.Lua", sb.ToString());
     }
 }

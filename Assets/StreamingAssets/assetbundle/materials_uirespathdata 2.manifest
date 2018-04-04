@@ -1,0 +1,18 @@
+ManifestFileVersion: 0
+CRC: 1470574787
+Hashes:
+  AssetFileHash:
+    serializedVersion: 2
+    Hash: 251916930e023b7bfea54cba4d28ae03
+  TypeTreeHash:
+    serializedVersion: 2
+    Hash: 308dd07eae4ab78bd0547b9778311a32
+HashAppended: 0
+ClassTypes:
+- Class: 114
+  Script: {fileID: 11500000, guid: 781fdb90f8245b949a57b388002a33b0, type: 3}
+- Class: 115
+  Script: {instanceID: 0}
+Assets:
+- Assets/Res/Materials/UIResPathData 2.asset
+Dependencies: []

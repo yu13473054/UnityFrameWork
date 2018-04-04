@@ -32,8 +32,10 @@ public class LuaMgr : MonoBehaviour
         DontDestroyOnLoad(gameObject);
 
         _loader = new LuaLoader();
+        _loader.beZip = GameMain.Inst.ResourceMode != 0;
+
         _lua = new LuaState();
-        this.OpenLibs();
+        OpenLibs();
         _lua.LuaSetTop(0);
 
         LuaBinder.Bind(_lua);
@@ -44,7 +46,6 @@ public class LuaMgr : MonoBehaviour
     public void InitStart()
     {
         InitLuaPath();
-        InitLuaBundle();
         _lua.Start();    //启动LUAVM
         StartMain();
         StartLooper();
@@ -56,25 +57,13 @@ public class LuaMgr : MonoBehaviour
         _loop.luaState = _lua;
     }
 
-    //cjson 比较特殊，只new了一个table，没有注册库，这里注册一下
-    protected void OpenCJson()
-    {
-        _lua.LuaGetField(LuaIndexes.LUA_REGISTRYINDEX, "_LOADED");
-        _lua.OpenLibs(LuaDLL.luaopen_cjson);
-        _lua.LuaSetField(-2, "cjson");
-
-        _lua.OpenLibs(LuaDLL.luaopen_cjson_safe);
-        _lua.LuaSetField(-2, "cjson.safe");
-    }
-
     void StartMain()
     {
-        _lua.DoFile("Main.lua");
+        _lua.DoFile("logic/Main.lua");
 
-        LuaFunction main = _lua.GetFunction("Main");
+        LuaFunction main = _lua.GetFunction("LuaStart");
         main.Call();
         main.Dispose();
-        main = null;
     }
 
     /// <summary>
@@ -83,13 +72,17 @@ public class LuaMgr : MonoBehaviour
     void OpenLibs()
     {
         _lua.OpenLibs(LuaDLL.luaopen_pb);
-        _lua.OpenLibs(LuaDLL.luaopen_sproto_core);
-        _lua.OpenLibs(LuaDLL.luaopen_protobuf_c);
         _lua.OpenLibs(LuaDLL.luaopen_lpeg);
         _lua.OpenLibs(LuaDLL.luaopen_bit);
         _lua.OpenLibs(LuaDLL.luaopen_socket_core);
 
-        this.OpenCJson();
+        //cjson 比较特殊，只new了一个table，没有注册库，这里注册一下
+        _lua.LuaGetField(LuaIndexes.LUA_REGISTRYINDEX, "_LOADED");
+        _lua.OpenLibs(LuaDLL.luaopen_cjson);
+        _lua.LuaSetField(-2, "cjson");
+
+        _lua.OpenLibs(LuaDLL.luaopen_cjson_safe);
+        _lua.LuaSetField(-2, "cjson.safe");
     }
 
     /// <summary>
@@ -97,42 +90,17 @@ public class LuaMgr : MonoBehaviour
     /// </summary>
     void InitLuaPath()
     {
-        if (GameMain.Inst.ResourceMode!=0)
+        if (_loader.beZip)
         {
-            string rootPath = Application.dataPath;
-            _lua.AddSearchPath(rootPath + "/Lua");
-            _lua.AddSearchPath(rootPath + "/ToLua/Lua");
+            _loader.AddBundle("lua_logic");
+            _loader.AddBundle("lua_tolua");
+            //            _loader.AddBundle("lua_ui");
+            _loader.AddBundle("lua_utils");
         }
         else
         {
-            _lua.AddSearchPath(CommonUtils.ResDir() + "lua");
-        }
-    }
-
-    /// <summary>
-    /// 初始化LuaBundle
-    /// </summary>
-    void InitLuaBundle()
-    {
-        if (_loader.beZip)
-        {
-            _loader.AddBundle("lua/lua" + AppConst.ExtName);
-            _loader.AddBundle("lua/lua_math" + AppConst.ExtName);
-            _loader.AddBundle("lua/lua_system" + AppConst.ExtName);
-            _loader.AddBundle("lua/lua_system_reflection" + AppConst.ExtName);
-            _loader.AddBundle("lua/lua_unityengine" + AppConst.ExtName);
-            _loader.AddBundle("lua/lua_common" + AppConst.ExtName);
-            _loader.AddBundle("lua/lua_logic" + AppConst.ExtName);
-            _loader.AddBundle("lua/lua_view" + AppConst.ExtName);
-            _loader.AddBundle("lua/lua_controller" + AppConst.ExtName);
-            _loader.AddBundle("lua/lua_misc" + AppConst.ExtName);
-
-            _loader.AddBundle("lua/lua_protobuf" + AppConst.ExtName);
-            _loader.AddBundle("lua/lua_3rd_cjson" + AppConst.ExtName);
-            _loader.AddBundle("lua/lua_3rd_luabitop" + AppConst.ExtName);
-            _loader.AddBundle("lua/lua_3rd_pbc" + AppConst.ExtName);
-            _loader.AddBundle("lua/lua_3rd_pblua" + AppConst.ExtName);
-            _loader.AddBundle("lua/lua_3rd_sproto" + AppConst.ExtName);
+            _lua.AddSearchPath(LuaConst.luaDir);
+            _lua.AddSearchPath(LuaConst.luaDir+"/ToLua");
         }
     }
 

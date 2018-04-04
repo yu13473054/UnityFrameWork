@@ -78,6 +78,7 @@ public class LuaClient : MonoBehaviour
     {
         if (!Directory.Exists(LuaConst.zbsDir))
         {
+            Debugger.LogWarning("ZeroBraneStudio not install or LuaConst.zbsDir not right");
             return;
         }
 
@@ -218,6 +219,7 @@ public class LuaClient : MonoBehaviour
             SceneManager.sceneLoaded -= OnSceneLoaded;
 #endif    
             luaState.Call("OnApplicationQuit", false);
+            DetachProfiler();
             LuaState state = luaState;
             luaState = null;
 
@@ -256,5 +258,25 @@ public class LuaClient : MonoBehaviour
     public LuaLooper GetLooper()
     {
         return loop;
+    }
+
+    LuaTable profiler = null;
+
+    public void AttachProfiler()
+    {
+        if (profiler == null)
+        {
+            profiler = luaState.Require<LuaTable>("UnityEngine.Profiler");
+            profiler.Call("start", profiler);
+        }
+    }
+    public void DetachProfiler()
+    {
+        if (profiler != null)
+        {
+            profiler.Call("stop", profiler);
+            profiler.Dispose();
+            LuaProfiler.Clear();
+        }
     }
 }

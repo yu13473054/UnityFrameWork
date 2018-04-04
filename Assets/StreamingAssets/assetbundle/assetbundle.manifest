@@ -1,0 +1,49 @@
+ManifestFileVersion: 0
+CRC: 1695202662
+AssetBundleManifest:
+  AssetBundleInfos:
+    Info_0:
+      Name: assetdata_uirespathdata 1
+      Dependencies: {}
+    Info_1:
+      Name: assetdata_uirespathdata
+      Dependencies: {}
+    Info_2:
+      Name: atlas_dlglogin
+      Dependencies: {}
+    Info_3:
+      Name: atlas_dlgbattle_blood_04
+      Dependencies: {}
+    Info_4:
+      Name: audio_bgm
+      Dependencies: {}
+    Info_5:
+      Name: audio_sound
+      Dependencies: {}
+    Info_6:
+      Name: shader_ui
+      Dependencies: {}
+    Info_7:
+      Name: dlgbattle_blood_05
+      Dependencies: {}
+    Info_8:
+      Name: dlgbattle_blood_06
+      Dependencies: {}
+    Info_9:
+      Name: dlgbattle_blood_07
+      Dependencies: {}
+    Info_10:
+      Name: dlgbattle_blood_08
+      Dependencies: {}
+    Info_11:
+      Name: dlgbattle_blood_09
+      Dependencies: {}
+    Info_12:
+      Name: dlgbattle_blood_10
+      Dependencies: {}
+    Info_13:
+      Name: materials_uirespathdata 2
+      Dependencies: {}
+    Info_14:
+      Name: materials_uirespathdata 3
+      Dependencies: {}

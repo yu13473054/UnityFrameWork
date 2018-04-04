@@ -3,6 +3,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using LuaInterface;
 
 
 public class GameMain : MonoBehaviour
@@ -36,6 +37,9 @@ public class GameMain : MonoBehaviour
     }
     #endregion
 
+
+    private bool _isMgrInit;
+
     /// <summary>
     /// 初始化游戏管理器
     /// </summary>
@@ -47,10 +51,15 @@ public class GameMain : MonoBehaviour
         //游戏属性设置
         Screen.sleepTimeout = SleepTimeout.NeverSleep;
         Application.targetFrameRate = _targetFrameRate;
+
+        Debugger.useLog = false;
     }
 
     void Start()
     {
+        OnResourceInited();
+        return;
+
         if (_resourceMode == 0)
         {
             //开发者模式下，直接启动游戏
@@ -65,41 +74,19 @@ public class GameMain : MonoBehaviour
         }
     }
 
-
-    public void ReBoot()
-    {
-        MgrRelease();
-    }
-
-    void OnUpdateFailed(string hintText)
-    {
-    }
-
-    /// 开始下载
-    void BeginDownload()
-    {
-
-    }
-
-    void OnSingleDownloadCompleted()
-    {
-
-    }
-
-    /// 所有文件下载完成
-    void OnAllDownloadCompleted()
-    {
-    }
-
     /// 资源初始化结束
     void OnResourceInited()
     {
+        if(_isMgrInit)
+             MgrRelease();
         MgrInit();
         OnInitialize();
     }
 
     private void MgrInit()
     {
+        if (_isMgrInit) return;
+        _isMgrInit = true;
         PrefMgr.Init();
         ResMgr.Init();
         DatabaseMgr.Init();
@@ -107,7 +94,6 @@ public class GameMain : MonoBehaviour
         UIMgr.Init();
         AudioMgr.Init();
         TimerMgr.Init();
-        NetworkMgr.Init();
         PoolMgr.Init();
 
         LuaMgr.Init();
@@ -121,14 +107,13 @@ public class GameMain : MonoBehaviour
         if (PrefMgr.Inst != null) DestroyImmediate(PrefMgr.Inst);
         if (PrefMgr.Inst != null) DestroyImmediate(UIMgr.Inst);
         if (ResMgr.Inst != null) DestroyImmediate(ResMgr.Inst);
-        if (NetworkMgr.Inst != null) DestroyImmediate(NetworkMgr.Inst);
         if (PoolMgr.Inst != null) DestroyImmediate(PoolMgr.Inst);
         if (LuaMgr.Inst != null) DestroyImmediate(LuaMgr.Inst);
     }
 
     void OnInitialize()
     {
-//        LuaMgr.Inst.InitStart();
+        LuaMgr.Inst.InitStart();
 
 
         //            LuaMgr.Inst.DoFile("Logic/Game");         //加载游戏
@@ -136,16 +121,11 @@ public class GameMain : MonoBehaviour
         //            NetworkMgr.Inst.OnInit();                     //初始化网络
         //
         //
-        //            CommonUtils.CallMethod("Game", "OnInitOK");     //初始化完成
     }
 
     /// 析构函数
     void OnDestroy()
     {
-        if (NetworkMgr.Inst != null)
-        {
-            NetworkMgr.Inst.Unload();
-        }
     }
 }
 

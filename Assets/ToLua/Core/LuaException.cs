@@ -101,7 +101,7 @@ namespace LuaInterface
                     }                    
                 }
 
-                sb.AppendLine();
+                sb.AppendLineEx();
             }
 
             for (int i = begin; i < trace.FrameCount; i++)

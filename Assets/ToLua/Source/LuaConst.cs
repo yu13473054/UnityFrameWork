@@ -2,8 +2,8 @@
 
 public static class LuaConst
 {
-    public static string luaDir = Application.dataPath + "/Lua";
-    public static string toluaDir = Application.dataPath + "/ToLua/Lua";
+    public static string luaDir = Application.dataPath + "/Lua";                //lua逻辑代码目录
+    public static string toluaDir = Application.dataPath + "/ToLua";           //tolua
 
 #if UNITY_STANDALONE
     public static string osDir = "Win";

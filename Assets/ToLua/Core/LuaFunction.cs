@@ -50,6 +50,17 @@ namespace LuaInterface
             this.luaState = state;
         }
 
+        public override void Dispose()
+        {
+#if UNITY_EDITOR
+            if (oldTop != -1 && count <= 1)
+            {
+                Debugger.LogError("You must call EndPCall before calling Dispose");
+            }
+#endif
+            base.Dispose();
+        }
+
         public T ToDelegate<T>() where T : class
         {
             return DelegateTraits<T>.Create(this) as T;
@@ -71,6 +82,13 @@ namespace LuaInterface
 
         public void PCall()
         {
+#if UNITY_EDITOR
+            if (oldTop == -1)
+            {
+                Debugger.LogError("You must call BeginPCall before calling PCall");
+            }
+#endif
+
             stackPos = oldTop + 1;
 
             try

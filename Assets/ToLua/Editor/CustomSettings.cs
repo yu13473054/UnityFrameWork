@@ -2,17 +2,17 @@
 using System;
 using System.Collections.Generic;
 using LuaInterface;
+using UnityEditor;
 
 using BindType = ToLuaMenu.BindType;
-using UnityEngine.UI;
 using System.Reflection;
 
 public static class CustomSettings
 {
-    public static string saveDir = Application.dataPath + "/ToLua/Source/Generate/";
-    public static string luaDir = Application.dataPath + "/Lua/";
+    public static string saveDir = Application.dataPath + "/ToLua/Source/Generate/";    
     public static string toluaBaseType = Application.dataPath + "/ToLua/BaseType/";
-	public static string toluaLuaDir = Application.dataPath + "/ToLua/Lua";
+    public static string baseLuaDir = Application.dataPath + "/Lua/ToLua/";
+    public static string injectionFilesPath = Application.dataPath + "/ToLua/Injection/";
 
     //导出时强制做为静态类的类型(注意customTypeList 还要添加这个类型才能导出)
     //unity 有些类作为sealed class, 其实完全等价于静态类
@@ -29,7 +29,6 @@ public static class CustomSettings
         typeof(UnityEngine.QualitySettings),
         typeof(UnityEngine.GL),
         typeof(UnityEngine.Graphics),
-        typeof(UnityEngine.Debug),
     };
 
     //附加导出委托类型(在导出委托时, customTypeList 中牵扯的委托类型都会导出， 无需写在这里)
@@ -58,7 +57,9 @@ public static class CustomSettings
         //_GT(typeof(TestExport.Space)),
         //-------------------------------------------------------------------        
                         
-        _GT(typeof(Debug)).SetNameSpace(null),          
+        _GT(typeof(LuaInjectionStation)),
+        _GT(typeof(InjectType)),
+        _GT(typeof(Debugger)).SetNameSpace(null),          
 
 #if USING_DOTWEENING
         _GT(typeof(DG.Tweening.DOTween)),
@@ -112,6 +113,9 @@ public static class CustomSettings
         _GT(typeof(AsyncOperation)).SetBaseType(typeof(System.Object)),        
         _GT(typeof(LightType)),
         _GT(typeof(SleepTimeout)),
+#if UNITY_5_3_OR_NEWER && !UNITY_5_6_OR_NEWER
+        _GT(typeof(UnityEngine.Experimental.Director.DirectorPlayer)),
+#endif
         _GT(typeof(Animator)),
         _GT(typeof(Input)),
         _GT(typeof(KeyCode)),
@@ -120,6 +124,11 @@ public static class CustomSettings
        
 
         _GT(typeof(MeshRenderer)),
+#if !UNITY_5_4_OR_NEWER
+        _GT(typeof(ParticleEmitter)),
+        _GT(typeof(ParticleRenderer)),
+        _GT(typeof(ParticleAnimator)), 
+#endif
 
         _GT(typeof(BoxCollider)),
         _GT(typeof(MeshCollider)),
@@ -138,32 +147,19 @@ public static class CustomSettings
         _GT(typeof(QualitySettings)),
         _GT(typeof(RenderSettings)),                                                   
         _GT(typeof(BlendWeights)),           
-        _GT(typeof(RenderTexture)), 
-		_GT(typeof(Resources)),      
-          
-        //for LuaFramework
-        _GT(typeof(RectTransform)),
-        _GT(typeof(Text)),
-
-        _GT(typeof(CommonUtils)),
-        _GT(typeof(AppConst)),
-        _GT(typeof(LuaHelper)),
-        _GT(typeof(ByteBuffer)),
-        _GT(typeof(LuaBehaviour)),
-
-        _GT(typeof(GameMain)),
-        _GT(typeof(LuaMgr)),
-        _GT(typeof(UIMgr)),
-        _GT(typeof(AudioMgr)),
-        _GT(typeof(TimerMgr)),
-        _GT(typeof(ThreadManager)),
-        _GT(typeof(NetworkMgr)),
-        _GT(typeof(ResMgr)),		  
+        _GT(typeof(RenderTexture)),
+        _GT(typeof(Resources)),     
+        _GT(typeof(LuaProfiler)),
     };
 
     public static List<Type> dynamicList = new List<Type>()
     {
         typeof(MeshRenderer),
+#if !UNITY_5_4_OR_NEWER
+        typeof(ParticleEmitter),
+        typeof(ParticleRenderer),
+        typeof(ParticleAnimator),
+#endif
 
         typeof(BoxCollider),
         typeof(MeshCollider),
@@ -237,4 +233,28 @@ public static class CustomSettings
     {
         return new DelegateType(t);
     }    
+
+
+    [MenuItem("Lua/Attach Profiler", false, 151)]
+    static void AttachProfiler()
+    {
+        if (!Application.isPlaying)
+        {
+            EditorUtility.DisplayDialog("警告", "请在运行时执行此功能", "确定");
+            return;
+        }
+
+        LuaClient.Instance.AttachProfiler();
+    }
+
+    [MenuItem("Lua/Detach Profiler", false, 152)]
+    static void DetachProfiler()
+    {
+        if (!Application.isPlaying)
+        {            
+            return;
+        }
+
+        LuaClient.Instance.DetachProfiler();
+    }
 }

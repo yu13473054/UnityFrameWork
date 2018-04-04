@@ -8,7 +8,7 @@ using UnityEngine;
 public class UISliderEditor : SliderEditor {
     private SerializedProperty _UIModProperty;
     private SerializedProperty _controlIDProperty;
-    private SerializedProperty _clickIntervalProperty;
+//    private SerializedProperty _clickIntervalProperty;
     private SerializedProperty _audioIdProperty;
 
     protected override void OnEnable()
@@ -16,7 +16,7 @@ public class UISliderEditor : SliderEditor {
         base.OnEnable();
         _UIModProperty = serializedObject.FindProperty("uiMod");
         _controlIDProperty = serializedObject.FindProperty("controlID");
-        _clickIntervalProperty = serializedObject.FindProperty("clickInterval");
+//        _clickIntervalProperty = serializedObject.FindProperty("clickInterval");
         _audioIdProperty = serializedObject.FindProperty("audioId");
     }
 

@@ -78,41 +78,6 @@ public class DatabaseMgr : MonoBehaviour
         return resTable;
     }
 
-    #region 资源路径
-    void LoadUIResPathData(Dictionary<string, Dictionary<string, object>> dic)
-    {
-        string tableName = typeof(UIResPathData).Name;
-        Dictionary<string, object>  resTable = new Dictionary<string, object>();
-        UIResPathData data = ResMgr.Inst.GetData<UIResPathData>();
-        for (int i = 0; i < data._properties.Count; i++)
-        {
-            UIResPathProperty property = data._properties[i];
-            string key = string.Format("{0}_{1}", property._resName, property._tagName);
-            resTable[key] = property;
-        }
-        dic[tableName] = resTable;
-    }
-
-    public UIResPathProperty GetUIResPathProperty(string fileName)
-    {
-        return GetUIResPathProperty(fileName, "");
-    }
-
-    public UIResPathProperty GetUIResPathProperty(string resName, string tagName)
-    {
-
-        Dictionary<string, object> resTable = GetDic(typeof(UIResPathData), LoadUIResPathData);
-        object result;
-        resTable.TryGetValue(string.Format("{0}_{1}", resName, tagName), out result);
-        if (result==null)
-        {
-            Debug.LogErrorFormat("获取文件失败：resName = {0}, tagName = {1}", resName, tagName);
-            return null;
-        }
-        return result as UIResPathProperty;
-    }
-#endregion
-
     public void ClearAllData()
     {
         _cacheData.Clear();

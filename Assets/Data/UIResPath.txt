@@ -1,0 +1,4 @@
+resName	tagName	res_develop	res_public	abName
+LoginPanel		UI/Prefabs_ui/LoginPanel.prefab	LoginPanel	Prefabs_ui
+NoticePanel		UI/Prefabs_ui/NoticePanel.prefab	NoticePanel	Prefabs_ui
+Tab		UI/Prefabs_ui/notice/Tab.prefab	Tab	notice

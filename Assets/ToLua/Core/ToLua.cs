@@ -198,6 +198,7 @@ namespace LuaInterface
                         }
                     }
 
+                    UnityEngine.Debug.LogError(sb.ToString());            //200行与_line一致
                 }
                 return 0;
             }
@@ -387,6 +388,7 @@ namespace LuaInterface
                 }
                 else
                 {
+                    Debugger.LogError("type not register to lua");
                     LuaDLL.lua_pushnil(L);
                 }
             }
@@ -506,8 +508,7 @@ namespace LuaInterface
             if (_instanceID == -1)
             {
                 int start = LuaConst.toluaDir.IndexOf("Assets");
-                int end = LuaConst.toluaDir.LastIndexOf("/Lua");
-                string dir = LuaConst.toluaDir.Substring(start, end - start);
+                string dir = LuaConst.toluaDir.Substring(start);
                 dir += "/Core/ToLua.cs";
                 _instanceID = AssetDatabase.LoadAssetAtPath(dir, typeof(MonoScript)).GetInstanceID();//"Assets/ToLua/Core/ToLua.cs"
             }
@@ -2576,6 +2577,9 @@ namespace LuaInterface
 
             if (LuaOpenLib != null)
             {
+#if UNITY_EDITOR
+                Debugger.LogWarning("register PreLoad type {0} to lua", LuaMisc.GetTypeName(type));
+#endif
                 reference = LuaPCall(L, LuaOpenLib);                
             }
             else

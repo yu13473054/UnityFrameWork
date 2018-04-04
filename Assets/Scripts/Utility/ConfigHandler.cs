@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
+using UnityEngine;
+
 /// 配置txt文件读取工具
 public class ConfigHandler
 {
@@ -8,6 +11,8 @@ public class ConfigHandler
 	/// 节点值
 	/// </summary>
 	private Dictionary<string, string> _dict;
+
+    private string _filePath;
 
     /// <summary>
     /// 构造
@@ -17,17 +22,46 @@ public class ConfigHandler
 		_dict = new Dictionary<string, string>();
     }
 
+    public ConfigHandler(string filePath) : this()
+    {
+        _filePath = filePath;
+    }
+
+
     /// <summary>
-    /// 打开TXT文
+    /// 打开TXT文件
     /// </summary>
     public static ConfigHandler Open( string filePath )
     {
-        ConfigHandler handler = new ConfigHandler();
-
-        //todo 考虑增加从ab包中获取配置文件
-
+        ConfigHandler handler = new ConfigHandler(filePath);
         //直接按照路径获取
         string allText = File.ReadAllText(filePath);
+        if (!string.IsNullOrEmpty(allText))
+        {
+            handler.Parser(allText);
+        }
+        return handler;
+    }
+
+    public static ConfigHandler OpenFromAB(string fileName, string abName)
+    {
+        ConfigHandler handler = new ConfigHandler(fileName);
+
+        string allText = null;
+        if (GameMain.Inst.ResourceMode == 2) // 配置文件也放在外部文件夹中，需要从外部文件夹中取得
+        {
+            string filePath = System.Environment.CurrentDirectory + "/" + abName.Replace("_", "/") + "/" + fileName;
+            allText = File.ReadAllText(filePath);
+        }
+        else
+        {
+            //拼装出EditorPath
+            string editorPath = Application.dataPath + "/" + abName.Replace("_", "/") + "/" + fileName;
+            //数据文件的使用者为自己，不受UI界面控制
+            TextAsset asset = ResMgr.Inst.LoadAsset<TextAsset>(abName, fileName, abName, editorPath);
+            allText = asset.text;
+        }
+        //解析数据
         if (!string.IsNullOrEmpty(allText))
         {
             handler.Parser(allText);
@@ -74,20 +108,23 @@ public class ConfigHandler
 	}        
 
 	// 写入一个值
-//	public void WriteValue(string key, object value)
-//	{
-//		if (_dict.ContainsKey(key))
-//			_dict[key] = value.ToString();
-//		else
-//			_dict.Add(key, value.ToString());
-//
-//		string IniText="";
-//		foreach ( var item in _dict )
-//		{
-//			IniText = IniText + item.Key + "=" + item.Value + "\r\n";
-//		}
-//		FileUtil.WriteFile( _fileName, IniText );
-//	}
+	public void WriteValue(string key, object value)
+	{
+        if(string.IsNullOrEmpty(_filePath))
+            UnityEngine.Debug.LogError("<ConfigHandler> 写入的文件的路径为空！");
+
+		if (_dict.ContainsKey(key))
+			_dict[key] = value.ToString();
+		else
+			_dict.Add(key, value.ToString());
+
+		string content="";
+		foreach ( var item in _dict )
+		{
+			content = content + item.Key + "=" + item.Value + "\r\n";
+		}
+	    File.WriteAllText(_filePath, content);
+	}
 
 	// 读取一个值
 	public string ReadValue(string key, string defaultv = "")

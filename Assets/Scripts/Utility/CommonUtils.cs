@@ -7,14 +7,14 @@ using System.Collections.Generic;
 using System.Security.Cryptography;
 using System.Text.RegularExpressions;
 using LuaInterface;
-
+using Object = UnityEngine.Object;
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
 
 public static class CommonUtils
 {
-    #region 添加Child
+    #region Child
     public static GameObject AddChild(this GameObject parent) { return parent.AddChild(-1); }
     public static GameObject AddChild(this GameObject parent, int layer)
     {
@@ -31,30 +31,33 @@ public static class CommonUtils
         }
         return go;
     }
+    /// <summary>
+    /// 清除所有子节点
+    /// </summary>
+    public static void ClearChild(Transform go)
+    {
+        if (go == null) return;
+        for (int i = go.childCount - 1; i >= 0; i--)
+        {
+            Object.Destroy(go.GetChild(i).gameObject);
+        }
+    }
     #endregion
 
     #region 路径管理
-    /// 获取资源的路径
-    public static string ResFullPath(string fileName, string suffix = "")
+    /// <summary>
+    /// 获取ab所在的位置
+    /// </summary>
+    /// <param name="abName"></param>
+    /// <returns></returns>
+    public static string GetABPath(string abName)
     {
-        if (!string.IsNullOrEmpty(suffix))
+        string abPath = AppConst.localABPath + abName;
+        if (!File.Exists(abPath))
         {
-            fileName += suffix;
+            abPath = AppConst.appABPath + abName;
         }
-        return ResDir() + fileName;
-    }
-
-    /// 取得数据存放目录
-    public static string ResDir()
-    {
-        if (GameMain.Inst.ResourceMode == 0)
-        {
-            return "Assets/Res/";
-        }
-        else
-        {
-            return AppConst.appABPath;
-        }
+        return abPath;
     }
     #endregion
 
@@ -83,27 +86,13 @@ public static class CommonUtils
 //#endif
 //    }
 
-    public static string ConstraintABName(string abName)
-    {
-        if (!abName.EndsWith(AppConst.ExtName))
-        {
-            abName += AppConst.ExtName;
-        }
-        return abName;
-    }
-
-    public static string Uid(string uid)
-    {
-        int position = uid.LastIndexOf('_');
-        return uid.Remove(0, position + 1);
-    }
-
     public static long GetTime()
     {
         TimeSpan ts = new TimeSpan(DateTime.UtcNow.Ticks - new DateTime(1970, 1, 1, 0, 0, 0).Ticks);
         return (long)ts.TotalMilliseconds;
     }
 
+    #region MD5
     /// <summary>
     /// 计算字符串的MD5值
     /// </summary>
@@ -148,17 +137,7 @@ public static class CommonUtils
         }
     }
 
-    /// <summary>
-    /// 清除所有子节点
-    /// </summary>
-    public static void ClearChild(Transform go)
-    {
-        if (go == null) return;
-        for (int i = go.childCount - 1; i >= 0; i--)
-        {
-            GameObject.Destroy(go.GetChild(i).gameObject);
-        }
-    }
+#endregion
 
     /// <summary>
     /// 清理内存
@@ -195,80 +174,5 @@ public static class CommonUtils
         {
             return Application.internetReachability == NetworkReachability.ReachableViaLocalAreaNetwork;
         }
-    }
-
-
-
-
-    /// <summary>
-    /// 防止初学者不按步骤来操作
-    /// </summary>
-    /// <returns></returns>
-    public static int CheckRuntimeFile()
-    {
-        if (!Application.isEditor) return 0;
-        string streamDir = Application.dataPath + "/StreamingAssets/";
-        if (!Directory.Exists(streamDir))
-        {
-            return -1;
-        }
-        else
-        {
-            string[] files = Directory.GetFiles(streamDir);
-            if (files.Length == 0) return -1;
-
-            if (!File.Exists(streamDir + "files.txt"))
-            {
-                return -1;
-            }
-        }
-        string sourceDir = Application.dataPath + "/ToLua/Source/Generate/";
-        if (!Directory.Exists(sourceDir))
-        {
-            return -2;
-        }
-        else
-        {
-            string[] files = Directory.GetFiles(sourceDir);
-            if (files.Length == 0) return -2;
-        }
-        return 0;
-    }
-
-    /// <summary>
-    /// 执行Lua方法
-    /// </summary>
-    public static object[] CallMethod(string module, string func, params object[] args)
-    {
-        return LuaMgr.Inst.CallFunction(module + "." + func, args);
-    }
-
-    /// <summary>
-    /// 检查运行环境
-    /// </summary>
-    public static bool CheckEnvironment()
-    {
-#if UNITY_EDITOR
-        int resultId = CheckRuntimeFile();
-        if (resultId == -1)
-        {
-            Debug.LogError("没有找到框架所需要的资源，单击Game菜单下Build xxx Resource生成！！");
-            EditorApplication.isPlaying = false;
-            return false;
-        }
-        else if (resultId == -2)
-        {
-            Debug.LogError("没有找到Wrap脚本缓存，单击Lua菜单下Gen Lua Wrap Files生成脚本！！");
-            EditorApplication.isPlaying = false;
-            return false;
-        }
-        if (Application.loadedLevelName == "Test" && GameMain.Inst.ResourceMode==0)
-        {
-            Debug.LogError("测试场景，必须打开调试模式，GameMain.Inst.ResourceMode!=0 = true！！");
-            EditorApplication.isPlaying = false;
-            return false;
-        }
-#endif
-        return true;
     }
 }

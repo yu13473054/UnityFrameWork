@@ -85,11 +85,12 @@ namespace LuaInterface
         HashSet<string> moduleSet = null;
 
         private static LuaState mainState = null;
+        private static LuaState injectionState = null;
         private static Dictionary<IntPtr, LuaState> stateMap = new Dictionary<IntPtr, LuaState>();
 
         private int beginCount = 0;
         private bool beLogGC = false;
-
+        private bool bInjectionInited = false;
 #if UNITY_EDITOR
         private bool beStart = false;
 #endif
@@ -103,6 +104,8 @@ namespace LuaInterface
             if (mainState == null)
             {
                 mainState = this;
+                // MULTI_STATE Not Support
+                injectionState = mainState;
             }
 
             float time = Time.realtimeSinceStartup;
@@ -116,6 +119,7 @@ namespace LuaInterface
             OpenBaseLibs();
             LuaSetTop(0);
             InitLuaPath();
+            Debugger.Log("Init lua state cost: {0}", Time.realtimeSinceStartup - time);
         }        
 
         void OpenBaseLibs()
@@ -212,7 +216,21 @@ namespace LuaInterface
 #if UNITY_EDITOR
             beStart = true;
 #endif
+            Debugger.Log("LuaState start");
             OpenBaseLuaLibs();
+#if ENABLE_LUA_INJECTION
+            Push(LuaDLL.tolua_tag());
+            LuaSetGlobal("tolua_tag");
+#if UNITY_EDITOR
+            if (UnityEditor.EditorPrefs.GetInt(Application.dataPath + "InjectStatus") == 1)
+            { 
+#endif
+                DoFile("System/Injection/LuaInjectionStation.lua");
+                bInjectionInited = true;
+#if UNITY_EDITOR
+            }
+#endif
+#endif
             PackBounds = GetFuncRef("Bounds.New");
             UnpackBounds = GetFuncRef("Bounds.Get");
             PackRay = GetFuncRef("Ray.New");
@@ -368,6 +386,16 @@ namespace LuaInterface
             return 0;
         }
 
+        public static bool GetInjectInitState(int index)
+        {
+            if (injectionState != null && injectionState.bInjectionInited)
+            {
+                return true;
+            }
+
+            return false;
+        }
+
         string GetToLuaTypeName(Type t)
         {
             if (t.IsGenericType)
@@ -516,7 +544,7 @@ namespace LuaInterface
             if (mainState != null && mainState.L == ptr)
             {
                 return mainState;
-            }
+            }            
 
             LuaState state = null;
 
@@ -525,7 +553,7 @@ namespace LuaInterface
                 return state;
             }
             else
-            {                
+            {
                 return Get(LuaDLL.tolua_getmainstate(ptr));
             }
 #endif
@@ -913,7 +941,13 @@ namespace LuaInterface
                 funcMap.Add(name, new WeakReference(fun));
                 funcRefMap.Add(reference, new WeakReference(fun));
                 RemoveFromGCList(reference);
+                if (LogGC) Debugger.Log("Alloc LuaFunction name {0}, id {1}", name, reference);                
                 return fun;
+            }
+
+            if (beLogMiss)
+            {
+                Debugger.Log("Lua function {0} not exists", name);                
             }
 
             return null;
@@ -950,6 +984,7 @@ namespace LuaInterface
             {                
                 func = new LuaFunction(reference, this);
                 funcRefMap.Add(reference, new WeakReference(func));
+                if (LogGC) Debugger.Log("Alloc LuaFunction name , id {0}", reference);      
             }
 
             RemoveFromGCList(reference);
@@ -1006,10 +1041,15 @@ namespace LuaInterface
                 table.name = fullPath;
                 funcMap.Add(fullPath, new WeakReference(table));
                 funcRefMap.Add(reference, new WeakReference(table));
+                if (LogGC) Debugger.Log("Alloc LuaTable name {0}, id {1}", fullPath, reference);     
                 RemoveFromGCList(reference);
                 return table;
             }
 
+            if (beLogMiss)
+            {
+                Debugger.LogWarning("Lua table {0} not exists", fullPath);
+            }
 
             return null;
         }
@@ -1112,6 +1152,7 @@ namespace LuaInterface
 
             if (n != 0)
             {
+                Debugger.LogWarning("Lua stack top is {0}", n);
                 return false;
             }
 
@@ -1866,6 +1907,7 @@ namespace LuaInterface
                     if (!missSet.Contains(t))
                     {
                         missSet.Add(t);
+                        Debugger.LogWarning("Type {0} not wrap to lua, push as {1}, the warning is only raised once", LuaMisc.GetTypeName(t), LuaMisc.GetTypeName(type));
                     }
 #endif                    
                     return reference;              
@@ -1884,6 +1926,7 @@ namespace LuaInterface
             if (!missSet.Contains(t))
             {
                 missSet.Add(t);
+                Debugger.LogWarning("Type {0} not wrap to lua, push as {1}, the warning is only raised once", LuaMisc.GetTypeName(t), LuaMisc.GetTypeName(type));
             }            
 #endif
 
@@ -1956,20 +1999,26 @@ namespace LuaInterface
                 typeMap.Clear();
                 enumMap.Clear();
                 preLoadMap.Clear();
-                genericSet.Clear();
-                stateMap.Remove(L);
-                LuaClose();
+                genericSet.Clear();                                
+                LuaDLL.lua_close(L);                
                 translator.Dispose();
-                translator = null;                    
+                stateMap.Remove(L);
+                translator = null;
+                L = IntPtr.Zero;
 #if MISS_WARNING
                 missSet.Clear();
 #endif
                 OnDestroy();
+                Debugger.Log("LuaState destroy");
             }
 
             if (mainState == this)
             {
                 mainState = null;
+            }
+            if (injectionState == this)
+            {
+                injectionState = null;
             }
 
 #if UNITY_EDITOR
@@ -2042,6 +2091,11 @@ namespace LuaInterface
             table.Dispose();
             var iter2 = dict.GetEnumerator();
 
+            while (iter2.MoveNext())
+            {
+                Debugger.Log("map item, k,v is {0}:{1}", iter2.Current.Key, iter2.Current.Value);
+            }
+
             iter2.Dispose();
             dict.Dispose();
         }
@@ -2074,6 +2128,7 @@ namespace LuaInterface
                     if (LogGC)
                     {
                         string str = name == null ? "null" : name;
+                        Debugger.Log("collect lua reference name {0}, id {1} in thread", str, reference);
                     }
                 }
             }
@@ -2102,6 +2157,7 @@ namespace LuaInterface
                 if (LogGC)
                 {
                     string str = name == null ? "null" : name;
+                    Debugger.Log("collect lua reference name {0}, id {1} in main", str, reference);
                 }
             }
         }
@@ -2156,6 +2212,10 @@ namespace LuaInterface
             else
             {
                 LuaDLL.lua_settop(L, top);
+                if (beLogMiss)
+                {
+                    Debugger.Log("Lua function {0} not exists", name);
+                }
                 
                 return false;
             }

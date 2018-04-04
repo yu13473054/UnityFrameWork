@@ -209,11 +209,11 @@ namespace LuaInterface
                         int tmp = pos + 1;
                         sb.Append("\n\tno file '").Append(fileName, tmp, fileName.Length - tmp).Append(".lua' in ").Append("lua_");
                         tmp = sb.Length;
-                        sb.Append(fileName, 0, pos).Replace('/', '_', tmp, pos).Append(AppConst.ExtName);
+                        sb.Append(fileName, 0, pos).Replace('/', '_', tmp, pos).Append(".unity3d");
                     }
                     else
                     {                        
-                        sb.Append("\n\tno file '").Append(fileName).Append(".lua' in ").Append("lua").Append(AppConst.ExtName);
+                        sb.Append("\n\tno file '").Append(fileName).Append(".lua' in ").Append("lua.unity3d");
                     }                    
                 }
 
@@ -235,8 +235,8 @@ namespace LuaInterface
 
                 if (pos > 0)
                 {
-                    sb.Append("_");                    
-                    sb.Append(fileName, 0, pos).ToLower().Replace('/', '_');                                        
+                    sb.Append("_");
+                    sb.Append(fileName, 0, pos).ToLower().Replace('/', '_');
                     fileName = fileName.Substring(pos + 1);
                 }
 
@@ -250,7 +250,12 @@ namespace LuaInterface
 #endif
                 zipName = sb.ToString();
                 zipMap.TryGetValue(zipName, out zipFile);
-            }            
+
+                //[0] 添加补丁 如果常规下找不到，就在默认的ab包中找lua文件
+                if (zipFile == null)
+                    zipFile = zipMap["lua_tolua"];
+                //[0]
+            }
 
             if (zipFile != null)
             {

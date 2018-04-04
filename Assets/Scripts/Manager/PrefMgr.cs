@@ -1,9 +1,4 @@
 ﻿using UnityEngine;
-using System.Collections;
-using System.Collections.Generic;
-using System.IO;
-using LuaInterface;
-using UObject = UnityEngine.Object;
 
 public class PrefMgr : MonoBehaviour
 {
