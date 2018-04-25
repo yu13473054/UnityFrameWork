@@ -32,68 +32,24 @@ UIEVENT_UIINPUT_SUBMIT = 61;                --
 UIEVENT_UISCROLLBAR_ONVALUECHANGE = 71;	    -- UIScrollbar内容发生变化时     float值
 UIEVENT_UISCROLLBAR_PRESS = 72;	            -- UIScrollbar按下              0 按下，1 抬起
 
-----------------------------------
 -- 事件分发实例
-----------------------------------
 Event = {};
 Event.Net = EventDispatcher.New();
-Event.Fight = EventDispatcher.New();
 Event.UI = EventDispatcher.New();
 
+-- 自定义事件
+EVENT_SOCKET_NORMAL         = 0;       -- 正常包
+EVENT_SOCKET_ONCONNECT      = -1;      -- 连接成功
+EVENT_SOCKET_DISCONNECT     = -101;    -- 正常断线
+EVENT_SOCKET_EXCEPTION      = -102;    -- 异常掉线
+
+-- Http协议号定义
+EVENT_HTTP_EXCEPTION        = -100;    -- http 异常
+EVENT_HTTP_LOGIN            = 10001;
+EVENT_HTTP_SERVERLIST       = 10002;
+
 ----------------------------------
--- 基础方法
+-- 基础公用方法
 ----------------------------------
---星级对应等级上限
-function LVLimitByStar(starNum)
-    if starNum ==1 then
-        return 40;
-    elseif starNum ==2 then
-        return 55;
-    elseif starNum ==3 then
-        return 70;
-    elseif starNum ==4 then
-        return 85;
-    else
-        return 100;
-    end
-end
--- Log，打印调试print就行
-function Log( msg )
-    Debugger.Log( msg );
-end
-function LogWarning( msg )
-    Debugger.LogWarning( msg );
-end
-function LogErr( msg )
-    Debugger.LogError( msg );
-end
-function error( msg )
-    Debugger.LogError( msg );
-end
 
--- 判空，仅用于Unity.Object
-function IsNilOrNull( obj )
-    if obj == nil or obj:Equals( nil ) then
-        return true;
-    end
-    return false;
-end
-
-function PlayTweenAnim(go)
-    local anims = go:GetComponents(typeof(DOTweenAnimation));
-
-	local longestAnim = anims[0];
-	local dura = 0;
-    --获取时间最长的animation
-	for i = 0, anims.Length-1 do
-	    local anim = anims[i];
-	    anim:DOPlay();
-
-	    if anim.duration > dura then
-	        dura = anim.duration;
-	        longestAnim = anim;
-	    end
-	end
-    return longestAnim;
-end
 

@@ -4,7 +4,7 @@ local _dlg = nil;
 
 -- 打开界面
 function #NAME#.Open()
-	_dlg = UIManager.instance:Open( "#NAME#" );
+	_dlg = UIMgr.Inst:Open( "#NAME#" );
 end
 
 -- 隐藏界面
@@ -13,7 +13,7 @@ function #NAME#.Close()
 		return;
 	end
 	
-	UIManager.instance:Close(_dlg);
+	UIMgr.Inst:Close(_dlg);
 end
 
 ----------------------------------------
@@ -21,7 +21,7 @@ end
 ----------------------------------------
 -- 所属按钮点击时调用
 function #NAME#.OnEvent( uiEvent, controlID, value, gameObject )
-	if uiEvent == UIEVENT_CLICK then
+	if uiEvent == UIEVENT_UIBUTTON_CLICK then
         if controlID == -1 then
             #NAME#.Close();
         end

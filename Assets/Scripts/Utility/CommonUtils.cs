@@ -52,39 +52,68 @@ public static class CommonUtils
     /// <returns></returns>
     public static string GetABPath(string abName)
     {
-        string abPath = AppConst.localABPath + abName;
+        string abPath = "";
+#if UNITY_EDITOR
+        abPath = AppConst.appABPath + abName;
+#else
+        abPath = AppConst.localABPath + abName;
+#endif
+        //先在本地缓存中查找文件，如果没有，就从app中直接获取
         if (!File.Exists(abPath))
         {
             abPath = AppConst.appABPath + abName;
         }
         return abPath;
     }
-    #endregion
+#endregion
 
 
     /// 直接从txt中获取对应的内容
-//    public static byte[] GetDataFromTxt(string filepath)
-//    {
-//#if UNITY_ANDROID
-//        WWW www = new WWW(filepath);
-//        while (!www.isDone)
-//        {
-//        }
-//        if (www.error != null)
-//        {
-//            Debug.LogErrorFormat("<CommonUtils> 读取文件失败：{0}",filepath);
-//            return null;
-//        }
-//        return www.bytes;
-//#else
-//        if (!File.Exists(filepath))
-//        {
-//            Debug.LogErrorFormat("<CommonUtils> 读取文件失败：{0}", filepath);
-//            return null;
-//        }
-//        return File.ReadAllBytes(filepath);
-//#endif
-//    }
+    public static string ReadFileText(string filepath)
+    {
+#if UNITY_ANDROID && !UNITY_EDITOR
+        WWW www = new WWW(filepath);
+        while (!www.isDone)
+        {
+        }
+        if (www.error != null)
+        {
+            Debug.LogErrorFormat("<CommonUtils> 读取文件失败：{0}, error:{1}",filepath, www.error);
+            return null;
+        }
+        return www.text;
+#else
+        if (!File.Exists(filepath))
+        {
+            Debug.LogErrorFormat("<CommonUtils> 读取文件失败：{0}", filepath);
+            return null;
+        }
+        return File.ReadAllText(filepath);
+#endif
+    }
+
+    public static byte[] ReadFileBytes(string filepath)
+    {
+#if UNITY_ANDROID && !UNITY_EDITOR
+        WWW www = new WWW(filepath);
+        while (!www.isDone)
+        {
+        }
+        if (www.error != null)
+        {
+            Debug.LogErrorFormat("<CommonUtils> 读取文件失败：{0}, error:{1}",filepath, www.error);
+            return null;
+        }
+        return www.bytes;
+#else
+        if (!File.Exists(filepath))
+        {
+            Debug.LogErrorFormat("<CommonUtils> 读取文件失败：{0}", filepath);
+            return null;
+        }
+        return File.ReadAllBytes(filepath);
+#endif
+    }
 
     public static long GetTime()
     {
@@ -92,7 +121,7 @@ public static class CommonUtils
         return (long)ts.TotalMilliseconds;
     }
 
-    #region MD5
+#region MD5
     /// <summary>
     /// 计算字符串的MD5值
     /// </summary>

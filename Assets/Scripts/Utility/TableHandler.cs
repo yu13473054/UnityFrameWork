@@ -27,23 +27,35 @@ public class TableHandler
     /// <summary>
     /// 打开TXT文件
     /// </summary>
-    public static TableHandler Open( string fileName, string abName)
+    public static TableHandler Open(string fileName, string abName)
     {
         TableHandler handle = new TableHandler(fileName);
 
         string allText = null;
-        if (GameMain.Inst.ResourceMode == 2) // 配置文件也放在外部文件夹中，需要从外部文件夹中取得
+        if (!Application.isPlaying || GameMain.Inst.ResourceMode == 0)
         {
-            string filePath = System.Environment.CurrentDirectory + "/" + abName.Replace("_", "/") + "/" + fileName;
-            allText = File.ReadAllText(filePath);
+#if UNITY_EDITOR
+            //拼装出EditorPath
+            abName = abName.ToLower();
+            string editorPath ="Assets/" + abName.Replace("_", "/") + "/" + fileName;
+            TextAsset asset = UnityEditor.AssetDatabase.LoadAssetAtPath<TextAsset>(editorPath);
+            allText = asset.text;
+#endif
         }
         else
         {
-            //拼装出EditorPath
-            string editorPath = Application.dataPath + "/" + abName.Replace("_", "/") + "/" + fileName;
-            //数据文件的使用者为自己，不受UI界面控制
-            TextAsset asset = ResMgr.Inst.LoadAsset<TextAsset>(abName, fileName, abName, editorPath);
-            allText = asset.text;
+            if (GameMain.Inst.ResourceMode == 2) // 配置文件也放在外部文件夹中，需要从外部文件夹中取得
+            {
+                abName = abName.ToLower();
+                string filePath = System.Environment.CurrentDirectory + "/" + abName.Replace("_", "/") + "/" + fileName;
+                allText = CommonUtils.ReadFileText(filePath);
+            }
+            else if (GameMain.Inst.ResourceMode == 1)
+            {
+                //数据文件的使用者为自己，不受UI界面控制
+                TextAsset asset = ResMgr.Inst.LoadAsset<TextAsset>(abName, fileName, abName);
+                allText = asset.text;
+            }
         }
         //解析数据
         if (!string.IsNullOrEmpty(allText))
@@ -57,46 +69,46 @@ public class TableHandler
     /// <summary>
     /// 解析内存数据
     /// </summary>
-    void Parser( string content )
+    void Parser(string content)
     {
         // 拆分得到每行的内容
-        content = content.Replace( "\r\n", "\n" );
-        string[] lineArray = content.Split( new char[] { '\n' }, StringSplitOptions.RemoveEmptyEntries );
-        if( lineArray.Length < 1 )
+        content = content.Replace("\r\n", "\n");
+        string[] lineArray = content.Split(new char[] { '\n' }, StringSplitOptions.RemoveEmptyEntries);
+        if (lineArray.Length < 1)
             return;
 
         // 分解第一行
-        string[] strArray = lineArray[0].Split( new char[] { '\t' } );
+        string[] strArray = lineArray[0].Split(new char[] { '\t' });
         int recordsNum = 0;
         int fieldsNum = strArray.Length;
         _columns = new string[fieldsNum];
-        Array.Copy( strArray, _columns, fieldsNum );
+        Array.Copy(strArray, _columns, fieldsNum);
 
         // 遍历余下行数
-        for( int i = 1; i < lineArray.Length; ++i )
+        for (int i = 1; i < lineArray.Length; ++i)
         {
-            if( lineArray[i].Length == 0 )
+            if (lineArray[i].Length == 0)
                 break;
 
-            strArray = lineArray[i].Split( new char[] { '\t' } );
+            strArray = lineArray[i].Split(new char[] { '\t' });
 
             // 是不是有内容
-            if( strArray.Length == 0 )
+            if (strArray.Length == 0)
                 break;
 
-            if( strArray[0].Length == 0 )
+            if (strArray[0].Length == 0)
                 break;
 
-            if( strArray[0][0] == '\0' )
+            if (strArray[0][0] == '\0')
                 break;
 
             // 是不是注释行
-            if( strArray[0][0] == '#' )
+            if (strArray[0][0] == '#')
                 continue;
             // 填充数据区
-            for( int n = 0; n < fieldsNum; ++n )
+            for (int n = 0; n < fieldsNum; ++n)
             {
-                _dataBuf.Add( strArray[n] );
+                _dataBuf.Add(strArray[n]);
             }
 
             ++recordsNum;
@@ -113,14 +125,14 @@ public class TableHandler
     /// <param name="recordLine">从0开始</param>
     /// <param name="columNum">从0开始</param>
     /// <returns></returns>
-    public string GetValue( int recordLine, int columNum )
+    public string GetValue(int recordLine, int columNum)
     {
         int position = recordLine * _fieldsNum + columNum;
 
-        if ( position < 0 || position > _dataBuf.Count )
+        if (position < 0 || position > _dataBuf.Count)
         {
-            string error = string.Format( "文件:{0} 读取出现异常! recordLine:{1} columNum:{2}", _fileName, recordLine, columNum );
-            Debug.LogError("<TableHandle> "+error);
+            string error = string.Format("文件:{0} 读取出现异常! recordLine:{1} columNum:{2}", _fileName, recordLine, columNum);
+            Debug.LogError("<TableHandle> " + error);
             return "";
         }
         return _dataBuf[position];
@@ -130,7 +142,7 @@ public class TableHandler
     /// </summary>
     /// <param name="columnNum"></param>
     /// <returns></returns>
-    public string GetColumn( int columnNum )
+    public string GetColumn(int columnNum)
     {
         return _columns[columnNum];
     }

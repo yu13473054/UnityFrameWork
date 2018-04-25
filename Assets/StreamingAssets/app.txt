@@ -1,2 +1,4 @@
-UpdateHost=http://192.168.3.102:8080/Resources/
+UpdateHost=http://localhost/Resources/
 LoginHost=http://192.168.3.102:8090/
+PlatID=1
+Encrypt=1

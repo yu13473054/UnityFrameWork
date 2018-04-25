@@ -1,0 +1,17 @@
+ManifestFileVersion: 0
+CRC: 1846576872
+Hashes:
+  AssetFileHash:
+    serializedVersion: 2
+    Hash: ba52d53a64d1c8df330edb150abc04e4
+  TypeTreeHash:
+    serializedVersion: 2
+    Hash: 5ad585dd02dfb5016c0dad519eab8f49
+HashAppended: 0
+ClassTypes:
+- Class: 49
+  Script: {instanceID: 0}
+Assets:
+- Assets/Lua/UI/DlgLogin.lua.bytes
+- Assets/Lua/UI/DlgWait.lua.bytes
+Dependencies: []

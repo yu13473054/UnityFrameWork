@@ -11,7 +11,7 @@ public class ExcelParserTool
 {
     const int StartRow = 4;
     private static string ExcelDirPath = System.Environment.CurrentDirectory + "/配置表";
-    private static string TxtDir = Application.dataPath + "/Data";
+    private static string TxtDir = Application.dataPath + "/data";
     private static string LuaDir = Application.dataPath + "/Lua/logic";
 
     class TableInfo

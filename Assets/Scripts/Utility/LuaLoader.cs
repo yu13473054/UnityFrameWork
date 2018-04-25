@@ -19,10 +19,7 @@ public class LuaLoader : LuaFileUtils
     /// <param name="bundle"></param>
     public void AddBundle(string bundleName)
     {
-
-        string url = CommonUtils.GetABPath(bundleName.ToLower());
-        var bytes = File.ReadAllBytes(url);
-        AssetBundle bundle = AssetBundle.LoadFromMemory(bytes);
+        AssetBundle bundle = ResMgr.Inst.InitAssetBundle(bundleName);
         if (bundle != null)
         {
             base.AddSearchBundle(bundleName.ToLower(), bundle);

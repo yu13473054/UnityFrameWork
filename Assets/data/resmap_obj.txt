@@ -1,0 +1,2 @@
+资源键名	资源路径	所在assetBundle名称
+DlgLogin	Assets/Res/Prefab/UI/DlgLogin.prefab	DlgLogin

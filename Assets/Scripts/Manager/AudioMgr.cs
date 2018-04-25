@@ -32,29 +32,10 @@ public class AudioMgr : MonoBehaviour
     {
         get { return _inst; }
     }
-
-    public static void Init()
-    {
-        if (_inst)
-        {
-            return;
-        }
-        GameObject go = new GameObject("AudioMgr");
-        for (int i = 0; i < AudioClipLimit; i++)
-        {
-            AudioSource audio = go.AddComponent<AudioSource>();
-            audio.clip = null;
-            audio.volume = 1.0f;
-            audio.loop = false;
-        }
-        go.AddComponent<AudioListener>();
-        go.AddComponent<AudioMgr>();
-    }
     #endregion
 
     Dictionary<int, AudioInfo> _resmapSound;    
 
-//    private AudioSource _bgmAudioSource;
     private AudioSource[] _audioSources;
 
     //BGM过渡使用
@@ -73,14 +54,29 @@ public class AudioMgr : MonoBehaviour
         _inst = this;
         DontDestroyOnLoad(gameObject);
 
+        _audioSources = new AudioSource[AudioClipLimit];
+
+        for (int i = 0; i < AudioClipLimit; i++)
+        {
+            AudioSource audioTmp = gameObject.AddComponent<AudioSource>();
+            audioTmp.clip = null;
+            audioTmp.volume = 1.0f;
+            audioTmp.loop = false;
+            _audioSources[i] = audioTmp;
+        }
+        gameObject.AddComponent<AudioListener>();
+
         _resmapSound = new Dictionary<int, AudioInfo>();
-
-        _audioSources = GetComponents<AudioSource>();
-
     }
 
     void OnDestroy()
     {
+        for (int i = 0; i < _audioSources.Length; i++)
+        {
+            Destroy(_audioSources[i]);
+        }
+        Destroy(gameObject.GetComponent<AudioListener>());
+
         _inst = null;
         _resmapSound.Clear();
     }

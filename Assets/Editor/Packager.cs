@@ -22,6 +22,8 @@ public class Packager {
         // 创建文件夹
         Directory.CreateDirectory(ABPATH);
 
+        AppConst.Init();
+
         // 自动设置AB名
         EditorUtility.DisplayProgressBar("打包前准备", "正在自动设置AB名...", 0);
         AssetBundleNameAuto.AssetBundleSetNames();
@@ -38,6 +40,12 @@ public class Packager {
         EditorUtility.DisplayProgressBar("打包", "AB打包中...", 0.3f);
         BuildPipeline.BuildAssetBundles(ABPATH, BuildAssetBundleOptions.ChunkBasedCompression, EditorUserBuildSettings.activeBuildTarget);
         AssetDatabase.Refresh();
+
+        //资源加密
+        if (AppConst.encrypt)
+        {
+            EncryptAB();
+        }
 
         // 版本号处理
         if (resverUpdate)
@@ -92,6 +100,21 @@ public class Packager {
             EditorUtility.DisplayProgressBar("上传", "准备上传", 1f);
             Upload();
             EditorUtility.ClearProgressBar();
+        }
+    }
+
+    private static void EncryptAB()
+    {
+        string[] files = Directory.GetFiles(ABPATH);
+        for (int i = 0; i < files.Length; i++)
+        {
+            string filePath = files[i];
+            if(filePath.Contains(".")) continue;
+            //拿到ab文件，进行加密
+            Debug.Log("正在处理：" + filePath + "\n" + ResMgr.ByteText(File.ReadAllBytes(filePath)));
+            byte[] encrypt = DecipherUtility.EncryptBytes(File.ReadAllBytes(filePath));
+            File.WriteAllBytes(filePath, encrypt);
+            Debug.Log("正在处理：" + filePath + "\n" + ResMgr.ByteText(File.ReadAllBytes(filePath)));
         }
     }
 

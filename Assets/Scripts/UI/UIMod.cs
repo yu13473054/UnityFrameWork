@@ -79,6 +79,7 @@ public class UIMod : MonoBehaviour
 
 	protected virtual void OnDestroy()
 	{
+	    if (!LuaMgr.Inst) return;
         LuaFunction onDestroy = LuaMgr.Inst.GetFunction( uiName + ".OnDestroy" );
         if (onDestroy != null )
             onDestroy.Call( gameObject );

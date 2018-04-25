@@ -216,7 +216,6 @@ namespace LuaInterface
 #if UNITY_EDITOR
             beStart = true;
 #endif
-            Debugger.Log("LuaState start");
             OpenBaseLuaLibs();
 #if ENABLE_LUA_INJECTION
             Push(LuaDLL.tolua_tag());
@@ -2009,7 +2008,6 @@ namespace LuaInterface
                 missSet.Clear();
 #endif
                 OnDestroy();
-                Debugger.Log("LuaState destroy");
             }
 
             if (mainState == this)

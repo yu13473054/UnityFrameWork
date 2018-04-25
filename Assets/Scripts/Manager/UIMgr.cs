@@ -17,15 +17,6 @@ public class UIMgr : MonoBehaviour
     {
         get { return _inst; }
     }
-    public static void Init()
-    {
-        if (_inst)
-        {
-            return;
-        }
-        GameObject go = new GameObject("UIMgr");
-        go.AddComponent<UIMgr>();
-    }
     #endregion
 
     public const int UIMaxCount = 16;
@@ -301,7 +292,7 @@ public class UIMgr : MonoBehaviour
 
     UISystem LoadUISystem(string uiName)
     {
-        GameObject obj = ResMgr.Inst.LoadPrefab(uiName);
+        GameObject obj = ResMgr.Inst.LoadPrefab(uiName, uiName);
         if (obj == null)
         {
             Debug.LogError("<UIMgr> 没有找到UI:" + uiName);
@@ -477,7 +468,6 @@ public class UIMgr : MonoBehaviour
         _UIList.Clear();
         _UIListByName.Clear();
         _fullUIStack.Clear();
-        _extraABUserDic.Clear();
     }
 
     void OnDestroy()
@@ -486,66 +476,12 @@ public class UIMgr : MonoBehaviour
         _inst = null;
     }
 
-    #region UI资源的管理
-    //key:abNam ---- value:uiSystemName的list
-    Dictionary<string, List<string>> _extraABUserDic = new Dictionary<string, List<string>>();
-
-    public Sprite GetSprite(string uiName, string spriteName)
-    {
-        string abName = "";
-//        //获取ab的名称，保存这个ab包被哪些UI系统所用
-//        if (AppConst.resourceMode != 0 && !ResourceManager.instance.IsDependBySprite(uiName, spriteName, out abName))
-//            ABRef(uiName, abName);
-//        return ResourceManager.instance.LoadSprite(spriteName);
-        return null;
-    }
-    public Sprite GetSprite(UISystem uiSystem, string spriteName)
-    {
-        return GetSprite(uiSystem.name, spriteName);
-    }
-    // 直接从AB中拿图片
-    public Sprite GetSprite(string uiName, string spriteName, string abName, string editorPath = "")
-    {
-        //获取ab的名称，保存这个ab包被哪些UI系统所用
-        abName = abName.ToLower();
-//        if (AppConst.resourceMode != 0 && !ResourceManager.instance.IsDependBySprite(uiName, abName))
-//        {
-//            ABRef(uiName, abName);
-//        }
-//        return ResourceManager.instance.LoadSprite(spriteName, abName, editorPath);
-return null;
-    }
-    private void ABRef(string uiName, string abName)
-    {
-        List<string> userList;
-        if (!_extraABUserDic.TryGetValue(abName, out userList))
-        {
-            userList = new List<string>();
-            _extraABUserDic[abName] = userList;
-        }
-        if (!userList.Contains(uiName))
-        {
-            userList.Add(uiName);
-//            ResourceManager.instance.AddRefCount(abName);
-        }
-    }
-
-    /// <summary>
-    /// 在UI界面被Destroy的时候，需要同时卸载依赖的ab包及其动态加载进来的ab包
-    /// </summary>
-    /// <param name="uiSystemName"></param>
+    /// 在UI界面被Destroy的时候，需要同时卸载ab包
     private void OnUIDestroy(string uiSystemName)
     {
-        //卸载UI prefab
-//        ResourceManager.instance.UnloadAssetBundle(uiSystemName);
-        //卸载额外加载进来的ab资源
-        foreach (var pair in _extraABUserDic)
+        if (ResMgr.Inst)
         {
-            List<string> userList = pair.Value;
-            userList.Remove(uiSystemName);//删除ab包的使用者信息
-            //卸载该ab包或者减少引用计数
-//            ResourceManager.instance.UnloadAssetBundle(pair.Key);
+            ResMgr.Inst.OnUserDestroy(uiSystemName);
         }
     }
-    #endregion
 }

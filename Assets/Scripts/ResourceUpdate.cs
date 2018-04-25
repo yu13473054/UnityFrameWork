@@ -7,29 +7,24 @@ using UnityEngine;
 public class ResourceUpdate : MonoBehaviour
 {
     public Action onShowUpdateUI;
-    public Action onResourceInited;
+    public Action onUpdateEnd;
     public Action onShowForceUpdate; //强更提示
-    public Action<int,int> onUnZipRes;//释放本地资源提示
+    public Action<int, int> onUnZipRes;//释放本地资源提示
 
     const string VersionFileName = "version.txt";
-    const string FileListName = "files.txt";
+    const string FileListName = "filelist";
 
     private List<DownloadTaskInfo> _downloadFiles = new List<DownloadTaskInfo>();
 
     void Start()
     {
-        StartCoroutine(BeginUpdate());    //启动释放协程
-    }
-
-    ///开始检查AB包
-    IEnumerator BeginUpdate()
-    {
+        //-----开始检查AB包--------
         string resDir = AppConst.localABPath;  // 本地存储的ab目录
 
         if (!Directory.Exists(resDir))
             Directory.CreateDirectory(resDir);
 
-        yield return CheckVersion();
+        StartCoroutine(CheckVersion()); 
     }
 
     ///进行版本对比
@@ -39,7 +34,7 @@ public class ResourceUpdate : MonoBehaviour
         ConfigHandler localVerConfig;
         int localVer;
 
-        string appVerFile = AppConst.appABPath + VersionFileName;
+        string appVerFile = AppConst.appABPath.Replace("/assetbundle", "") + VersionFileName;
         if (!File.Exists(localVerFile)) //本地不存在版本文件：被删除或者第一次安装
         {
             //本地做一份保存
@@ -90,28 +85,32 @@ public class ResourceUpdate : MonoBehaviour
         ConfigHandler remoteVerConfig = new ConfigHandler();
         remoteVerConfig.Parser(www.bytes);
         // 资源版本
-        int remoteVer = int.Parse(remoteVerConfig.ReadValue("Resource_Version"));
+        string remoteVerStr = remoteVerConfig.ReadValue("Resource_Version");
+        int remoteVerInt = int.Parse(remoteVerStr);
 
         // 是否要强更？
-        float forceVer = float.Parse(remoteVerConfig.ReadValue("Force_Version"));
+        string remoteForceVerStr = remoteVerConfig.ReadValue("Force_Version");
+        float remoteForceVerFloat = float.Parse(remoteForceVerStr);
         float localForceVer = float.Parse(Application.version);
-        if (forceVer > localForceVer)
+        if (remoteForceVerFloat > localForceVer)
         {
-            Debug.Log("<ResourceUpdate> 去商店下载最新版本！强更程序版本：" + forceVer);
+            Debug.Log("<ResourceUpdate> 去商店下载最新版本！强更程序版本：" + remoteForceVerFloat);
             if (onShowForceUpdate != null) onShowForceUpdate();
             yield break;
         }
-        
-        //远端版本低于本地版本的情况不存在
 
-       if (remoteVer > localVer)
+        //远端版本低于本地版本的情况不存在
+        if (remoteVerInt > localVer)
         {
             //本地做一份保存
-            File.WriteAllBytes(AppConst.localABPath+VersionFileName,www.bytes);
+            File.WriteAllBytes(AppConst.localABPath + VersionFileName, www.bytes);
         }
 
         //检查是否需要更新，防止更新进行到一半时，断网了
-        yield return CheckOutUpdateFiles(forceVer, remoteVer);
+        yield return CheckOutUpdateFiles(remoteForceVerStr, remoteVerStr);
+
+        //todo 优化：不用每次都从服务器端获取filelist文件，可以在版本号相同时，
+        // todo  用本地的filelist文件进行判断，ab包和本地filelist中的是否匹配，如果不匹配，再从远端获取更新
     }
 
     /// <summary>
@@ -121,12 +120,13 @@ public class ResourceUpdate : MonoBehaviour
     {
         Debug.Log("<ResourceUpdate> 开始释放app内部资源！");
 
-        string localFileListPath = AppConst.localABPath + FileListName;
         string appFileListPath = AppConst.appABPath + FileListName;
-        File.Copy(appFileListPath, localFileListPath,true);
-
         //释放所有文件到数据目录
-        string[] fileList = File.ReadAllLines(localFileListPath);
+        AssetBundle localFileListAB = AssetBundle.LoadFromFile(appFileListPath);
+        string[] fileList = localFileListAB
+            .LoadAsset<TextAsset>(FileListName)
+            .text.Split('\n');
+        localFileListAB.Unload(true);
         for (int i = 0; i < fileList.Length; i++)
         {
             if (onUnZipRes != null)
@@ -135,27 +135,25 @@ public class ResourceUpdate : MonoBehaviour
             }
             string fileDesc = fileList[i];
             string fileName = fileDesc.Split('|')[0];
-            File.Copy(AppConst.appABPath+fileName, AppConst.localABPath+fileName, true);
+            File.Copy(AppConst.appABPath + fileName, AppConst.localABPath + fileName, true);
             yield return null;
         }
         Debug.Log("<ResourceUpdate> 解包完成!!!");
     }
 
     /// 检查出需要更新的文件
-    IEnumerator CheckOutUpdateFiles(float forceVer, int remoteVer)
+    IEnumerator CheckOutUpdateFiles(string forceVer, string remoteVer)
     {
         // todo 更新过程中，每秒都需要进行网络检查
-//        StartCoroutine(OnCheckNetwork());
+        //        StartCoroutine(OnCheckNetwork());
 
         // 下载地址
-        string downloadURL = AppConst.updateHost + AppConst.platformName + "/" + forceVer + remoteVer + "/";
+        string downloadURL = AppConst.updateHost + AppConst.platformName + "/" + forceVer + "." + remoteVer + "/";
         string resDir = AppConst.localABPath;
-
-        string fileNameNoExt = FileListName.TrimEnd(".txt".ToCharArray());
 
         // 远端资源文件表
         // 获取服务器文件列表
-        WWW fileListWWW = new WWW(downloadURL + fileNameNoExt);
+        WWW fileListWWW = new WWW(downloadURL + FileListName);
         yield return fileListWWW;
         if (fileListWWW.error != null)
         {
@@ -183,7 +181,7 @@ public class ResourceUpdate : MonoBehaviour
             }
             if (canUpdate)
             {
-                string newFileUrl = downloadURL+newFileName;
+                string newFileUrl = downloadURL + newFileName;
                 _downloadFiles.Add(new DownloadTaskInfo()
                 {
                     url = newFileUrl,
@@ -203,12 +201,12 @@ public class ResourceUpdate : MonoBehaviour
             WWW www = new WWW(taskInfo.url); yield return www;
             if (www.error != null)
             {
-//                OnUpdateFailed(taskInfo.filePath);
+                //                OnUpdateFailed(taskInfo.filePath);
             }
             else
             {
                 File.WriteAllBytes(taskInfo.filePath, www.bytes);
-                if (onShowUpdateUI!=null)
+                if (onShowUpdateUI != null)
                 {
                     onShowUpdateUI();
                 }
@@ -216,9 +214,9 @@ public class ResourceUpdate : MonoBehaviour
             yield return null;
         }
 
-        if (onResourceInited != null)
+        if (onUpdateEnd != null)
         {
-            onResourceInited();
+            onUpdateEnd();
         }
     }
 

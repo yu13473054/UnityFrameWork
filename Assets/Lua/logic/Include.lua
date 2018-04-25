@@ -6,7 +6,8 @@ require "utils/Events"
 -- 基本逻辑
 require "logic/Define"
 require "logic/Data"
---require "logic/Network"
+require "logic/Network"
 
 -- UI
---require "ui/DlgLogin"
+require "ui/DlgLogin"
+require "ui/DlgWait"

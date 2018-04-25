@@ -80,6 +80,47 @@ function Class(classname, super)
     return cls
 end
 
+-- Log，打印调试print就行
+function Log( msg )
+    Debugger.Log( msg );
+end
+function LogWarning( msg )
+    Debugger.LogWarning( msg );
+end
+function LogErr( msg )
+    Debugger.LogError( msg );
+end
+function error( msg )
+    Debugger.LogError( msg );
+end
+
+-- 判空，仅用于Unity.Object
+function IsNilOrNull( obj )
+    if obj == nil or obj:Equals( nil ) then
+        return true;
+    end
+    return false;
+end
+
+-- 播放GameObject上的动画
+function PlayTweenAnim(go)
+    local anims = go:GetComponents(typeof(DOTweenAnimation));
+
+	local longestAnim = anims[0];
+	local dura = 0;
+    --获取时间最长的animation
+	for i = 0, anims.Length-1 do
+	    local anim = anims[i];
+	    anim:DOPlay();
+
+	    if anim.duration > dura then
+	        dura = anim.duration;
+	        longestAnim = anim;
+	    end
+	end
+    return longestAnim;
+end
+
 ---------------------------------------------
 ---- 延迟执行
 ---------------------------------------------

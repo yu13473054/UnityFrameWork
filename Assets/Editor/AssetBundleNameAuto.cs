@@ -191,20 +191,51 @@ public class AssetBundleNameAuto
         }
     }
 
+    /// <summary>
+    /// 递归获取dirPath文件夹下所有文件夹，包括子文件夹中的文件夹
+    /// </summary>
+    static void GetDirRecursion(List<string> resultList, string dirPath)
+    {
+        if (!Directory.Exists(dirPath))
+        {
+            Debug.LogError("请检查路径是不是文件夹。" + dirPath);
+            return;
+        }
+        string[] childDirPaths = Directory.GetDirectories(dirPath);
+        resultList.AddRange(childDirPaths);
+        for (int i = 0; i < childDirPaths.Length; i++)
+        {
+            GetFilesRecursion(resultList, childDirPaths[i]);
+        }
+    }
+
     // 清除所有名字
     [MenuItem("Builder/清除AssetBundleName", false, 202)]
     static void ClearAllNames()
     {
+        List<string> dirPathList = new List<string>();
+        GetDirRecursion(dirPathList, "Assets/Res");
+        for (int i = 0; i < dirPathList.Count; i++)
+        {
+            string path = dirPathList[i];
+            path = path.Substring(path.IndexOf("Assets"));
+            AssetImporter importer = AssetImporter.GetAtPath(path);
+            if (importer != null)
+            {
+                importer.assetBundleName = "";
+            }
+        }
+
         List<string> filePathList = new List<string>();
-        GetFilesRecursion(filePathList, "Assets");
+        GetFilesRecursion(filePathList, "Assets/Res");
         for (int i = 0; i < filePathList.Count; i++)
         {
-            FileInfo file = new FileInfo(filePathList[i]);
+            string file = filePathList[i];
 			// 文本文件跳过
-            if( file.Extension == ".meta" || file.Extension == ".cs" || file.Extension == ".js" )
+            if( file.EndsWith(".meta") || file.EndsWith(".cs") || file.EndsWith(".js") )
                 continue;
 
-            string path = file.FullName.Substring( file.FullName.IndexOf( "Assets" ) ).Replace( "\\", "/" );
+            string path = file.Substring( file.IndexOf( "Assets" ) );
             
 			AssetImporter importer = AssetImporter.GetAtPath ( path );
             if( importer != null )

@@ -1,9 +1,9 @@
 ManifestFileVersion: 0
-CRC: 816074281
+CRC: 1796146071
 Hashes:
   AssetFileHash:
     serializedVersion: 2
-    Hash: bfd3d6b50d928c063a1af50e9cbdd300
+    Hash: 34851e68e43bbd5ac1fd8603cdc6bc3d
   TypeTreeHash:
     serializedVersion: 2
     Hash: 5ad585dd02dfb5016c0dad519eab8f49
@@ -12,7 +12,7 @@ ClassTypes:
 - Class: 49
   Script: {instanceID: 0}
 Assets:
+- Assets/Lua/utils/ObjectPool.lua.bytes
 - Assets/Lua/utils/Utils.lua.bytes
 - Assets/Lua/utils/Events.lua.bytes
-- Assets/Lua/utils/ObjectPool.lua.bytes
 Dependencies: []

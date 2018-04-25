@@ -1,9 +1,7 @@
-﻿using UnityEngine;
-using System;
+﻿using System;
 using System.Collections;
-using System.Collections.Generic;
 using System.IO;
-using LuaInterface;
+using UnityEngine;
 
 
 public class GameMain : MonoBehaviour
@@ -25,7 +23,8 @@ public class GameMain : MonoBehaviour
     [SerializeField]
     [Label("游戏模式", 0, 2)]
     private int _resourceMode = 0;
-
+    [SerializeField][Label("显示日志")]
+    private bool _showLog = true;
 
     public int TargetFrameRate
     {
@@ -35,10 +34,8 @@ public class GameMain : MonoBehaviour
     {
         get { return _resourceMode; }
     }
+
     #endregion
-
-
-    private bool _isMgrInit;
 
     /// <summary>
     /// 初始化游戏管理器
@@ -52,51 +49,67 @@ public class GameMain : MonoBehaviour
         Screen.sleepTimeout = SleepTimeout.NeverSleep;
         Application.targetFrameRate = _targetFrameRate;
 
-        Debugger.useLog = false;
+        //显示日志
+        if (_showLog)
+        {
+            Transform rootReporter = GameObject.Find("Reporter").transform;
+            for (int i = 0; i < rootReporter.childCount; i++)
+            {
+                rootReporter.GetChild(i).gameObject.SetActive(_showLog);
+            }
+        }
     }
 
     void Start()
     {
-        OnResourceInited();
+        StartCoroutine(Init(CheckUpdate));
+    }
+
+    private IEnumerator Init(Action endAction)
+    {
+        AppConst.Init();
+        gameObject.AddComponent<PrefMgr>();
+        gameObject.AddComponent<ResMgr>();
+        gameObject.AddComponent<DatabaseMgr>();
+        gameObject.AddComponent<UIMgr>();
+        gameObject.AddComponent<AudioMgr>();
+        gameObject.AddComponent<TimerMgr>();
+        gameObject.AddComponent<LuaMgr>();
+        gameObject.AddComponent<NetworkMgr>();
+        Localization.Init();
+        yield return null;
+
+        endAction();
+    }
+
+    void CheckUpdate()
+    {
+        GameStart();
         return;
 
-        if (_resourceMode == 0)
+
+        if (_resourceMode != 0)
         {
-            //开发者模式下，直接启动游戏
-            OnResourceInited();
-        }
-        else
-        {
-            MgrInit();//先把管理器启动起来，资源更新完毕后，重启管理器
             //启动更新器
             ResourceUpdate resourceUpdate = gameObject.AddComponent<ResourceUpdate>();
-            resourceUpdate.onResourceInited = OnResourceInited;
+            resourceUpdate.onUpdateEnd = OnUpdateEnd;
+        }
+        else //直接启动游戏
+        {
+            GameStart();
         }
     }
 
-    /// 资源初始化结束
-    void OnResourceInited()
+    void GameStart()
     {
-        if(_isMgrInit)
-             MgrRelease();
-        MgrInit();
-        OnInitialize();
+        LuaMgr.Inst.InitStart();
     }
 
-    private void MgrInit()
+    private void OnUpdateEnd()
     {
-        if (_isMgrInit) return;
-        _isMgrInit = true;
-        PrefMgr.Init();
-        ResMgr.Init();
-        DatabaseMgr.Init();
-
-        UIMgr.Init();
-        AudioMgr.Init();
-        TimerMgr.Init();
-        PoolMgr.Init();
-
-        LuaMgr.Init();
+        //重启
+        MgrRelease();
+        StartCoroutine(Init(GameStart));
     }
 
     void MgrRelease()
@@ -107,20 +120,10 @@ public class GameMain : MonoBehaviour
         if (PrefMgr.Inst != null) DestroyImmediate(PrefMgr.Inst);
         if (PrefMgr.Inst != null) DestroyImmediate(UIMgr.Inst);
         if (ResMgr.Inst != null) DestroyImmediate(ResMgr.Inst);
-        if (PoolMgr.Inst != null) DestroyImmediate(PoolMgr.Inst);
+//        if (PoolMgr.Inst != null) PoolMgr.Inst.OnDestory();
+        if (NetworkMgr.Inst != null) DestroyImmediate(NetworkMgr.Inst);
         if (LuaMgr.Inst != null) DestroyImmediate(LuaMgr.Inst);
-    }
-
-    void OnInitialize()
-    {
-        LuaMgr.Inst.InitStart();
-
-
-        //            LuaMgr.Inst.DoFile("Logic/Game");         //加载游戏
-        //            LuaMgr.Inst.DoFile("Logic/Network");      //加载网络
-        //            NetworkMgr.Inst.OnInit();                     //初始化网络
-        //
-        //
+        Localization.OnDestroy();
     }
 
     /// 析构函数

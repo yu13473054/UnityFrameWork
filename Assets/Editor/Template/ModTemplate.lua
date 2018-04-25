@@ -8,9 +8,9 @@ local _mod;
 
 -- 所属按钮点击时调用
 function #NAME#.OnEvent( uiEvent, controlID, value, gameObject )
-	if uiEvent == UIEVENT_CLICK then
+	if uiEvent == UIEVENT_UIBUTTON_CLICK then
 		print( "Button Clicked, nControlID:" .. controlID );
-	elseif uiEvent == UIEVENT_PRESS then
+	elseif uiEvent == UIEVENT_UIBUTTON_PRESS then
 		if value then
 			print( "Button Pressed Down, nControlID:" .. controlID );
 		elseif not value then

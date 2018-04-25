@@ -103,7 +103,6 @@ function coroutine.step(t, co, ...)
 	else
 		timer = FrameTimer.New(action, t or 1, 1)
 	end
-
 	comap[co] = timer
 	timer:Start()
 	return yield()

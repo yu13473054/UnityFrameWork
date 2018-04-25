@@ -1,0 +1,57 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!687078895 &4343727234628468602
+SpriteAtlas:
+  m_ObjectHideFlags: 0
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_Name: DlgLogin
+  m_EditorData:
+    textureSettings:
+      serializedVersion: 2
+      anisoLevel: 1
+      compressionQuality: 50
+      maxTextureSize: 2048
+      textureCompression: 1
+      filterMode: 1
+      generateMipMaps: 0
+      readable: 0
+      crunchedCompression: 0
+      sRGB: 1
+    platformSettings: []
+    packingParameters:
+      serializedVersion: 2
+      padding: 2
+      blockOffset: 1
+      allowAlphaSplitting: 0
+      enableRotation: 1
+      enableTightPacking: 0
+    variantMultiplier: 1
+    packables:
+    - {fileID: 102900000, guid: 8316f088aec45d64db2fd76fcfe5c62a, type: 3}
+    bindAsDefault: 1
+  m_MasterAtlas: {fileID: 0}
+  m_PackedSprites:
+  - {fileID: 21300000, guid: d634390342d6fdf4cb838c59be59a882, type: 3}
+  - {fileID: 21300000, guid: 8f310f1dbda2bb14aaf6d52f878afe37, type: 3}
+  - {fileID: 21300000, guid: 4b5e5b023a827de44a21f751aa6bf757, type: 3}
+  - {fileID: 21300000, guid: 51551ee7368da034eb06f34f68556c61, type: 3}
+  - {fileID: 21300000, guid: 5b1ccff9c93affe45a21168c130174b5, type: 3}
+  - {fileID: 21300000, guid: 47aa41a80ecc7c242ace02c5745bb163, type: 3}
+  - {fileID: 21300000, guid: 124379b5086dc3f4699995d11a610bb8, type: 3}
+  - {fileID: 21300000, guid: d625c4aef5795874ca621866e4a02df8, type: 3}
+  - {fileID: 21300000, guid: 0119832e092341a4e90eaf5b31cdad70, type: 3}
+  - {fileID: 21300000, guid: aaaeb4dd7aade8343bb0442cb994ddbb, type: 3}
+  m_PackedSpriteNamesToIndex:
+  - UI_loginBg 6
+  - UI_loginBg 7
+  - UI_loginBg 4
+  - UI_loginBg 5
+  - UI_loginBg 2
+  - UI_loginBg 3
+  - UI_loginBg 1
+  - DlgLogin_Input
+  - Cm_Ft_Btn0
+  - Cm_Ft_BtnBg
+  m_Tag: DlgLogin
+  m_IsVariant: 0

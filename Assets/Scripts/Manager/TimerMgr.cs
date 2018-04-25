@@ -14,12 +14,6 @@ public class TimerMgr : MonoBehaviour
             return _inst;
         }
     }
-    public static void Init()
-    {
-        if (_inst != null) return;
-        GameObject go = new GameObject("TimerMgr");
-        go.AddComponent<TimerMgr>();
-    }
     #endregion
 
     private List<TimerElement> _timerList;

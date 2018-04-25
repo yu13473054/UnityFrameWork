@@ -30,8 +30,6 @@ public class UIPolygonRaycast : UIRaycast,ICanvasRaycastFilter
     {
         base.Reset();
         transform.localPosition = Vector3.zero;
-        float w = (rectTransform.sizeDelta.x * 0.5f) + 0.1f;
-        float h = (rectTransform.sizeDelta.y * 0.5f) + 0.1f;
         _polygon.points = new Vector2[]
         {
             new Vector2(-50,-50),

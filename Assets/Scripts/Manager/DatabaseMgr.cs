@@ -14,15 +14,6 @@ public class DatabaseMgr : MonoBehaviour
         get { return _inst; }
     }
 
-    public static void Init()
-    {
-        if (_inst)
-        {
-            return;
-        }
-        GameObject go = new GameObject("DatabaseMgr");
-        go.AddComponent<DatabaseMgr>();
-    }
     #endregion
 
     private Dictionary<string, Dictionary<string, object>> _cacheData;//事先缓存的数据

@@ -2,7 +2,9 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Text;
 using UnityEngine;
+using Debug = UnityEngine.Debug;
 
 /// 配置txt文件读取工具
 public class ConfigHandler
@@ -35,7 +37,7 @@ public class ConfigHandler
     {
         ConfigHandler handler = new ConfigHandler(filePath);
         //直接按照路径获取
-        string allText = File.ReadAllText(filePath);
+        string allText = CommonUtils.ReadFileText(filePath);
         if (!string.IsNullOrEmpty(allText))
         {
             handler.Parser(allText);
@@ -51,7 +53,7 @@ public class ConfigHandler
         if (GameMain.Inst.ResourceMode == 2) // 配置文件也放在外部文件夹中，需要从外部文件夹中取得
         {
             string filePath = System.Environment.CurrentDirectory + "/" + abName.Replace("_", "/") + "/" + fileName;
-            allText = File.ReadAllText(filePath);
+            allText = CommonUtils.ReadFileText(filePath);
         }
         else
         {
@@ -71,7 +73,7 @@ public class ConfigHandler
 
     public void Parser(byte[] data)
     {
-        Parser(data.ToString());
+        Parser(Encoding.UTF8.GetString(data));
     }
 
     /// <summary>

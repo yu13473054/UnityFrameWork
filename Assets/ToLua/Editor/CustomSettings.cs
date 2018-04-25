@@ -6,6 +6,7 @@ using UnityEditor;
 
 using BindType = ToLuaMenu.BindType;
 using System.Reflection;
+using UnityEngine.UI;
 
 public static class CustomSettings
 {
@@ -45,21 +46,10 @@ public static class CustomSettings
     //在这里添加你要导出注册到lua的类型列表
     public static BindType[] customTypeList =
     {                
-        //------------------------为例子导出--------------------------------
-        //_GT(typeof(TestEventListener)),
-        //_GT(typeof(TestProtol)),
-        //_GT(typeof(TestAccount)),
-        //_GT(typeof(Dictionary<int, TestAccount>)).SetLibName("AccountMap"),
-        //_GT(typeof(KeyValuePair<int, TestAccount>)),
-        //_GT(typeof(Dictionary<int, TestAccount>.KeyCollection)),
-        //_GT(typeof(Dictionary<int, TestAccount>.ValueCollection)),
-        //_GT(typeof(TestExport)),
-        //_GT(typeof(TestExport.Space)),
-        //-------------------------------------------------------------------        
-                        
         _GT(typeof(LuaInjectionStation)),
         _GT(typeof(InjectType)),
-        _GT(typeof(Debugger)).SetNameSpace(null),          
+        _GT(typeof(Debugger)).SetNameSpace(null),
+        _GT(typeof(LuaProfiler)),        
 
 #if USING_DOTWEENING
         _GT(typeof(DG.Tweening.DOTween)),
@@ -70,97 +60,114 @@ public static class CustomSettings
         _GT(typeof(DG.Tweening.PathMode)),
         _GT(typeof(DG.Tweening.PathType)),
         _GT(typeof(DG.Tweening.RotateMode)),
-        _GT(typeof(Component)).AddExtendType(typeof(DG.Tweening.ShortcutExtensions)),
-        _GT(typeof(Transform)).AddExtendType(typeof(DG.Tweening.ShortcutExtensions)),
-        _GT(typeof(Light)).AddExtendType(typeof(DG.Tweening.ShortcutExtensions)),
-        _GT(typeof(Material)).AddExtendType(typeof(DG.Tweening.ShortcutExtensions)),
-        _GT(typeof(Rigidbody)).AddExtendType(typeof(DG.Tweening.ShortcutExtensions)),
-        _GT(typeof(Camera)).AddExtendType(typeof(DG.Tweening.ShortcutExtensions)),
-        _GT(typeof(AudioSource)).AddExtendType(typeof(DG.Tweening.ShortcutExtensions)),
-        //_GT(typeof(LineRenderer)).AddExtendType(typeof(DG.Tweening.ShortcutExtensions)),
-        //_GT(typeof(TrailRenderer)).AddExtendType(typeof(DG.Tweening.ShortcutExtensions)),    
+        _GT(typeof(Component)).SetNameSpace(null).AddExtendType(typeof(DG.Tweening.ShortcutExtensions)),
+        _GT(typeof(Transform)).SetNameSpace(null).AddExtendType(typeof(DG.Tweening.ShortcutExtensions)),
+        _GT(typeof(Light)).SetNameSpace(null).AddExtendType(typeof(DG.Tweening.ShortcutExtensions)),
+        _GT(typeof(Material)).SetNameSpace(null).AddExtendType(typeof(DG.Tweening.ShortcutExtensions)),
+        _GT(typeof(Rigidbody)).SetNameSpace(null).AddExtendType(typeof(DG.Tweening.ShortcutExtensions)),
+        _GT(typeof(Camera)).SetNameSpace(null).AddExtendType(typeof(DG.Tweening.ShortcutExtensions)),
+        _GT(typeof(AudioSource)).SetNameSpace(null).AddExtendType(typeof(DG.Tweening.ShortcutExtensions)),
+        //_GT(typeof(LineRenderer)).SetNameSpace(null).AddExtendType(typeof(DG.Tweening.ShortcutExtensions)),
+        //_GT(typeof(TrailRenderer)).SetNameSpace(null).AddExtendType(typeof(DG.Tweening.ShortcutExtensions)),    
 #else
                                          
-        _GT(typeof(Component)),
-        _GT(typeof(Transform)),
-        _GT(typeof(Material)),
-        _GT(typeof(Light)),
-        _GT(typeof(Rigidbody)),
-        _GT(typeof(Camera)),
-        _GT(typeof(AudioSource)),
-        //_GT(typeof(LineRenderer))
-        //_GT(typeof(TrailRenderer))
+        _GT(typeof(Component)).SetNameSpace(null),
+        _GT(typeof(Transform)).SetNameSpace(null),
+        _GT(typeof(Material)).SetNameSpace(null),
+        _GT(typeof(Light)).SetNameSpace(null),
+        _GT(typeof(Rigidbody)).SetNameSpace(null),
+        _GT(typeof(Camera)).SetNameSpace(null),
+        _GT(typeof(AudioSource)).SetNameSpace(null),
+        //_GT(typeof(LineRenderer)).SetNameSpace(null),
+        //_GT(typeof(TrailRenderer)).SetNameSpace(null),
 #endif
       
-        _GT(typeof(Behaviour)),
-        _GT(typeof(MonoBehaviour)),        
-        _GT(typeof(GameObject)),
-        _GT(typeof(TrackedReference)),
-        _GT(typeof(Application)),
-        _GT(typeof(Physics)),
-        _GT(typeof(Collider)),
-        _GT(typeof(Time)),        
-        _GT(typeof(Texture)),
-        _GT(typeof(Texture2D)),
-        _GT(typeof(Shader)),        
-        _GT(typeof(Renderer)),
-        _GT(typeof(WWW)),
-        _GT(typeof(Screen)),        
-        _GT(typeof(CameraClearFlags)),
-        _GT(typeof(AudioClip)),        
-        _GT(typeof(AssetBundle)),
-        _GT(typeof(ParticleSystem)),
-        _GT(typeof(AsyncOperation)).SetBaseType(typeof(System.Object)),        
-        _GT(typeof(LightType)),
-        _GT(typeof(SleepTimeout)),
-#if UNITY_5_3_OR_NEWER && !UNITY_5_6_OR_NEWER
-        _GT(typeof(UnityEngine.Experimental.Director.DirectorPlayer)),
-#endif
-        _GT(typeof(Animator)),
-        _GT(typeof(Input)),
-        _GT(typeof(KeyCode)),
-        _GT(typeof(SkinnedMeshRenderer)),
-        _GT(typeof(Space)),      
+        _GT(typeof(Behaviour)).SetNameSpace(null),
+        _GT(typeof(MonoBehaviour)).SetNameSpace(null),        
+        _GT(typeof(GameObject)).SetNameSpace(null),
+        _GT(typeof(TrackedReference)).SetNameSpace(null),
+        _GT(typeof(Application)).SetNameSpace(null),
+        _GT(typeof(Physics)).SetNameSpace(null),
+        _GT(typeof(Collider)).SetNameSpace(null),
+        _GT(typeof(Time)).SetNameSpace(null),        
+        _GT(typeof(Texture)).SetNameSpace(null),
+        _GT(typeof(Texture2D)).SetNameSpace(null),
+        _GT(typeof(Shader)).SetNameSpace(null),        
+        _GT(typeof(Renderer)).SetNameSpace(null),
+        _GT(typeof(WWW)).SetNameSpace(null),
+        _GT(typeof(Screen)).SetNameSpace(null),        
+        _GT(typeof(CameraClearFlags)).SetNameSpace(null),
+        _GT(typeof(AudioClip)).SetNameSpace(null),        
+        _GT(typeof(AssetBundle)).SetNameSpace(null),
+        _GT(typeof(ParticleSystem)).SetNameSpace(null),
+        _GT(typeof(AsyncOperation)).SetBaseType(typeof(System.Object)).SetNameSpace(null),        
+        _GT(typeof(LightType)).SetNameSpace(null),
+        _GT(typeof(SleepTimeout)).SetNameSpace(null),
+        _GT(typeof(Animator)).SetNameSpace(null),
+        _GT(typeof(Input)).SetNameSpace(null),
+        _GT(typeof(KeyCode)).SetNameSpace(null),
+        _GT(typeof(SkinnedMeshRenderer)).SetNameSpace(null),
+        _GT(typeof(Space)).SetNameSpace(null),      
        
 
-        _GT(typeof(MeshRenderer)),
-#if !UNITY_5_4_OR_NEWER
-        _GT(typeof(ParticleEmitter)),
-        _GT(typeof(ParticleRenderer)),
-        _GT(typeof(ParticleAnimator)), 
-#endif
+        _GT(typeof(MeshRenderer)).SetNameSpace(null),
 
-        _GT(typeof(BoxCollider)),
-        _GT(typeof(MeshCollider)),
-        _GT(typeof(SphereCollider)),        
-        _GT(typeof(CharacterController)),
-        _GT(typeof(CapsuleCollider)),
+        _GT(typeof(BoxCollider)).SetNameSpace(null),
+        _GT(typeof(MeshCollider)).SetNameSpace(null),
+        _GT(typeof(SphereCollider)).SetNameSpace(null),        
+        _GT(typeof(CharacterController)).SetNameSpace(null),
+        _GT(typeof(CapsuleCollider)).SetNameSpace(null),
         
-        _GT(typeof(Animation)),        
-        _GT(typeof(AnimationClip)).SetBaseType(typeof(UnityEngine.Object)),        
-        _GT(typeof(AnimationState)),
-        _GT(typeof(AnimationBlendMode)),
-        _GT(typeof(QueueMode)),  
-        _GT(typeof(PlayMode)),
-        _GT(typeof(WrapMode)),
+        _GT(typeof(Animation)).SetNameSpace(null),        
+        _GT(typeof(AnimationClip)).SetBaseType(typeof(UnityEngine.Object)).SetNameSpace(null),        
+        _GT(typeof(AnimationState)).SetNameSpace(null),
+        _GT(typeof(AnimationBlendMode)).SetNameSpace(null),
+        _GT(typeof(QueueMode)).SetNameSpace(null),  
+        _GT(typeof(PlayMode)).SetNameSpace(null),
+        _GT(typeof(WrapMode)).SetNameSpace(null),
 
-        _GT(typeof(QualitySettings)),
-        _GT(typeof(RenderSettings)),                                                   
-        _GT(typeof(BlendWeights)),           
-        _GT(typeof(RenderTexture)),
-        _GT(typeof(Resources)),     
-        _GT(typeof(LuaProfiler)),
+        _GT(typeof(QualitySettings)).SetNameSpace(null),
+        _GT(typeof(RenderSettings)).SetNameSpace(null),                                                   
+        _GT(typeof(BlendWeights)).SetNameSpace(null),           
+        _GT(typeof(RenderTexture)).SetNameSpace(null),
+        _GT(typeof(Resources)).SetNameSpace(null),     
+
+
+        //自定义
+        _GT(typeof(AppConst)),
+        _GT(typeof(UIMod)),
+        _GT(typeof(UISystem)),
+        _GT(typeof(Localization)),
+
+        //Manager
+        _GT(typeof(UIMgr)),
+        _GT(typeof(AudioMgr)),
+        _GT(typeof(PrefMgr)),
+        _GT(typeof(ResMgr)),
+        _GT(typeof(DatabaseMgr)),
+        _GT(typeof(TimerMgr)),
+        _GT(typeof(NetworkMgr)),
+
+        //UI
+        _GT(typeof(RectTransform)),
+        _GT(typeof(LayoutRebuilder)).SetNameSpace(null),
+        _GT(typeof(UIImage)),
+        _GT(typeof(UIRawImage)),
+        _GT(typeof(UIText)),
+        _GT(typeof(UIButton)),
+        _GT(typeof(UIToggle)),
+        _GT(typeof(UISlider)),
+        _GT(typeof(UIScrollView)),
+        _GT(typeof(UIScrollbar)),
+        _GT(typeof(UIInputField)),
+        _GT(typeof(UIRaycast)),
+        _GT(typeof(UIPolygonRaycast)),
+        _GT(typeof(WrapContent)),
     };
 
     public static List<Type> dynamicList = new List<Type>()
     {
         typeof(MeshRenderer),
-#if !UNITY_5_4_OR_NEWER
-        typeof(ParticleEmitter),
-        typeof(ParticleRenderer),
-        typeof(ParticleAnimator),
-#endif
-
         typeof(BoxCollider),
         typeof(MeshCollider),
         typeof(SphereCollider),
@@ -183,45 +190,21 @@ public static class CustomSettings
         
     };
         
-    //ngui优化，下面的类没有派生类，可以作为sealed class
+    //ui优化，下面的类没有派生类，可以作为sealed class
     public static List<Type> sealedList = new List<Type>()
     {
-        /*typeof(Transform),
-        typeof(UIRoot),
-        typeof(UICamera),
-        typeof(UIViewport),
-        typeof(UIPanel),
-        typeof(UILabel),
-        typeof(UIAnchor),
-        typeof(UIAtlas),
-        typeof(UIFont),
-        typeof(UITexture),
-        typeof(UISprite),
-        typeof(UIGrid),
-        typeof(UITable),
-        typeof(UIWrapGrid),
-        typeof(UIInput),
-        typeof(UIScrollView),
-        typeof(UIEventListener),
-        typeof(UIScrollBar),
-        typeof(UICenterOnChild),
-        typeof(UIScrollView),        
-        typeof(UIButton),
-        typeof(UITextList),
-        typeof(UIPlayTween),
-        typeof(UIDragScrollView),
-        typeof(UISpriteAnimation),
-        typeof(UIWrapContent),
-        typeof(TweenWidth),
-        typeof(TweenAlpha),
-        typeof(TweenColor),
-        typeof(TweenRotation),
-        typeof(TweenPosition),
-        typeof(TweenScale),
-        typeof(TweenHeight),
-        typeof(TypewriterEffect),
-        typeof(UIToggle),
-        typeof(Localization),*/
+        /* typeof(UIImage),
+         typeof(UIImage),
+         typeof(UIText),
+         typeof(UIButton),
+         typeof(UIToggle),
+         typeof(UISlider),
+         typeof(UIScrollView),
+         typeof(UIScrollbar),
+         typeof(UIInputField),
+         typeof(UIRaycast),
+         typeof(UIPolygonRaycast),
+         typeof(WrapContent),*/
     };
 
     public static BindType _GT(Type t)
@@ -233,7 +216,6 @@ public static class CustomSettings
     {
         return new DelegateType(t);
     }    
-
 
     [MenuItem("Lua/Attach Profiler", false, 151)]
     static void AttachProfiler()
