@@ -32,24 +32,10 @@ SpriteAtlas:
     bindAsDefault: 1
   m_MasterAtlas: {fileID: 0}
   m_PackedSprites:
-  - {fileID: 21300000, guid: d634390342d6fdf4cb838c59be59a882, type: 3}
-  - {fileID: 21300000, guid: 8f310f1dbda2bb14aaf6d52f878afe37, type: 3}
-  - {fileID: 21300000, guid: 4b5e5b023a827de44a21f751aa6bf757, type: 3}
-  - {fileID: 21300000, guid: 51551ee7368da034eb06f34f68556c61, type: 3}
-  - {fileID: 21300000, guid: 5b1ccff9c93affe45a21168c130174b5, type: 3}
-  - {fileID: 21300000, guid: 47aa41a80ecc7c242ace02c5745bb163, type: 3}
-  - {fileID: 21300000, guid: 124379b5086dc3f4699995d11a610bb8, type: 3}
   - {fileID: 21300000, guid: d625c4aef5795874ca621866e4a02df8, type: 3}
   - {fileID: 21300000, guid: 0119832e092341a4e90eaf5b31cdad70, type: 3}
   - {fileID: 21300000, guid: aaaeb4dd7aade8343bb0442cb994ddbb, type: 3}
   m_PackedSpriteNamesToIndex:
-  - UI_loginBg 6
-  - UI_loginBg 7
-  - UI_loginBg 4
-  - UI_loginBg 5
-  - UI_loginBg 2
-  - UI_loginBg 3
-  - UI_loginBg 1
   - DlgLogin_Input
   - Cm_Ft_Btn0
   - Cm_Ft_BtnBg

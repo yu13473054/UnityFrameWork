@@ -1,7 +1,11 @@
 ﻿using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.IO;
+using System.Net;
+using System.Text;
 using UnityEngine;
+using UnityEngine.Networking;
 
 
 public class GameMain : MonoBehaviour
@@ -62,8 +66,57 @@ public class GameMain : MonoBehaviour
 
     void Start()
     {
-        StartCoroutine(Init(CheckUpdate));
+//        StartCoroutine(Init(CheckUpdate));
+
+        StartCoroutine(GenerateQRCode());
     }
+
+    private IEnumerator GenerateQRCode()
+    {
+        WWW www = new WWW("https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=wx0c0c31b49819cca6&secret=45d74e925baac11ca875fb5b978cce87");
+        yield return www;
+        string access_token = JsonUtility.FromJson<AA>(www.text).access_token;
+
+
+        WWWForm form = new WWWForm();
+        form.AddField("scene", "2341");
+        form.AddField("width", 430);
+        form.AddField("auto_color", "false");
+        WWWForm form1 = new WWWForm();
+        form1.AddField("r","0");
+        form1.AddField("g","0");
+        form1.AddField("b","0");
+        form.AddField("line_color", Encoding.Default.GetString(form1.data));
+        Debug.Log(Encoding.Default.GetString(form.data));
+        WWW www1 = new WWW("https://api.weixin.qq.com/wxa/getwxacodeunlimit?access_token="+access_token, form);
+        yield return www1;
+        if (string.IsNullOrEmpty(www1.error))
+        {
+            Debug.Log(www1.text);
+        }
+        else
+        {
+            Debug.Log(www1.error);
+        }
+
+
+//        JsonUtility.FromJson<BB>(www1.text);
+
+    }
+
+    [System.Serializable]
+    class AA
+    {
+        public string access_token;
+        public int expires_in;
+    }
+
+    [System.Serializable]
+    class BB
+    {
+        public string data;
+    }
+
 
     private IEnumerator Init(Action endAction)
     {
