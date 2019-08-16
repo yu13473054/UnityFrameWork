@@ -33,7 +33,7 @@ function DlgWait.OnEvent( uiEvent, controlID, value, gameObject )
 end
 
 -- 载入时调用
-function DlgWait.OnAwake( gameObject )
+function DlgWait.OnInit( gameObject )
 	-- 控件赋值	
 	local objs = gameObject:GetComponent( typeof( UISystem ) ).relatedGameObject;	
     _waitUI = objs[0]:GetComponent(typeof(UIImage));
@@ -41,19 +41,15 @@ function DlgWait.OnAwake( gameObject )
     _timer = Timer.New(DlgWait.OnShowHint, _delayTime);
 end
 
--- 界面初始化时调用
-function DlgWait.OnStart( gameObject )
-end
-
 -- 界面显示时调用
-function DlgWait.OnEnable( gameObject )
+function DlgWait.OnOpen( gameObject )
 	--超时显示菊花
 	_timer:Start();
     _waitUI.gameObject:SetActive(false);
 end
 
 -- 界面隐藏时调用
-function DlgWait.OnDisable( gameObject )
+function DlgWait.OnClose( gameObject )
 	_timer:Stop();
 end
 

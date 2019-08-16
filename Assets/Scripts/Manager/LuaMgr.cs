@@ -1,79 +1,68 @@
 ﻿using UnityEngine;
 using System.Collections;
 using LuaInterface;
+using System.IO;
+using System;
+using System.Collections.Generic;
+
+public class LuaLoader : LuaFileUtils
+{
+    public LuaLoader()
+    {
+        instance = this;
+    }
+
+    /// <summary>
+    /// 添加打入Lua代码的AssetBundle
+    /// </summary>
+    /// <param name="bundle"></param>
+    public void AddBundle( string bundleName )
+    {
+        AssetBundle bundle = ResMgr.Inst.LoadAB( bundleName, "Lua" );
+        if( bundle != null )
+        {
+            bundleName = bundleName.Replace( "lua/", "" );
+            base.AddSearchBundle( bundleName.ToLower(), bundle );
+        }
+    }
+}
 
 public class LuaMgr : MonoBehaviour
 {
-    #region 初始化
-    private static LuaMgr _inst;
-    public static LuaMgr Inst
+    protected LuaState  _lua = null;
+    public LuaState lua { get { return _lua; } }
+
+    protected LuaLoader _loader;
+
+    public static LuaMgr Inst;
+
+    protected void Awake()
     {
-        get { return _inst; }
+        // 实例化Lua State
+        Inst = this;
     }
-    #endregion
 
-    private LuaState _lua;
-    private LuaLoader _loader;
-    private LuaLooper _loop;
-
-    // Use this for initialization
-    void Awake()
+    public void Init()
     {
-        _inst = this;
-        DontDestroyOnLoad(gameObject);
-
         _loader = new LuaLoader();
-        _loader.beZip = GameMain.Inst.ResourceMode != 0;
-
         _lua = new LuaState();
         OpenLibs();
-        _lua.LuaSetTop(0);
 
-        LuaBinder.Bind(_lua);
-        DelegateFactory.Init();
-        LuaCoroutine.Register(_lua, this);
+        LuaBinder.Bind( _lua );
+        DelegateFactory.Register();
+        LuaCoroutine.Register( _lua, this );
 
-        InitLuaPath();
-        _lua.Start();    //启动LUAVM
-        _lua.DoFile("logic/Main.lua");
-        _loop = gameObject.AddComponent<LuaLooper>();
-        _loop.luaState = _lua;
-    }
+        // Lua读取路径
+        _loader.beZip = GameMain.Inst.ResourceMode != 0;
 
-    public void InitStart()
-    {
-        LuaFunction main = _lua.GetFunction("LuaStart");
-        main.Call();
-        main.Dispose();
-    }
-
-    /// <summary>
-    /// 初始化加载第三方库
-    /// </summary>
-    void OpenLibs()
-    {
-        _lua.OpenLibs(LuaDLL.luaopen_pb);
-        _lua.OpenLibs(LuaDLL.luaopen_lpeg);
-        _lua.OpenLibs(LuaDLL.luaopen_bit);
-        _lua.OpenLibs(LuaDLL.luaopen_socket_core);
-
-        //cjson 比较特殊，只new了一个table，没有注册库，这里注册一下
-        _lua.LuaGetField(LuaIndexes.LUA_REGISTRYINDEX, "_LOADED");
-        _lua.OpenLibs(LuaDLL.luaopen_cjson);
-        _lua.LuaSetField(-2, "cjson");
-
-        _lua.OpenLibs(LuaDLL.luaopen_cjson_safe);
-        _lua.LuaSetField(-2, "cjson.safe");
-    }
-
-    /// <summary>
-    /// 初始化Lua代码加载路径
-    /// </summary>
-    void InitLuaPath()
-    {
+        // 如果是打包模式，读AB，否则读Lua目录
         if (_loader.beZip)
         {
+            _loader.AddBundle("lua_modulelogic");
+            _loader.AddBundle("lua_fightlogic");
+            _loader.AddBundle("lua_fightview");
             _loader.AddBundle("lua_logic");
+            _loader.AddBundle("lua_protobuf");
             _loader.AddBundle("lua_protocols");
             _loader.AddBundle("lua_tolua");
             _loader.AddBundle("lua_ui");
@@ -82,40 +71,76 @@ public class LuaMgr : MonoBehaviour
         else
         {
             _lua.AddSearchPath(LuaConst.luaDir);
-            _lua.AddSearchPath(LuaConst.luaDir+"/ToLua");
+            _lua.AddSearchPath(LuaConst.luaDir + "/ToLua");
         }
+
+        //启动LuaVM
+        _lua.Start();
+
+        // Lua计时
+        gameObject.AddComponent<LuaLooper>().luaState = _lua;
+
+        // 添加lua之间的引用关系
+        DoFile("logic/Main");
     }
 
-    public void DoFile(string filename)
+    /// <summary>
+    /// 初始化加载第三方库
+    /// </summary>
+    protected void OpenLibs()
     {
-        _lua.DoFile(filename);
+        _lua.OpenLibs( LuaDLL.luaopen_pb );
+        _lua.OpenLibs( LuaDLL.luaopen_lpeg );
+        _lua.OpenLibs( LuaDLL.luaopen_bit );
+        //_lua.OpenLibs( LuaDLL.luaopen_socket_core );
+
+        //cjson 比较特殊，只new了一个table，没有注册库，这里注册一下
+        _lua.LuaGetField( LuaIndexes.LUA_REGISTRYINDEX, "_LOADED" );
+        _lua.OpenLibs( LuaDLL.luaopen_cjson );
+        _lua.LuaSetField( -2, "cjson" );
+        _lua.OpenLibs( LuaDLL.luaopen_cjson_safe );
+        _lua.LuaSetField( -2, "cjson.safe" );
+
+        _lua.LuaSetTop( 0 );
     }
 
-    public LuaFunction GetFunction(string func)
+    public void DoFile( string filename )
     {
-        return _lua.GetFunction(func);
+        _lua.DoFile( filename );
     }
 
     public void LuaGC()
     {
-        _lua.LuaGC(LuaGCOptions.LUA_GCCOLLECT);
+        _lua.LuaGC( LuaGCOptions.LUA_GCCOLLECT );
     }
 
     void OnDestroy()
     {
-        if (_loop)
-        {
-            _loop.Destroy();
-            _loop = null;
-        }
+#if !UNITY_EDITOR
+        _lua.Dispose();
+#endif
+        Debug.Log("<LuaManager> OnDestroy!");
+    }
 
-        if (_lua != null)
-        {
-            _lua.Dispose();
-            _lua = null;
-        }
-
-        _loader = null;
-        _inst = null;
+    // 封装了下常用的Lua方法调用
+    public void Call( string func )
+    {
+        _lua.GetFunction( func ).Call();
+    }
+    public void Call<T>( string func, T param )
+    {
+        _lua.GetFunction( func ).Call<T>( param );
+    }
+    public R Call<R>( string func )
+    {
+        return _lua.GetFunction( func ).Invoke<R>();
+    }
+    public R Call<T,R>( string func, T param )
+    {
+        return _lua.GetFunction( func ).Invoke<T,R>( param );
+    }
+    public LuaFunction GetFunction( string func )
+    {
+        return _lua.GetFunction( func );
     }
 }

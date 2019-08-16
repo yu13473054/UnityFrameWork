@@ -40,8 +40,8 @@ public class UITextWrap
 		{
 			o = ToLua.ToObject(L, 1);
 			UIText obj = (UIText)o;
-			int ret = obj.localizationID;
-			LuaDLL.lua_pushinteger(L, ret);
+			string ret = obj.localizationID;
+			LuaDLL.lua_pushstring(L, ret);
 			return 1;
 		}
 		catch(Exception e)
@@ -59,7 +59,7 @@ public class UITextWrap
 		{
 			o = ToLua.ToObject(L, 1);
 			UIText obj = (UIText)o;
-			int arg0 = (int)LuaDLL.luaL_checknumber(L, 2);
+			string arg0 = ToLua.CheckString(L, 2);
 			obj.localizationID = arg0;
 			return 0;
 		}

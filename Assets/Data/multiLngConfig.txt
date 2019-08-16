@@ -1,0 +1,4 @@
+资源名	CN	EN	JP
+AI	AI_cn	AI_en	AI
+localization	localization_cn	localization_en	localization_jp
+Localization	Localization_cn	Localization_en	Localization

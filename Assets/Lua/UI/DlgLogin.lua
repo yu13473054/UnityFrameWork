@@ -41,7 +41,7 @@ function DlgLogin.OnEvent(uiEvent, controlID, value, gameObject)
 end
 
 -- 载入时调用
-function DlgLogin.OnAwake(gameObject)
+function DlgLogin.OnInit(gameObject)
     -- 控件赋值	
     local objs = gameObject:GetComponent(typeof(UISystem)).relatedGameObject;
     _inputField = objs[0]:GetComponent(typeof(UIInputField));
@@ -49,7 +49,8 @@ function DlgLogin.OnAwake(gameObject)
 end
 
 -- 界面初始化时调用
-function DlgLogin.OnStart(gameObject)
+function DlgLogin.OnOpen(gameObject)
+	Event.UI:AddListener("SERVERLIST",DlgLogin.OnServerChange);
     -- 显示本地存储的uid ，如果属于新建的角色，随机一个uid
 --    local userName = Data.userini:ReadValue("UserName", "");
 --    if userName == "" then
@@ -65,13 +66,8 @@ function DlgLogin.OnStart(gameObject)
     DlgLogin.LoginStart();
 end
 
--- 界面显示时调用
-function DlgLogin.OnEnable(gameObject)
-    Event.UI:AddListener("SERVERLIST",DlgLogin.OnServerChange);
-end
-
 -- 界面隐藏时调用
-function DlgLogin.OnDisable(gameObject)
+function DlgLogin.OnClose(gameObject)
     Event.UI:RemoveListener("SERVERLIST",DlgLogin.OnServerChange);
 end
 

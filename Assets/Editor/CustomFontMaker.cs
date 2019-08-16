@@ -10,7 +10,7 @@ using System.Text.RegularExpressions;
 using Object = UnityEngine.Object;
 
 
-public class CustomFontMaker : EditorWindow
+public class CustomFontMaker : Editor
 {
     [MenuItem("Assets/Create/BMFont",false,610)]
     static void CreateFont()

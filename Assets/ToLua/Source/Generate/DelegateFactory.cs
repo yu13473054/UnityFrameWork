@@ -23,16 +23,26 @@ public class DelegateFactory
 		dict.Add(typeof(System.Action<int>), factory.System_Action_int);
 		dict.Add(typeof(System.Comparison<int>), factory.System_Comparison_int);
 		dict.Add(typeof(System.Func<int,int>), factory.System_Func_int_int);
+		dict.Add(typeof(UnityEngine.RectTransform.ReapplyDrivenProperties), factory.UnityEngine_RectTransform_ReapplyDrivenProperties);
 		dict.Add(typeof(UnityEngine.Camera.CameraCallback), factory.UnityEngine_Camera_CameraCallback);
-		dict.Add(typeof(UnityEngine.Application.LowMemoryCallback), factory.UnityEngine_Application_LowMemoryCallback);
 		dict.Add(typeof(UnityEngine.Application.AdvertisingIdentifierCallback), factory.UnityEngine_Application_AdvertisingIdentifierCallback);
+		dict.Add(typeof(UnityEngine.Application.LowMemoryCallback), factory.UnityEngine_Application_LowMemoryCallback);
 		dict.Add(typeof(UnityEngine.Application.LogCallback), factory.UnityEngine_Application_LogCallback);
+		dict.Add(typeof(System.Func<bool>), factory.System_Func_bool);
 		dict.Add(typeof(UnityEngine.AudioClip.PCMReaderCallback), factory.UnityEngine_AudioClip_PCMReaderCallback);
 		dict.Add(typeof(UnityEngine.AudioClip.PCMSetPositionCallback), factory.UnityEngine_AudioClip_PCMSetPositionCallback);
 		dict.Add(typeof(System.Action<UnityEngine.AsyncOperation>), factory.System_Action_UnityEngine_AsyncOperation);
-		dict.Add(typeof(LoadTableDelegate), factory.LoadTableDelegate);
-		dict.Add(typeof(TimerEleCallBack), factory.TimerEleCallBack);
-		dict.Add(typeof(UnityEngine.RectTransform.ReapplyDrivenProperties), factory.UnityEngine_RectTransform_ReapplyDrivenProperties);
+		dict.Add(typeof(System.Predicate<UnityEngine.GameObject>), factory.System_Predicate_UnityEngine_GameObject);
+		dict.Add(typeof(System.Action<UnityEngine.GameObject>), factory.System_Action_UnityEngine_GameObject);
+		dict.Add(typeof(System.Comparison<UnityEngine.GameObject>), factory.System_Comparison_UnityEngine_GameObject);
+		dict.Add(typeof(System.Action<UnityEngine.Playables.PlayableDirector>), factory.System_Action_UnityEngine_Playables_PlayableDirector);
+		dict.Add(typeof(System.Predicate<UnityEngine.Playables.PlayableAsset>), factory.System_Predicate_UnityEngine_Playables_PlayableAsset);
+		dict.Add(typeof(System.Action<UnityEngine.Playables.PlayableAsset>), factory.System_Action_UnityEngine_Playables_PlayableAsset);
+		dict.Add(typeof(System.Comparison<UnityEngine.Playables.PlayableAsset>), factory.System_Comparison_UnityEngine_Playables_PlayableAsset);
+		dict.Add(typeof(System.Predicate<string>), factory.System_Predicate_string);
+		dict.Add(typeof(System.Action<string>), factory.System_Action_string);
+		dict.Add(typeof(System.Comparison<string>), factory.System_Comparison_string);
+		dict.Add(typeof(UnityEngine.Canvas.WillRenderCanvases), factory.UnityEngine_Canvas_WillRenderCanvases);
 		dict.Add(typeof(AlignToFinish), factory.AlignToFinish);
 		dict.Add(typeof(UnityEngine.UI.InputField.OnValidateInput), factory.UnityEngine_UI_InputField_OnValidateInput);
 
@@ -42,16 +52,26 @@ public class DelegateFactory
 		DelegateTraits<System.Action<int>>.Init(factory.System_Action_int);
 		DelegateTraits<System.Comparison<int>>.Init(factory.System_Comparison_int);
 		DelegateTraits<System.Func<int,int>>.Init(factory.System_Func_int_int);
+		DelegateTraits<UnityEngine.RectTransform.ReapplyDrivenProperties>.Init(factory.UnityEngine_RectTransform_ReapplyDrivenProperties);
 		DelegateTraits<UnityEngine.Camera.CameraCallback>.Init(factory.UnityEngine_Camera_CameraCallback);
-		DelegateTraits<UnityEngine.Application.LowMemoryCallback>.Init(factory.UnityEngine_Application_LowMemoryCallback);
 		DelegateTraits<UnityEngine.Application.AdvertisingIdentifierCallback>.Init(factory.UnityEngine_Application_AdvertisingIdentifierCallback);
+		DelegateTraits<UnityEngine.Application.LowMemoryCallback>.Init(factory.UnityEngine_Application_LowMemoryCallback);
 		DelegateTraits<UnityEngine.Application.LogCallback>.Init(factory.UnityEngine_Application_LogCallback);
+		DelegateTraits<System.Func<bool>>.Init(factory.System_Func_bool);
 		DelegateTraits<UnityEngine.AudioClip.PCMReaderCallback>.Init(factory.UnityEngine_AudioClip_PCMReaderCallback);
 		DelegateTraits<UnityEngine.AudioClip.PCMSetPositionCallback>.Init(factory.UnityEngine_AudioClip_PCMSetPositionCallback);
 		DelegateTraits<System.Action<UnityEngine.AsyncOperation>>.Init(factory.System_Action_UnityEngine_AsyncOperation);
-		DelegateTraits<LoadTableDelegate>.Init(factory.LoadTableDelegate);
-		DelegateTraits<TimerEleCallBack>.Init(factory.TimerEleCallBack);
-		DelegateTraits<UnityEngine.RectTransform.ReapplyDrivenProperties>.Init(factory.UnityEngine_RectTransform_ReapplyDrivenProperties);
+		DelegateTraits<System.Predicate<UnityEngine.GameObject>>.Init(factory.System_Predicate_UnityEngine_GameObject);
+		DelegateTraits<System.Action<UnityEngine.GameObject>>.Init(factory.System_Action_UnityEngine_GameObject);
+		DelegateTraits<System.Comparison<UnityEngine.GameObject>>.Init(factory.System_Comparison_UnityEngine_GameObject);
+		DelegateTraits<System.Action<UnityEngine.Playables.PlayableDirector>>.Init(factory.System_Action_UnityEngine_Playables_PlayableDirector);
+		DelegateTraits<System.Predicate<UnityEngine.Playables.PlayableAsset>>.Init(factory.System_Predicate_UnityEngine_Playables_PlayableAsset);
+		DelegateTraits<System.Action<UnityEngine.Playables.PlayableAsset>>.Init(factory.System_Action_UnityEngine_Playables_PlayableAsset);
+		DelegateTraits<System.Comparison<UnityEngine.Playables.PlayableAsset>>.Init(factory.System_Comparison_UnityEngine_Playables_PlayableAsset);
+		DelegateTraits<System.Predicate<string>>.Init(factory.System_Predicate_string);
+		DelegateTraits<System.Action<string>>.Init(factory.System_Action_string);
+		DelegateTraits<System.Comparison<string>>.Init(factory.System_Comparison_string);
+		DelegateTraits<UnityEngine.Canvas.WillRenderCanvases>.Init(factory.UnityEngine_Canvas_WillRenderCanvases);
 		DelegateTraits<AlignToFinish>.Init(factory.AlignToFinish);
 		DelegateTraits<UnityEngine.UI.InputField.OnValidateInput>.Init(factory.UnityEngine_UI_InputField_OnValidateInput);
 
@@ -61,16 +81,26 @@ public class DelegateFactory
 		TypeTraits<System.Action<int>>.Init(factory.Check_System_Action_int);
 		TypeTraits<System.Comparison<int>>.Init(factory.Check_System_Comparison_int);
 		TypeTraits<System.Func<int,int>>.Init(factory.Check_System_Func_int_int);
+		TypeTraits<UnityEngine.RectTransform.ReapplyDrivenProperties>.Init(factory.Check_UnityEngine_RectTransform_ReapplyDrivenProperties);
 		TypeTraits<UnityEngine.Camera.CameraCallback>.Init(factory.Check_UnityEngine_Camera_CameraCallback);
-		TypeTraits<UnityEngine.Application.LowMemoryCallback>.Init(factory.Check_UnityEngine_Application_LowMemoryCallback);
 		TypeTraits<UnityEngine.Application.AdvertisingIdentifierCallback>.Init(factory.Check_UnityEngine_Application_AdvertisingIdentifierCallback);
+		TypeTraits<UnityEngine.Application.LowMemoryCallback>.Init(factory.Check_UnityEngine_Application_LowMemoryCallback);
 		TypeTraits<UnityEngine.Application.LogCallback>.Init(factory.Check_UnityEngine_Application_LogCallback);
+		TypeTraits<System.Func<bool>>.Init(factory.Check_System_Func_bool);
 		TypeTraits<UnityEngine.AudioClip.PCMReaderCallback>.Init(factory.Check_UnityEngine_AudioClip_PCMReaderCallback);
 		TypeTraits<UnityEngine.AudioClip.PCMSetPositionCallback>.Init(factory.Check_UnityEngine_AudioClip_PCMSetPositionCallback);
 		TypeTraits<System.Action<UnityEngine.AsyncOperation>>.Init(factory.Check_System_Action_UnityEngine_AsyncOperation);
-		TypeTraits<LoadTableDelegate>.Init(factory.Check_LoadTableDelegate);
-		TypeTraits<TimerEleCallBack>.Init(factory.Check_TimerEleCallBack);
-		TypeTraits<UnityEngine.RectTransform.ReapplyDrivenProperties>.Init(factory.Check_UnityEngine_RectTransform_ReapplyDrivenProperties);
+		TypeTraits<System.Predicate<UnityEngine.GameObject>>.Init(factory.Check_System_Predicate_UnityEngine_GameObject);
+		TypeTraits<System.Action<UnityEngine.GameObject>>.Init(factory.Check_System_Action_UnityEngine_GameObject);
+		TypeTraits<System.Comparison<UnityEngine.GameObject>>.Init(factory.Check_System_Comparison_UnityEngine_GameObject);
+		TypeTraits<System.Action<UnityEngine.Playables.PlayableDirector>>.Init(factory.Check_System_Action_UnityEngine_Playables_PlayableDirector);
+		TypeTraits<System.Predicate<UnityEngine.Playables.PlayableAsset>>.Init(factory.Check_System_Predicate_UnityEngine_Playables_PlayableAsset);
+		TypeTraits<System.Action<UnityEngine.Playables.PlayableAsset>>.Init(factory.Check_System_Action_UnityEngine_Playables_PlayableAsset);
+		TypeTraits<System.Comparison<UnityEngine.Playables.PlayableAsset>>.Init(factory.Check_System_Comparison_UnityEngine_Playables_PlayableAsset);
+		TypeTraits<System.Predicate<string>>.Init(factory.Check_System_Predicate_string);
+		TypeTraits<System.Action<string>>.Init(factory.Check_System_Action_string);
+		TypeTraits<System.Comparison<string>>.Init(factory.Check_System_Comparison_string);
+		TypeTraits<UnityEngine.Canvas.WillRenderCanvases>.Init(factory.Check_UnityEngine_Canvas_WillRenderCanvases);
 		TypeTraits<AlignToFinish>.Init(factory.Check_AlignToFinish);
 		TypeTraits<UnityEngine.UI.InputField.OnValidateInput>.Init(factory.Check_UnityEngine_UI_InputField_OnValidateInput);
 
@@ -80,16 +110,26 @@ public class DelegateFactory
 		StackTraits<System.Action<int>>.Push = factory.Push_System_Action_int;
 		StackTraits<System.Comparison<int>>.Push = factory.Push_System_Comparison_int;
 		StackTraits<System.Func<int,int>>.Push = factory.Push_System_Func_int_int;
+		StackTraits<UnityEngine.RectTransform.ReapplyDrivenProperties>.Push = factory.Push_UnityEngine_RectTransform_ReapplyDrivenProperties;
 		StackTraits<UnityEngine.Camera.CameraCallback>.Push = factory.Push_UnityEngine_Camera_CameraCallback;
-		StackTraits<UnityEngine.Application.LowMemoryCallback>.Push = factory.Push_UnityEngine_Application_LowMemoryCallback;
 		StackTraits<UnityEngine.Application.AdvertisingIdentifierCallback>.Push = factory.Push_UnityEngine_Application_AdvertisingIdentifierCallback;
+		StackTraits<UnityEngine.Application.LowMemoryCallback>.Push = factory.Push_UnityEngine_Application_LowMemoryCallback;
 		StackTraits<UnityEngine.Application.LogCallback>.Push = factory.Push_UnityEngine_Application_LogCallback;
+		StackTraits<System.Func<bool>>.Push = factory.Push_System_Func_bool;
 		StackTraits<UnityEngine.AudioClip.PCMReaderCallback>.Push = factory.Push_UnityEngine_AudioClip_PCMReaderCallback;
 		StackTraits<UnityEngine.AudioClip.PCMSetPositionCallback>.Push = factory.Push_UnityEngine_AudioClip_PCMSetPositionCallback;
 		StackTraits<System.Action<UnityEngine.AsyncOperation>>.Push = factory.Push_System_Action_UnityEngine_AsyncOperation;
-		StackTraits<LoadTableDelegate>.Push = factory.Push_LoadTableDelegate;
-		StackTraits<TimerEleCallBack>.Push = factory.Push_TimerEleCallBack;
-		StackTraits<UnityEngine.RectTransform.ReapplyDrivenProperties>.Push = factory.Push_UnityEngine_RectTransform_ReapplyDrivenProperties;
+		StackTraits<System.Predicate<UnityEngine.GameObject>>.Push = factory.Push_System_Predicate_UnityEngine_GameObject;
+		StackTraits<System.Action<UnityEngine.GameObject>>.Push = factory.Push_System_Action_UnityEngine_GameObject;
+		StackTraits<System.Comparison<UnityEngine.GameObject>>.Push = factory.Push_System_Comparison_UnityEngine_GameObject;
+		StackTraits<System.Action<UnityEngine.Playables.PlayableDirector>>.Push = factory.Push_System_Action_UnityEngine_Playables_PlayableDirector;
+		StackTraits<System.Predicate<UnityEngine.Playables.PlayableAsset>>.Push = factory.Push_System_Predicate_UnityEngine_Playables_PlayableAsset;
+		StackTraits<System.Action<UnityEngine.Playables.PlayableAsset>>.Push = factory.Push_System_Action_UnityEngine_Playables_PlayableAsset;
+		StackTraits<System.Comparison<UnityEngine.Playables.PlayableAsset>>.Push = factory.Push_System_Comparison_UnityEngine_Playables_PlayableAsset;
+		StackTraits<System.Predicate<string>>.Push = factory.Push_System_Predicate_string;
+		StackTraits<System.Action<string>>.Push = factory.Push_System_Action_string;
+		StackTraits<System.Comparison<string>>.Push = factory.Push_System_Comparison_string;
+		StackTraits<UnityEngine.Canvas.WillRenderCanvases>.Push = factory.Push_UnityEngine_Canvas_WillRenderCanvases;
 		StackTraits<AlignToFinish>.Push = factory.Push_AlignToFinish;
 		StackTraits<UnityEngine.UI.InputField.OnValidateInput>.Push = factory.Push_UnityEngine_UI_InputField_OnValidateInput;
 	}
@@ -551,6 +591,63 @@ public class DelegateFactory
 		ToLua.Push(L, o);
 	}
 
+	class UnityEngine_RectTransform_ReapplyDrivenProperties_Event : LuaDelegate
+	{
+		public UnityEngine_RectTransform_ReapplyDrivenProperties_Event(LuaFunction func) : base(func) { }
+		public UnityEngine_RectTransform_ReapplyDrivenProperties_Event(LuaFunction func, LuaTable self) : base(func, self) { }
+
+		public void Call(UnityEngine.RectTransform param0)
+		{
+			func.BeginPCall();
+			func.PushSealed(param0);
+			func.PCall();
+			func.EndPCall();
+		}
+
+		public void CallWithSelf(UnityEngine.RectTransform param0)
+		{
+			func.BeginPCall();
+			func.Push(self);
+			func.PushSealed(param0);
+			func.PCall();
+			func.EndPCall();
+		}
+	}
+
+	public UnityEngine.RectTransform.ReapplyDrivenProperties UnityEngine_RectTransform_ReapplyDrivenProperties(LuaFunction func, LuaTable self, bool flag)
+	{
+		if (func == null)
+		{
+			UnityEngine.RectTransform.ReapplyDrivenProperties fn = delegate(UnityEngine.RectTransform param0) { };
+			return fn;
+		}
+
+		if(!flag)
+		{
+			UnityEngine_RectTransform_ReapplyDrivenProperties_Event target = new UnityEngine_RectTransform_ReapplyDrivenProperties_Event(func);
+			UnityEngine.RectTransform.ReapplyDrivenProperties d = target.Call;
+			target.method = d.Method;
+			return d;
+		}
+		else
+		{
+			UnityEngine_RectTransform_ReapplyDrivenProperties_Event target = new UnityEngine_RectTransform_ReapplyDrivenProperties_Event(func, self);
+			UnityEngine.RectTransform.ReapplyDrivenProperties d = target.CallWithSelf;
+			target.method = d.Method;
+			return d;
+		}
+	}
+
+	bool Check_UnityEngine_RectTransform_ReapplyDrivenProperties(IntPtr L, int pos)
+	{
+		return TypeChecker.CheckDelegateType(typeof(UnityEngine.RectTransform.ReapplyDrivenProperties), L, pos);
+	}
+
+	void Push_UnityEngine_RectTransform_ReapplyDrivenProperties(IntPtr L, UnityEngine.RectTransform.ReapplyDrivenProperties o)
+	{
+		ToLua.Push(L, o);
+	}
+
 	class UnityEngine_Camera_CameraCallback_Event : LuaDelegate
 	{
 		public UnityEngine_Camera_CameraCallback_Event(LuaFunction func) : base(func) { }
@@ -604,59 +701,6 @@ public class DelegateFactory
 	}
 
 	void Push_UnityEngine_Camera_CameraCallback(IntPtr L, UnityEngine.Camera.CameraCallback o)
-	{
-		ToLua.Push(L, o);
-	}
-
-	class UnityEngine_Application_LowMemoryCallback_Event : LuaDelegate
-	{
-		public UnityEngine_Application_LowMemoryCallback_Event(LuaFunction func) : base(func) { }
-		public UnityEngine_Application_LowMemoryCallback_Event(LuaFunction func, LuaTable self) : base(func, self) { }
-
-		public void Call()
-		{
-			func.Call();
-		}
-
-		public void CallWithSelf()
-		{
-			func.BeginPCall();
-			func.Push(self);
-			func.PCall();
-			func.EndPCall();
-		}
-	}
-
-	public UnityEngine.Application.LowMemoryCallback UnityEngine_Application_LowMemoryCallback(LuaFunction func, LuaTable self, bool flag)
-	{
-		if (func == null)
-		{
-			UnityEngine.Application.LowMemoryCallback fn = delegate() { };
-			return fn;
-		}
-
-		if(!flag)
-		{
-			UnityEngine_Application_LowMemoryCallback_Event target = new UnityEngine_Application_LowMemoryCallback_Event(func);
-			UnityEngine.Application.LowMemoryCallback d = target.Call;
-			target.method = d.Method;
-			return d;
-		}
-		else
-		{
-			UnityEngine_Application_LowMemoryCallback_Event target = new UnityEngine_Application_LowMemoryCallback_Event(func, self);
-			UnityEngine.Application.LowMemoryCallback d = target.CallWithSelf;
-			target.method = d.Method;
-			return d;
-		}
-	}
-
-	bool Check_UnityEngine_Application_LowMemoryCallback(IntPtr L, int pos)
-	{
-		return TypeChecker.CheckDelegateType(typeof(UnityEngine.Application.LowMemoryCallback), L, pos);
-	}
-
-	void Push_UnityEngine_Application_LowMemoryCallback(IntPtr L, UnityEngine.Application.LowMemoryCallback o)
 	{
 		ToLua.Push(L, o);
 	}
@@ -722,6 +766,59 @@ public class DelegateFactory
 		ToLua.Push(L, o);
 	}
 
+	class UnityEngine_Application_LowMemoryCallback_Event : LuaDelegate
+	{
+		public UnityEngine_Application_LowMemoryCallback_Event(LuaFunction func) : base(func) { }
+		public UnityEngine_Application_LowMemoryCallback_Event(LuaFunction func, LuaTable self) : base(func, self) { }
+
+		public void Call()
+		{
+			func.Call();
+		}
+
+		public void CallWithSelf()
+		{
+			func.BeginPCall();
+			func.Push(self);
+			func.PCall();
+			func.EndPCall();
+		}
+	}
+
+	public UnityEngine.Application.LowMemoryCallback UnityEngine_Application_LowMemoryCallback(LuaFunction func, LuaTable self, bool flag)
+	{
+		if (func == null)
+		{
+			UnityEngine.Application.LowMemoryCallback fn = delegate() { };
+			return fn;
+		}
+
+		if(!flag)
+		{
+			UnityEngine_Application_LowMemoryCallback_Event target = new UnityEngine_Application_LowMemoryCallback_Event(func);
+			UnityEngine.Application.LowMemoryCallback d = target.Call;
+			target.method = d.Method;
+			return d;
+		}
+		else
+		{
+			UnityEngine_Application_LowMemoryCallback_Event target = new UnityEngine_Application_LowMemoryCallback_Event(func, self);
+			UnityEngine.Application.LowMemoryCallback d = target.CallWithSelf;
+			target.method = d.Method;
+			return d;
+		}
+	}
+
+	bool Check_UnityEngine_Application_LowMemoryCallback(IntPtr L, int pos)
+	{
+		return TypeChecker.CheckDelegateType(typeof(UnityEngine.Application.LowMemoryCallback), L, pos);
+	}
+
+	void Push_UnityEngine_Application_LowMemoryCallback(IntPtr L, UnityEngine.Application.LowMemoryCallback o)
+	{
+		ToLua.Push(L, o);
+	}
+
 	class UnityEngine_Application_LogCallback_Event : LuaDelegate
 	{
 		public UnityEngine_Application_LogCallback_Event(LuaFunction func) : base(func) { }
@@ -779,6 +876,65 @@ public class DelegateFactory
 	}
 
 	void Push_UnityEngine_Application_LogCallback(IntPtr L, UnityEngine.Application.LogCallback o)
+	{
+		ToLua.Push(L, o);
+	}
+
+	class System_Func_bool_Event : LuaDelegate
+	{
+		public System_Func_bool_Event(LuaFunction func) : base(func) { }
+		public System_Func_bool_Event(LuaFunction func, LuaTable self) : base(func, self) { }
+
+		public bool Call()
+		{
+			func.BeginPCall();
+			func.PCall();
+			bool ret = func.CheckBoolean();
+			func.EndPCall();
+			return ret;
+		}
+
+		public bool CallWithSelf()
+		{
+			func.BeginPCall();
+			func.Push(self);
+			func.PCall();
+			bool ret = func.CheckBoolean();
+			func.EndPCall();
+			return ret;
+		}
+	}
+
+	public System.Func<bool> System_Func_bool(LuaFunction func, LuaTable self, bool flag)
+	{
+		if (func == null)
+		{
+			System.Func<bool> fn = delegate() { return false; };
+			return fn;
+		}
+
+		if(!flag)
+		{
+			System_Func_bool_Event target = new System_Func_bool_Event(func);
+			System.Func<bool> d = target.Call;
+			target.method = d.Method;
+			return d;
+		}
+		else
+		{
+			System_Func_bool_Event target = new System_Func_bool_Event(func, self);
+			System.Func<bool> d = target.CallWithSelf;
+			target.method = d.Method;
+			return d;
+		}
+	}
+
+	bool Check_System_Func_bool(IntPtr L, int pos)
+	{
+		return TypeChecker.CheckDelegateType(typeof(System.Func<bool>), L, pos);
+	}
+
+	void Push_System_Func_bool(IntPtr L, System.Func<bool> o)
 	{
 		ToLua.Push(L, o);
 	}
@@ -954,173 +1110,655 @@ public class DelegateFactory
 		ToLua.Push(L, o);
 	}
 
-	class LoadTableDelegate_Event : LuaDelegate
+	class System_Predicate_UnityEngine_GameObject_Event : LuaDelegate
 	{
-		public LoadTableDelegate_Event(LuaFunction func) : base(func) { }
-		public LoadTableDelegate_Event(LuaFunction func, LuaTable self) : base(func, self) { }
+		public System_Predicate_UnityEngine_GameObject_Event(LuaFunction func) : base(func) { }
+		public System_Predicate_UnityEngine_GameObject_Event(LuaFunction func, LuaTable self) : base(func, self) { }
 
-		public void Call(System.Collections.Generic.Dictionary<string,System.Collections.Generic.Dictionary<string,object>> param0)
+		public bool Call(UnityEngine.GameObject param0)
 		{
 			func.BeginPCall();
 			func.PushSealed(param0);
 			func.PCall();
+			bool ret = func.CheckBoolean();
 			func.EndPCall();
+			return ret;
 		}
 
-		public void CallWithSelf(System.Collections.Generic.Dictionary<string,System.Collections.Generic.Dictionary<string,object>> param0)
+		public bool CallWithSelf(UnityEngine.GameObject param0)
 		{
 			func.BeginPCall();
 			func.Push(self);
 			func.PushSealed(param0);
 			func.PCall();
+			bool ret = func.CheckBoolean();
 			func.EndPCall();
+			return ret;
 		}
 	}
 
-	public LoadTableDelegate LoadTableDelegate(LuaFunction func, LuaTable self, bool flag)
+	public System.Predicate<UnityEngine.GameObject> System_Predicate_UnityEngine_GameObject(LuaFunction func, LuaTable self, bool flag)
 	{
 		if (func == null)
 		{
-			LoadTableDelegate fn = delegate(System.Collections.Generic.Dictionary<string,System.Collections.Generic.Dictionary<string,object>> param0) { };
+			System.Predicate<UnityEngine.GameObject> fn = delegate(UnityEngine.GameObject param0) { return false; };
 			return fn;
 		}
 
 		if(!flag)
 		{
-			LoadTableDelegate_Event target = new LoadTableDelegate_Event(func);
-			LoadTableDelegate d = target.Call;
+			System_Predicate_UnityEngine_GameObject_Event target = new System_Predicate_UnityEngine_GameObject_Event(func);
+			System.Predicate<UnityEngine.GameObject> d = target.Call;
 			target.method = d.Method;
 			return d;
 		}
 		else
 		{
-			LoadTableDelegate_Event target = new LoadTableDelegate_Event(func, self);
-			LoadTableDelegate d = target.CallWithSelf;
+			System_Predicate_UnityEngine_GameObject_Event target = new System_Predicate_UnityEngine_GameObject_Event(func, self);
+			System.Predicate<UnityEngine.GameObject> d = target.CallWithSelf;
 			target.method = d.Method;
 			return d;
 		}
 	}
 
-	bool Check_LoadTableDelegate(IntPtr L, int pos)
+	bool Check_System_Predicate_UnityEngine_GameObject(IntPtr L, int pos)
 	{
-		return TypeChecker.CheckDelegateType(typeof(LoadTableDelegate), L, pos);
+		return TypeChecker.CheckDelegateType(typeof(System.Predicate<UnityEngine.GameObject>), L, pos);
 	}
 
-	void Push_LoadTableDelegate(IntPtr L, LoadTableDelegate o)
+	void Push_System_Predicate_UnityEngine_GameObject(IntPtr L, System.Predicate<UnityEngine.GameObject> o)
 	{
 		ToLua.Push(L, o);
 	}
 
-	class TimerEleCallBack_Event : LuaDelegate
+	class System_Action_UnityEngine_GameObject_Event : LuaDelegate
 	{
-		public TimerEleCallBack_Event(LuaFunction func) : base(func) { }
-		public TimerEleCallBack_Event(LuaFunction func, LuaTable self) : base(func, self) { }
+		public System_Action_UnityEngine_GameObject_Event(LuaFunction func) : base(func) { }
+		public System_Action_UnityEngine_GameObject_Event(LuaFunction func, LuaTable self) : base(func, self) { }
 
-		public void Call(TimerElement param0)
+		public void Call(UnityEngine.GameObject param0)
 		{
 			func.BeginPCall();
-			func.PushObject(param0);
+			func.PushSealed(param0);
 			func.PCall();
 			func.EndPCall();
 		}
 
-		public void CallWithSelf(TimerElement param0)
+		public void CallWithSelf(UnityEngine.GameObject param0)
 		{
 			func.BeginPCall();
 			func.Push(self);
-			func.PushObject(param0);
+			func.PushSealed(param0);
 			func.PCall();
 			func.EndPCall();
 		}
 	}
 
-	public TimerEleCallBack TimerEleCallBack(LuaFunction func, LuaTable self, bool flag)
+	public System.Action<UnityEngine.GameObject> System_Action_UnityEngine_GameObject(LuaFunction func, LuaTable self, bool flag)
 	{
 		if (func == null)
 		{
-			TimerEleCallBack fn = delegate(TimerElement param0) { };
+			System.Action<UnityEngine.GameObject> fn = delegate(UnityEngine.GameObject param0) { };
 			return fn;
 		}
 
 		if(!flag)
 		{
-			TimerEleCallBack_Event target = new TimerEleCallBack_Event(func);
-			TimerEleCallBack d = target.Call;
+			System_Action_UnityEngine_GameObject_Event target = new System_Action_UnityEngine_GameObject_Event(func);
+			System.Action<UnityEngine.GameObject> d = target.Call;
 			target.method = d.Method;
 			return d;
 		}
 		else
 		{
-			TimerEleCallBack_Event target = new TimerEleCallBack_Event(func, self);
-			TimerEleCallBack d = target.CallWithSelf;
+			System_Action_UnityEngine_GameObject_Event target = new System_Action_UnityEngine_GameObject_Event(func, self);
+			System.Action<UnityEngine.GameObject> d = target.CallWithSelf;
 			target.method = d.Method;
 			return d;
 		}
 	}
 
-	bool Check_TimerEleCallBack(IntPtr L, int pos)
+	bool Check_System_Action_UnityEngine_GameObject(IntPtr L, int pos)
 	{
-		return TypeChecker.CheckDelegateType(typeof(TimerEleCallBack), L, pos);
+		return TypeChecker.CheckDelegateType(typeof(System.Action<UnityEngine.GameObject>), L, pos);
 	}
 
-	void Push_TimerEleCallBack(IntPtr L, TimerEleCallBack o)
+	void Push_System_Action_UnityEngine_GameObject(IntPtr L, System.Action<UnityEngine.GameObject> o)
 	{
 		ToLua.Push(L, o);
 	}
 
-	class UnityEngine_RectTransform_ReapplyDrivenProperties_Event : LuaDelegate
+	class System_Comparison_UnityEngine_GameObject_Event : LuaDelegate
 	{
-		public UnityEngine_RectTransform_ReapplyDrivenProperties_Event(LuaFunction func) : base(func) { }
-		public UnityEngine_RectTransform_ReapplyDrivenProperties_Event(LuaFunction func, LuaTable self) : base(func, self) { }
+		public System_Comparison_UnityEngine_GameObject_Event(LuaFunction func) : base(func) { }
+		public System_Comparison_UnityEngine_GameObject_Event(LuaFunction func, LuaTable self) : base(func, self) { }
 
-		public void Call(UnityEngine.RectTransform param0)
+		public int Call(UnityEngine.GameObject param0, UnityEngine.GameObject param1)
 		{
 			func.BeginPCall();
 			func.PushSealed(param0);
+			func.PushSealed(param1);
 			func.PCall();
+			int ret = (int)func.CheckNumber();
 			func.EndPCall();
+			return ret;
 		}
 
-		public void CallWithSelf(UnityEngine.RectTransform param0)
+		public int CallWithSelf(UnityEngine.GameObject param0, UnityEngine.GameObject param1)
 		{
 			func.BeginPCall();
 			func.Push(self);
 			func.PushSealed(param0);
+			func.PushSealed(param1);
 			func.PCall();
+			int ret = (int)func.CheckNumber();
 			func.EndPCall();
+			return ret;
 		}
 	}
 
-	public UnityEngine.RectTransform.ReapplyDrivenProperties UnityEngine_RectTransform_ReapplyDrivenProperties(LuaFunction func, LuaTable self, bool flag)
+	public System.Comparison<UnityEngine.GameObject> System_Comparison_UnityEngine_GameObject(LuaFunction func, LuaTable self, bool flag)
 	{
 		if (func == null)
 		{
-			UnityEngine.RectTransform.ReapplyDrivenProperties fn = delegate(UnityEngine.RectTransform param0) { };
+			System.Comparison<UnityEngine.GameObject> fn = delegate(UnityEngine.GameObject param0, UnityEngine.GameObject param1) { return 0; };
 			return fn;
 		}
 
 		if(!flag)
 		{
-			UnityEngine_RectTransform_ReapplyDrivenProperties_Event target = new UnityEngine_RectTransform_ReapplyDrivenProperties_Event(func);
-			UnityEngine.RectTransform.ReapplyDrivenProperties d = target.Call;
+			System_Comparison_UnityEngine_GameObject_Event target = new System_Comparison_UnityEngine_GameObject_Event(func);
+			System.Comparison<UnityEngine.GameObject> d = target.Call;
 			target.method = d.Method;
 			return d;
 		}
 		else
 		{
-			UnityEngine_RectTransform_ReapplyDrivenProperties_Event target = new UnityEngine_RectTransform_ReapplyDrivenProperties_Event(func, self);
-			UnityEngine.RectTransform.ReapplyDrivenProperties d = target.CallWithSelf;
+			System_Comparison_UnityEngine_GameObject_Event target = new System_Comparison_UnityEngine_GameObject_Event(func, self);
+			System.Comparison<UnityEngine.GameObject> d = target.CallWithSelf;
 			target.method = d.Method;
 			return d;
 		}
 	}
 
-	bool Check_UnityEngine_RectTransform_ReapplyDrivenProperties(IntPtr L, int pos)
+	bool Check_System_Comparison_UnityEngine_GameObject(IntPtr L, int pos)
 	{
-		return TypeChecker.CheckDelegateType(typeof(UnityEngine.RectTransform.ReapplyDrivenProperties), L, pos);
+		return TypeChecker.CheckDelegateType(typeof(System.Comparison<UnityEngine.GameObject>), L, pos);
 	}
 
-	void Push_UnityEngine_RectTransform_ReapplyDrivenProperties(IntPtr L, UnityEngine.RectTransform.ReapplyDrivenProperties o)
+	void Push_System_Comparison_UnityEngine_GameObject(IntPtr L, System.Comparison<UnityEngine.GameObject> o)
+	{
+		ToLua.Push(L, o);
+	}
+
+	class System_Action_UnityEngine_Playables_PlayableDirector_Event : LuaDelegate
+	{
+		public System_Action_UnityEngine_Playables_PlayableDirector_Event(LuaFunction func) : base(func) { }
+		public System_Action_UnityEngine_Playables_PlayableDirector_Event(LuaFunction func, LuaTable self) : base(func, self) { }
+
+		public void Call(UnityEngine.Playables.PlayableDirector param0)
+		{
+			func.BeginPCall();
+			func.Push(param0);
+			func.PCall();
+			func.EndPCall();
+		}
+
+		public void CallWithSelf(UnityEngine.Playables.PlayableDirector param0)
+		{
+			func.BeginPCall();
+			func.Push(self);
+			func.Push(param0);
+			func.PCall();
+			func.EndPCall();
+		}
+	}
+
+	public System.Action<UnityEngine.Playables.PlayableDirector> System_Action_UnityEngine_Playables_PlayableDirector(LuaFunction func, LuaTable self, bool flag)
+	{
+		if (func == null)
+		{
+			System.Action<UnityEngine.Playables.PlayableDirector> fn = delegate(UnityEngine.Playables.PlayableDirector param0) { };
+			return fn;
+		}
+
+		if(!flag)
+		{
+			System_Action_UnityEngine_Playables_PlayableDirector_Event target = new System_Action_UnityEngine_Playables_PlayableDirector_Event(func);
+			System.Action<UnityEngine.Playables.PlayableDirector> d = target.Call;
+			target.method = d.Method;
+			return d;
+		}
+		else
+		{
+			System_Action_UnityEngine_Playables_PlayableDirector_Event target = new System_Action_UnityEngine_Playables_PlayableDirector_Event(func, self);
+			System.Action<UnityEngine.Playables.PlayableDirector> d = target.CallWithSelf;
+			target.method = d.Method;
+			return d;
+		}
+	}
+
+	bool Check_System_Action_UnityEngine_Playables_PlayableDirector(IntPtr L, int pos)
+	{
+		return TypeChecker.CheckDelegateType(typeof(System.Action<UnityEngine.Playables.PlayableDirector>), L, pos);
+	}
+
+	void Push_System_Action_UnityEngine_Playables_PlayableDirector(IntPtr L, System.Action<UnityEngine.Playables.PlayableDirector> o)
+	{
+		ToLua.Push(L, o);
+	}
+
+	class System_Predicate_UnityEngine_Playables_PlayableAsset_Event : LuaDelegate
+	{
+		public System_Predicate_UnityEngine_Playables_PlayableAsset_Event(LuaFunction func) : base(func) { }
+		public System_Predicate_UnityEngine_Playables_PlayableAsset_Event(LuaFunction func, LuaTable self) : base(func, self) { }
+
+		public bool Call(UnityEngine.Playables.PlayableAsset param0)
+		{
+			func.BeginPCall();
+			func.Push(param0);
+			func.PCall();
+			bool ret = func.CheckBoolean();
+			func.EndPCall();
+			return ret;
+		}
+
+		public bool CallWithSelf(UnityEngine.Playables.PlayableAsset param0)
+		{
+			func.BeginPCall();
+			func.Push(self);
+			func.Push(param0);
+			func.PCall();
+			bool ret = func.CheckBoolean();
+			func.EndPCall();
+			return ret;
+		}
+	}
+
+	public System.Predicate<UnityEngine.Playables.PlayableAsset> System_Predicate_UnityEngine_Playables_PlayableAsset(LuaFunction func, LuaTable self, bool flag)
+	{
+		if (func == null)
+		{
+			System.Predicate<UnityEngine.Playables.PlayableAsset> fn = delegate(UnityEngine.Playables.PlayableAsset param0) { return false; };
+			return fn;
+		}
+
+		if(!flag)
+		{
+			System_Predicate_UnityEngine_Playables_PlayableAsset_Event target = new System_Predicate_UnityEngine_Playables_PlayableAsset_Event(func);
+			System.Predicate<UnityEngine.Playables.PlayableAsset> d = target.Call;
+			target.method = d.Method;
+			return d;
+		}
+		else
+		{
+			System_Predicate_UnityEngine_Playables_PlayableAsset_Event target = new System_Predicate_UnityEngine_Playables_PlayableAsset_Event(func, self);
+			System.Predicate<UnityEngine.Playables.PlayableAsset> d = target.CallWithSelf;
+			target.method = d.Method;
+			return d;
+		}
+	}
+
+	bool Check_System_Predicate_UnityEngine_Playables_PlayableAsset(IntPtr L, int pos)
+	{
+		return TypeChecker.CheckDelegateType(typeof(System.Predicate<UnityEngine.Playables.PlayableAsset>), L, pos);
+	}
+
+	void Push_System_Predicate_UnityEngine_Playables_PlayableAsset(IntPtr L, System.Predicate<UnityEngine.Playables.PlayableAsset> o)
+	{
+		ToLua.Push(L, o);
+	}
+
+	class System_Action_UnityEngine_Playables_PlayableAsset_Event : LuaDelegate
+	{
+		public System_Action_UnityEngine_Playables_PlayableAsset_Event(LuaFunction func) : base(func) { }
+		public System_Action_UnityEngine_Playables_PlayableAsset_Event(LuaFunction func, LuaTable self) : base(func, self) { }
+
+		public void Call(UnityEngine.Playables.PlayableAsset param0)
+		{
+			func.BeginPCall();
+			func.Push(param0);
+			func.PCall();
+			func.EndPCall();
+		}
+
+		public void CallWithSelf(UnityEngine.Playables.PlayableAsset param0)
+		{
+			func.BeginPCall();
+			func.Push(self);
+			func.Push(param0);
+			func.PCall();
+			func.EndPCall();
+		}
+	}
+
+	public System.Action<UnityEngine.Playables.PlayableAsset> System_Action_UnityEngine_Playables_PlayableAsset(LuaFunction func, LuaTable self, bool flag)
+	{
+		if (func == null)
+		{
+			System.Action<UnityEngine.Playables.PlayableAsset> fn = delegate(UnityEngine.Playables.PlayableAsset param0) { };
+			return fn;
+		}
+
+		if(!flag)
+		{
+			System_Action_UnityEngine_Playables_PlayableAsset_Event target = new System_Action_UnityEngine_Playables_PlayableAsset_Event(func);
+			System.Action<UnityEngine.Playables.PlayableAsset> d = target.Call;
+			target.method = d.Method;
+			return d;
+		}
+		else
+		{
+			System_Action_UnityEngine_Playables_PlayableAsset_Event target = new System_Action_UnityEngine_Playables_PlayableAsset_Event(func, self);
+			System.Action<UnityEngine.Playables.PlayableAsset> d = target.CallWithSelf;
+			target.method = d.Method;
+			return d;
+		}
+	}
+
+	bool Check_System_Action_UnityEngine_Playables_PlayableAsset(IntPtr L, int pos)
+	{
+		return TypeChecker.CheckDelegateType(typeof(System.Action<UnityEngine.Playables.PlayableAsset>), L, pos);
+	}
+
+	void Push_System_Action_UnityEngine_Playables_PlayableAsset(IntPtr L, System.Action<UnityEngine.Playables.PlayableAsset> o)
+	{
+		ToLua.Push(L, o);
+	}
+
+	class System_Comparison_UnityEngine_Playables_PlayableAsset_Event : LuaDelegate
+	{
+		public System_Comparison_UnityEngine_Playables_PlayableAsset_Event(LuaFunction func) : base(func) { }
+		public System_Comparison_UnityEngine_Playables_PlayableAsset_Event(LuaFunction func, LuaTable self) : base(func, self) { }
+
+		public int Call(UnityEngine.Playables.PlayableAsset param0, UnityEngine.Playables.PlayableAsset param1)
+		{
+			func.BeginPCall();
+			func.Push(param0);
+			func.Push(param1);
+			func.PCall();
+			int ret = (int)func.CheckNumber();
+			func.EndPCall();
+			return ret;
+		}
+
+		public int CallWithSelf(UnityEngine.Playables.PlayableAsset param0, UnityEngine.Playables.PlayableAsset param1)
+		{
+			func.BeginPCall();
+			func.Push(self);
+			func.Push(param0);
+			func.Push(param1);
+			func.PCall();
+			int ret = (int)func.CheckNumber();
+			func.EndPCall();
+			return ret;
+		}
+	}
+
+	public System.Comparison<UnityEngine.Playables.PlayableAsset> System_Comparison_UnityEngine_Playables_PlayableAsset(LuaFunction func, LuaTable self, bool flag)
+	{
+		if (func == null)
+		{
+			System.Comparison<UnityEngine.Playables.PlayableAsset> fn = delegate(UnityEngine.Playables.PlayableAsset param0, UnityEngine.Playables.PlayableAsset param1) { return 0; };
+			return fn;
+		}
+
+		if(!flag)
+		{
+			System_Comparison_UnityEngine_Playables_PlayableAsset_Event target = new System_Comparison_UnityEngine_Playables_PlayableAsset_Event(func);
+			System.Comparison<UnityEngine.Playables.PlayableAsset> d = target.Call;
+			target.method = d.Method;
+			return d;
+		}
+		else
+		{
+			System_Comparison_UnityEngine_Playables_PlayableAsset_Event target = new System_Comparison_UnityEngine_Playables_PlayableAsset_Event(func, self);
+			System.Comparison<UnityEngine.Playables.PlayableAsset> d = target.CallWithSelf;
+			target.method = d.Method;
+			return d;
+		}
+	}
+
+	bool Check_System_Comparison_UnityEngine_Playables_PlayableAsset(IntPtr L, int pos)
+	{
+		return TypeChecker.CheckDelegateType(typeof(System.Comparison<UnityEngine.Playables.PlayableAsset>), L, pos);
+	}
+
+	void Push_System_Comparison_UnityEngine_Playables_PlayableAsset(IntPtr L, System.Comparison<UnityEngine.Playables.PlayableAsset> o)
+	{
+		ToLua.Push(L, o);
+	}
+
+	class System_Predicate_string_Event : LuaDelegate
+	{
+		public System_Predicate_string_Event(LuaFunction func) : base(func) { }
+		public System_Predicate_string_Event(LuaFunction func, LuaTable self) : base(func, self) { }
+
+		public bool Call(string param0)
+		{
+			func.BeginPCall();
+			func.Push(param0);
+			func.PCall();
+			bool ret = func.CheckBoolean();
+			func.EndPCall();
+			return ret;
+		}
+
+		public bool CallWithSelf(string param0)
+		{
+			func.BeginPCall();
+			func.Push(self);
+			func.Push(param0);
+			func.PCall();
+			bool ret = func.CheckBoolean();
+			func.EndPCall();
+			return ret;
+		}
+	}
+
+	public System.Predicate<string> System_Predicate_string(LuaFunction func, LuaTable self, bool flag)
+	{
+		if (func == null)
+		{
+			System.Predicate<string> fn = delegate(string param0) { return false; };
+			return fn;
+		}
+
+		if(!flag)
+		{
+			System_Predicate_string_Event target = new System_Predicate_string_Event(func);
+			System.Predicate<string> d = target.Call;
+			target.method = d.Method;
+			return d;
+		}
+		else
+		{
+			System_Predicate_string_Event target = new System_Predicate_string_Event(func, self);
+			System.Predicate<string> d = target.CallWithSelf;
+			target.method = d.Method;
+			return d;
+		}
+	}
+
+	bool Check_System_Predicate_string(IntPtr L, int pos)
+	{
+		return TypeChecker.CheckDelegateType(typeof(System.Predicate<string>), L, pos);
+	}
+
+	void Push_System_Predicate_string(IntPtr L, System.Predicate<string> o)
+	{
+		ToLua.Push(L, o);
+	}
+
+	class System_Action_string_Event : LuaDelegate
+	{
+		public System_Action_string_Event(LuaFunction func) : base(func) { }
+		public System_Action_string_Event(LuaFunction func, LuaTable self) : base(func, self) { }
+
+		public void Call(string param0)
+		{
+			func.BeginPCall();
+			func.Push(param0);
+			func.PCall();
+			func.EndPCall();
+		}
+
+		public void CallWithSelf(string param0)
+		{
+			func.BeginPCall();
+			func.Push(self);
+			func.Push(param0);
+			func.PCall();
+			func.EndPCall();
+		}
+	}
+
+	public System.Action<string> System_Action_string(LuaFunction func, LuaTable self, bool flag)
+	{
+		if (func == null)
+		{
+			System.Action<string> fn = delegate(string param0) { };
+			return fn;
+		}
+
+		if(!flag)
+		{
+			System_Action_string_Event target = new System_Action_string_Event(func);
+			System.Action<string> d = target.Call;
+			target.method = d.Method;
+			return d;
+		}
+		else
+		{
+			System_Action_string_Event target = new System_Action_string_Event(func, self);
+			System.Action<string> d = target.CallWithSelf;
+			target.method = d.Method;
+			return d;
+		}
+	}
+
+	bool Check_System_Action_string(IntPtr L, int pos)
+	{
+		return TypeChecker.CheckDelegateType(typeof(System.Action<string>), L, pos);
+	}
+
+	void Push_System_Action_string(IntPtr L, System.Action<string> o)
+	{
+		ToLua.Push(L, o);
+	}
+
+	class System_Comparison_string_Event : LuaDelegate
+	{
+		public System_Comparison_string_Event(LuaFunction func) : base(func) { }
+		public System_Comparison_string_Event(LuaFunction func, LuaTable self) : base(func, self) { }
+
+		public int Call(string param0, string param1)
+		{
+			func.BeginPCall();
+			func.Push(param0);
+			func.Push(param1);
+			func.PCall();
+			int ret = (int)func.CheckNumber();
+			func.EndPCall();
+			return ret;
+		}
+
+		public int CallWithSelf(string param0, string param1)
+		{
+			func.BeginPCall();
+			func.Push(self);
+			func.Push(param0);
+			func.Push(param1);
+			func.PCall();
+			int ret = (int)func.CheckNumber();
+			func.EndPCall();
+			return ret;
+		}
+	}
+
+	public System.Comparison<string> System_Comparison_string(LuaFunction func, LuaTable self, bool flag)
+	{
+		if (func == null)
+		{
+			System.Comparison<string> fn = delegate(string param0, string param1) { return 0; };
+			return fn;
+		}
+
+		if(!flag)
+		{
+			System_Comparison_string_Event target = new System_Comparison_string_Event(func);
+			System.Comparison<string> d = target.Call;
+			target.method = d.Method;
+			return d;
+		}
+		else
+		{
+			System_Comparison_string_Event target = new System_Comparison_string_Event(func, self);
+			System.Comparison<string> d = target.CallWithSelf;
+			target.method = d.Method;
+			return d;
+		}
+	}
+
+	bool Check_System_Comparison_string(IntPtr L, int pos)
+	{
+		return TypeChecker.CheckDelegateType(typeof(System.Comparison<string>), L, pos);
+	}
+
+	void Push_System_Comparison_string(IntPtr L, System.Comparison<string> o)
+	{
+		ToLua.Push(L, o);
+	}
+
+	class UnityEngine_Canvas_WillRenderCanvases_Event : LuaDelegate
+	{
+		public UnityEngine_Canvas_WillRenderCanvases_Event(LuaFunction func) : base(func) { }
+		public UnityEngine_Canvas_WillRenderCanvases_Event(LuaFunction func, LuaTable self) : base(func, self) { }
+
+		public void Call()
+		{
+			func.Call();
+		}
+
+		public void CallWithSelf()
+		{
+			func.BeginPCall();
+			func.Push(self);
+			func.PCall();
+			func.EndPCall();
+		}
+	}
+
+	public UnityEngine.Canvas.WillRenderCanvases UnityEngine_Canvas_WillRenderCanvases(LuaFunction func, LuaTable self, bool flag)
+	{
+		if (func == null)
+		{
+			UnityEngine.Canvas.WillRenderCanvases fn = delegate() { };
+			return fn;
+		}
+
+		if(!flag)
+		{
+			UnityEngine_Canvas_WillRenderCanvases_Event target = new UnityEngine_Canvas_WillRenderCanvases_Event(func);
+			UnityEngine.Canvas.WillRenderCanvases d = target.Call;
+			target.method = d.Method;
+			return d;
+		}
+		else
+		{
+			UnityEngine_Canvas_WillRenderCanvases_Event target = new UnityEngine_Canvas_WillRenderCanvases_Event(func, self);
+			UnityEngine.Canvas.WillRenderCanvases d = target.CallWithSelf;
+			target.method = d.Method;
+			return d;
+		}
+	}
+
+	bool Check_UnityEngine_Canvas_WillRenderCanvases(IntPtr L, int pos)
+	{
+		return TypeChecker.CheckDelegateType(typeof(UnityEngine.Canvas.WillRenderCanvases), L, pos);
+	}
+
+	void Push_UnityEngine_Canvas_WillRenderCanvases(IntPtr L, UnityEngine.Canvas.WillRenderCanvases o)
 	{
 		ToLua.Push(L, o);
 	}

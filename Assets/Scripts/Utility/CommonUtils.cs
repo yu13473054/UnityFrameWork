@@ -2,15 +2,9 @@
 using System;
 using System.IO;
 using System.Text;
-using System.Collections;
-using System.Collections.Generic;
 using System.Security.Cryptography;
-using System.Text.RegularExpressions;
-using LuaInterface;
 using Object = UnityEngine.Object;
-#if UNITY_EDITOR
-using UnityEditor;
-#endif
+using System.Text.RegularExpressions;
 
 public static class CommonUtils
 {
@@ -65,55 +59,28 @@ public static class CommonUtils
         }
         return abPath;
     }
-#endregion
+    #endregion
 
-
+    #region 文件读取
     /// 直接从txt中获取对应的内容
     public static string ReadFileText(string filepath)
     {
-#if UNITY_ANDROID && !UNITY_EDITOR
-        WWW www = new WWW(filepath);
-        while (!www.isDone)
-        {
-        }
-        if (www.error != null)
-        {
-            Debug.LogErrorFormat("<CommonUtils> 读取文件失败：{0}, error:{1}",filepath, www.error);
-            return null;
-        }
-        return www.text;
-#else
         if (!File.Exists(filepath))
         {
             Debug.LogErrorFormat("<CommonUtils> 读取文件失败：{0}", filepath);
             return null;
         }
-        return File.ReadAllText(filepath);
-#endif
+        using (StreamReader reader = new StreamReader(filepath))
+        {
+            return reader.ReadToEnd();
+        }
     }
-
     public static byte[] ReadFileBytes(string filepath)
     {
-#if UNITY_ANDROID && !UNITY_EDITOR
-        WWW www = new WWW(filepath);
-        while (!www.isDone)
-        {
-        }
-        if (www.error != null)
-        {
-            Debug.LogErrorFormat("<CommonUtils> 读取文件失败：{0}, error:{1}",filepath, www.error);
-            return null;
-        }
-        return www.bytes;
-#else
-        if (!File.Exists(filepath))
-        {
-            Debug.LogErrorFormat("<CommonUtils> 读取文件失败：{0}", filepath);
-            return null;
-        }
-        return File.ReadAllBytes(filepath);
-#endif
+        string text = ReadFileText(filepath);
+        return Encoding.UTF8.GetBytes(text);
     }
+    #endregion
 
     public static long GetTime()
     {
@@ -121,7 +88,7 @@ public static class CommonUtils
         return (long)ts.TotalMilliseconds;
     }
 
-#region MD5
+    #region MD5
     /// <summary>
     /// 计算字符串的MD5值
     /// </summary>
@@ -166,21 +133,16 @@ public static class CommonUtils
         }
     }
 
-#endregion
+    #endregion
 
     /// <summary>
     /// 清理内存
     /// </summary>
     public static void ClearMemory()
     {
-        GC.Collect(); Resources.UnloadUnusedAssets();
+        GC.Collect(); 
+        Resources.UnloadUnusedAssets();
         LuaMgr.Inst.LuaGC();
-    }
-
-    /// 取得文本
-    public static string GetFileText(string path)
-    {
-        return File.ReadAllText(path);
     }
 
     /// <summary>
@@ -203,5 +165,40 @@ public static class CommonUtils
         {
             return Application.internetReachability == NetworkReachability.ReachableViaLocalAreaNetwork;
         }
+    }
+
+    /// <summary>
+    /// 判断是否是汉字
+    /// </summary>
+    public static bool IsChinese(char c)
+    {
+        if (c >= 0x4e00 && c <= 0x9fbb)
+            return true;
+        return false;
+    }
+
+    /// <summary>
+    /// 返回字符串的宽度：汉字为两个字符，英文为一个字符
+    /// </summary>
+    public static int StrLenWidth(string str)
+    {
+        int len = 0;
+        char[] chars = str.ToCharArray();
+        for(int i =0; i<chars.Length; i++)
+        {
+            if (IsChinese(chars[i]))
+                len += 2;
+            else
+                len++;
+        }
+        return len;
+    }
+
+    /// <summary>
+    /// 检查名称是否合法：只有中文数字字母
+    /// </summary>
+    public static bool NameCheck(string str)
+    {
+        return Regex.IsMatch(str, @"[^a-zA-Z0-9\u4E00-\u9Fbb]");
     }
 }

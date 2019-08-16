@@ -46,6 +46,7 @@ public class UnityEngine_UI_InputFieldWrap
 		L.RegVar("contentType", get_contentType, set_contentType);
 		L.RegVar("lineType", get_lineType, set_lineType);
 		L.RegVar("inputType", get_inputType, set_inputType);
+		L.RegVar("touchScreenKeyboard", get_touchScreenKeyboard, null);
 		L.RegVar("keyboardType", get_keyboardType, set_keyboardType);
 		L.RegVar("characterValidation", get_characterValidation, set_characterValidation);
 		L.RegVar("readOnly", get_readOnly, set_readOnly);
@@ -737,6 +738,25 @@ public class UnityEngine_UI_InputFieldWrap
 		catch(Exception e)
 		{
 			return LuaDLL.toluaL_exception(L, e, o, "attempt to index inputType on a nil value");
+		}
+	}
+
+	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
+	static int get_touchScreenKeyboard(IntPtr L)
+	{
+		object o = null;
+
+		try
+		{
+			o = ToLua.ToObject(L, 1);
+			UnityEngine.UI.InputField obj = (UnityEngine.UI.InputField)o;
+			UnityEngine.TouchScreenKeyboard ret = obj.touchScreenKeyboard;
+			ToLua.PushObject(L, ret);
+			return 1;
+		}
+		catch(Exception e)
+		{
+			return LuaDLL.toluaL_exception(L, e, o, "attempt to index touchScreenKeyboard on a nil value");
 		}
 	}
 

@@ -1,4 +1,4 @@
-﻿#########  unity.ignore  ########
+#########  unity.ignore  ########
 
 /[Ll]ibrary/
 /[Tt]emp/
@@ -27,6 +27,7 @@ ExportedObj/
 *Lua.config*
 *Lua.luaproj*
 obj.meta
+.DS_Store
 
 # Unity3D generated meta files
 *.pidb.meta

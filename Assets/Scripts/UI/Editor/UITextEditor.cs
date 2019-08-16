@@ -9,7 +9,7 @@ public class UITextEditor : UnityEditor.UI.TextEditor
 {
     private SerializedProperty _localizationIDProperty;
 //    private float _lastFontSize;
-    private int _lastTextID = 0;
+    private string _lastTextID = "";
 
     protected override void OnEnable()
     {
@@ -20,7 +20,7 @@ public class UITextEditor : UnityEditor.UI.TextEditor
     public override void OnInspectorGUI()
     {
         UIText txt = target as UIText;
-        int localizeID = _localizationIDProperty.intValue;
+        string localizeID = _localizationIDProperty.stringValue;
         EditorGUILayout.PropertyField(_localizationIDProperty);
         if (_lastTextID != localizeID)
         {

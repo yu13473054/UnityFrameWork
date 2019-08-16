@@ -6,20 +6,18 @@ public class AppConst
     public static void Init()
     {
         // app配置
-        ConfigHandler handler = ConfigHandler.Open(appABPath.Replace("/assetbundle","") + "app.txt");
+        ConfigHandler handler = ConfigHandler.Open(Application.streamingAssetsPath + "/app.txt");
         updateHost = handler.ReadValue("UpdateHost");
         loginHost = handler.ReadValue("LoginHost");
         platID = int.Parse(handler.ReadValue("PlatID"));
-        encrypt = handler.ReadValue("Encrypt").Equals("1");
     }
 
     public static string updateHost = "";
     public static string loginHost = "";
     public static int platID;
-    public static bool encrypt;
+
     // 包内Steaming地址
     public static string appABPath = Application.streamingAssetsPath + "/assetbundle/";
-
     //本地资源路径
     public static string localABPath = Application.persistentDataPath + "/";
 

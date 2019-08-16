@@ -231,12 +231,16 @@ namespace LuaInterface
             {
                 CString sb = CString.Alloc(256);
                 sb.Append("lua");
+                int startPos = fileName.IndexOf('/');
                 int pos = fileName.LastIndexOf('/');
 
-                if (pos > 0)
+                if (startPos > 0) //封装出包名
                 {
                     sb.Append("_");
-                    sb.Append(fileName, 0, pos).ToLower().Replace('/', '_');
+                    sb.Append(fileName, 0, startPos).ToLower().Replace('/', '_');
+                }
+                if (pos > 0) //文件名
+                {
                     fileName = fileName.Substring(pos + 1);
                 }
 
@@ -245,7 +249,7 @@ namespace LuaInterface
                     fileName += ".lua";
                 }
 
-#if UNITY_5 || UNITY_2017
+#if UNITY_5 || UNITY_5_3_OR_NEWER
                 fileName += ".bytes";
 #endif
                 zipName = sb.ToString();
@@ -259,10 +263,10 @@ namespace LuaInterface
 
             if (zipFile != null)
             {
-#if UNITY_5 || UNITY_2017
-                TextAsset luaCode = zipFile.LoadAsset<TextAsset>(fileName);
-#else
+#if UNITY_4_6 || UNITY_4_7
                 TextAsset luaCode = zipFile.Load(fileName, typeof(TextAsset)) as TextAsset;
+#else
+                TextAsset luaCode = zipFile.LoadAsset<TextAsset>(fileName);
 #endif
 
                 if (luaCode != null)

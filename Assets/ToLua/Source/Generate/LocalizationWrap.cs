@@ -6,34 +6,22 @@ public class LocalizationWrap
 {
 	public static void Register(LuaState L)
 	{
-		L.BeginClass(typeof(Localization), typeof(System.Object));
+		L.BeginStaticLibs("Localization");
+		L.RegFunction("Reload", Reload);
 		L.RegFunction("Init", Init);
-		L.RegFunction("OnDestroy", OnDestroy);
 		L.RegFunction("Get", Get);
-		L.RegFunction("SafeGet", SafeGet);
-		L.RegFunction("New", _CreateLocalization);
-		L.RegFunction("__tostring", ToLua.op_ToString);
 		L.RegVar("isInited", get_isInited, set_isInited);
-		L.EndClass();
+		L.EndStaticLibs();
 	}
 
 	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
-	static int _CreateLocalization(IntPtr L)
+	static int Reload(IntPtr L)
 	{
 		try
 		{
-			int count = LuaDLL.lua_gettop(L);
-
-			if (count == 0)
-			{
-				Localization obj = new Localization();
-				ToLua.PushObject(L, obj);
-				return 1;
-			}
-			else
-			{
-				return LuaDLL.luaL_throw(L, "invalid arguments to ctor method: Localization.New");
-			}
+			ToLua.CheckArgsCount(L, 0);
+			Localization.Reload();
+			return 0;
 		}
 		catch (Exception e)
 		{
@@ -57,46 +45,14 @@ public class LocalizationWrap
 	}
 
 	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
-	static int OnDestroy(IntPtr L)
-	{
-		try
-		{
-			ToLua.CheckArgsCount(L, 0);
-			Localization.OnDestroy();
-			return 0;
-		}
-		catch (Exception e)
-		{
-			return LuaDLL.toluaL_exception(L, e);
-		}
-	}
-
-	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
 	static int Get(IntPtr L)
 	{
 		try
 		{
-			ToLua.CheckArgsCount(L, 1);
-			int arg0 = (int)LuaDLL.luaL_checknumber(L, 1);
-			string o = Localization.Get(arg0);
-			LuaDLL.lua_pushstring(L, o);
-			return 1;
-		}
-		catch (Exception e)
-		{
-			return LuaDLL.toluaL_exception(L, e);
-		}
-	}
-
-	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
-	static int SafeGet(IntPtr L)
-	{
-		try
-		{
-			ToLua.CheckArgsCount(L, 2);
-			int arg0 = (int)LuaDLL.luaL_checknumber(L, 1);
-			string arg1 = ToLua.CheckString(L, 2);
-			string o = Localization.SafeGet(arg0, arg1);
+			int count = LuaDLL.lua_gettop(L);
+			string arg0 = ToLua.CheckString(L, 1);
+			object[] arg1 = ToLua.ToParamsObject(L, 2, count - 1);
+			string o = Localization.Get(arg0, arg1);
 			LuaDLL.lua_pushstring(L, o);
 			return 1;
 		}

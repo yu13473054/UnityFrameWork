@@ -1,2 +1,1 @@
 资源键名	资源路径	所在assetBundle名称
-DlgBattle_Blood_01	Assets/Res/Atlas/DlgBattle/DlgBattle_Blood_01.png	atlas_DlgBattle

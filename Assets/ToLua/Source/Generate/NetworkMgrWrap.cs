@@ -11,6 +11,7 @@ public class NetworkMgrWrap
 		L.RegFunction("SendConnect", SendConnect);
 		L.RegFunction("Send", Send);
 		L.RegFunction("HttpGet", HttpGet);
+		L.RegFunction("HttpPost", HttpPost);
 		L.RegFunction("__eq", op_Equality);
 		L.RegFunction("__tostring", ToLua.op_ToString);
 		L.RegVar("Inst", get_Inst, null);
@@ -78,6 +79,24 @@ public class NetworkMgrWrap
 			NetworkMgr obj = (NetworkMgr)ToLua.CheckObject<NetworkMgr>(L, 1);
 			string arg0 = ToLua.CheckString(L, 2);
 			obj.HttpGet(arg0);
+			return 0;
+		}
+		catch (Exception e)
+		{
+			return LuaDLL.toluaL_exception(L, e);
+		}
+	}
+
+	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
+	static int HttpPost(IntPtr L)
+	{
+		try
+		{
+			ToLua.CheckArgsCount(L, 3);
+			NetworkMgr obj = (NetworkMgr)ToLua.CheckObject<NetworkMgr>(L, 1);
+			string arg0 = ToLua.CheckString(L, 2);
+			System.Collections.Generic.Dictionary<string,string> arg1 = (System.Collections.Generic.Dictionary<string,string>)ToLua.CheckObject(L, 3, typeof(System.Collections.Generic.Dictionary<string,string>));
+			obj.HttpPost(arg0, arg1);
 			return 0;
 		}
 		catch (Exception e)

@@ -2,34 +2,41 @@
 using UnityEngine.SceneManagement;
 using System.IO;
 using UnityEditor;
-
-public class ShortCut
+using System.Diagnostics;
+using System;
+public class 快捷方式
 {
-    [MenuItem("Tools/暂停 _F1")]
+    [MenuItem("快捷方式/暂停 _F1")]
     static void Pause()
     {
         EditorApplication.ExecuteMenuItem("Edit/Pause");
-    }    
-
-    [MenuItem("Tools/重启 _F5")]
-    static void Reboot()
-    {
-        SceneManager.LoadScene("Boot");
     }
 
-    [MenuItem("Tools/手动释放内存 _F6")]
+    [MenuItem("快捷方式/重启 _F5")]
+    static void Reboot()
+    {
+        SceneManager.LoadScene("Game");
+    }
+
+    [MenuItem("快捷方式/手动释放内存 _F6")]
     static void UnloadUnusedAssets()
     {
         Resources.UnloadUnusedAssets();
     }
 
-    [MenuItem("Tools/GC _F7")]
+    [MenuItem("快捷方式/GC _F7")]
     static void GC()
     {
         System.GC.Collect();
     }
 
-    [MenuItem("Tools/打开缓存目录 _F12")]
+    [MenuItem( "快捷方式/重载文字表 _F8" )]
+    static void ReloadLocaliztion()
+    {
+        Localization.Reload();
+    }
+
+    [MenuItem("快捷方式/打开缓存目录 _F12")]
     static void OpenPersistentDataPath()
     {
         string path = Application.persistentDataPath;
@@ -54,4 +61,5 @@ public class ShortCut
         System.Diagnostics.Process.Start("open", arguments);
 #endif
     }
+
 }

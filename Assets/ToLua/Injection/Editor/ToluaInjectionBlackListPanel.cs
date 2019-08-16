@@ -11,7 +11,7 @@ using System.Text.RegularExpressions;
 
 public class InjectionBlackListGenerator : EditorWindow
 {
-    public static string blackListFilePath = CustomSettings.injectionFilesPath + "InjectionBlackList.txt";
+    public static string blackListFilePath = WrapList.injectionFilesPath + "InjectionBlackList.txt";
     public static Action onBlackListGenerated;
 
     static string pathsInfoSavedPath;
@@ -328,7 +328,7 @@ public class InjectionBlackListGenerator : EditorWindow
     {
         if (pathsInfoSavedPath == null)
         {
-            pathsInfoSavedPath = CustomSettings.injectionFilesPath + "LuaInjectionSkipPaths.txt";
+            pathsInfoSavedPath = WrapList.injectionFilesPath + "LuaInjectionSkipPaths.txt";
         }
         if (paths != null)
         {
@@ -342,15 +342,15 @@ public class InjectionBlackListGenerator : EditorWindow
         else
         {
             paths = new List<string>();
-            string toluaPath = GetRelativePath(CustomSettings.injectionFilesPath.Substring(0, CustomSettings.injectionFilesPath.Length - "Injection/".Length));
+            string toluaPath = GetRelativePath(WrapList.injectionFilesPath.Substring(0, WrapList.injectionFilesPath.Length - "Injection/".Length));
             paths.Add(toluaPath + "Core/");
             paths.Add(toluaPath + "Injection/");
             paths.Add(toluaPath + "Misc/");
             paths.Add(toluaPath + "Injection/");
             paths.Add(toluaPath + "Misc/");
             paths.Add(Application.dataPath + "/Plugins/");
-            paths.Add(CustomSettings.toluaBaseType);
-            paths.Add(GetRelativePath(CustomSettings.saveDir));
+            paths.Add(WrapList.toluaBaseType);
+            paths.Add(GetRelativePath(WrapList.saveDir));
         }
     }
 

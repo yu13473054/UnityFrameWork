@@ -7,16 +7,114 @@ public class ResMgrWrap
 	public static void Register(LuaState L)
 	{
 		L.BeginClass(typeof(ResMgr), typeof(UnityEngine.MonoBehaviour));
+		L.RegFunction("Init", Init);
+		L.RegFunction("InitAssetBundle", InitAssetBundle);
+		L.RegFunction("GetResinfoInObj", GetResinfoInObj);
+		L.RegFunction("GetResinfoInPrefab", GetResinfoInPrefab);
+		L.RegFunction("GetResinfoInSprite", GetResinfoInSprite);
 		L.RegFunction("LoadPrefab", LoadPrefab);
 		L.RegFunction("LoadSprite", LoadSprite);
+		L.RegFunction("LoadTexture", LoadTexture);
 		L.RegFunction("LoadObj", LoadObj);
+		L.RegFunction("LoadMaterial", LoadMaterial);
 		L.RegFunction("LoadAB", LoadAB);
 		L.RegFunction("UnloadAB", UnloadAB);
-		L.RegFunction("OnUserDestroy", OnUserDestroy);
+		L.RegFunction("OnMoudleDestroy", OnMoudleDestroy);
+		L.RegFunction("AddPreLoadAsset", AddPreLoadAsset);
+		L.RegFunction("StartPreLoad", StartPreLoad);
+		L.RegFunction("ClearPreList", ClearPreList);
 		L.RegFunction("__eq", op_Equality);
 		L.RegFunction("__tostring", ToLua.op_ToString);
 		L.RegVar("Inst", get_Inst, null);
 		L.EndClass();
+	}
+
+	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
+	static int Init(IntPtr L)
+	{
+		try
+		{
+			ToLua.CheckArgsCount(L, 1);
+			ResMgr obj = (ResMgr)ToLua.CheckObject<ResMgr>(L, 1);
+			obj.Init();
+			return 0;
+		}
+		catch (Exception e)
+		{
+			return LuaDLL.toluaL_exception(L, e);
+		}
+	}
+
+	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
+	static int InitAssetBundle(IntPtr L)
+	{
+		try
+		{
+			ToLua.CheckArgsCount(L, 2);
+			ResMgr obj = (ResMgr)ToLua.CheckObject<ResMgr>(L, 1);
+			string arg0 = ToLua.CheckString(L, 2);
+			UnityEngine.AssetBundle o = obj.InitAssetBundle(arg0);
+			ToLua.Push(L, o);
+			return 1;
+		}
+		catch (Exception e)
+		{
+			return LuaDLL.toluaL_exception(L, e);
+		}
+	}
+
+	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
+	static int GetResinfoInObj(IntPtr L)
+	{
+		try
+		{
+			ToLua.CheckArgsCount(L, 2);
+			ResMgr obj = (ResMgr)ToLua.CheckObject<ResMgr>(L, 1);
+			string arg0 = ToLua.CheckString(L, 2);
+			ResmapInfo o = obj.GetResinfoInObj(arg0);
+			ToLua.PushObject(L, o);
+			return 1;
+		}
+		catch (Exception e)
+		{
+			return LuaDLL.toluaL_exception(L, e);
+		}
+	}
+
+	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
+	static int GetResinfoInPrefab(IntPtr L)
+	{
+		try
+		{
+			ToLua.CheckArgsCount(L, 2);
+			ResMgr obj = (ResMgr)ToLua.CheckObject<ResMgr>(L, 1);
+			string arg0 = ToLua.CheckString(L, 2);
+			ResmapInfo o = obj.GetResinfoInPrefab(arg0);
+			ToLua.PushObject(L, o);
+			return 1;
+		}
+		catch (Exception e)
+		{
+			return LuaDLL.toluaL_exception(L, e);
+		}
+	}
+
+	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
+	static int GetResinfoInSprite(IntPtr L)
+	{
+		try
+		{
+			ToLua.CheckArgsCount(L, 2);
+			ResMgr obj = (ResMgr)ToLua.CheckObject<ResMgr>(L, 1);
+			string arg0 = ToLua.CheckString(L, 2);
+			ResmapInfo o = obj.GetResinfoInSprite(arg0);
+			ToLua.PushObject(L, o);
+			return 1;
+		}
+		catch (Exception e)
+		{
+			return LuaDLL.toluaL_exception(L, e);
+		}
 	}
 
 	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
@@ -58,6 +156,25 @@ public class ResMgrWrap
 	}
 
 	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
+	static int LoadTexture(IntPtr L)
+	{
+		try
+		{
+			ToLua.CheckArgsCount(L, 3);
+			ResMgr obj = (ResMgr)ToLua.CheckObject<ResMgr>(L, 1);
+			string arg0 = ToLua.CheckString(L, 2);
+			string arg1 = ToLua.CheckString(L, 3);
+			UnityEngine.Texture o = obj.LoadTexture(arg0, arg1);
+			ToLua.Push(L, o);
+			return 1;
+		}
+		catch (Exception e)
+		{
+			return LuaDLL.toluaL_exception(L, e);
+		}
+	}
+
+	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
 	static int LoadObj(IntPtr L)
 	{
 		try
@@ -77,6 +194,25 @@ public class ResMgrWrap
 	}
 
 	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
+	static int LoadMaterial(IntPtr L)
+	{
+		try
+		{
+			ToLua.CheckArgsCount(L, 3);
+			ResMgr obj = (ResMgr)ToLua.CheckObject<ResMgr>(L, 1);
+			string arg0 = ToLua.CheckString(L, 2);
+			string arg1 = ToLua.CheckString(L, 3);
+			UnityEngine.Material o = obj.LoadMaterial(arg0, arg1);
+			ToLua.Push(L, o);
+			return 1;
+		}
+		catch (Exception e)
+		{
+			return LuaDLL.toluaL_exception(L, e);
+		}
+	}
+
+	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
 	static int LoadAB(IntPtr L)
 	{
 		try
@@ -86,7 +222,7 @@ public class ResMgrWrap
 			string arg0 = ToLua.CheckString(L, 2);
 			string arg1 = ToLua.CheckString(L, 3);
 			UnityEngine.AssetBundle o = obj.LoadAB(arg0, arg1);
-			ToLua.PushSealed(L, o);
+			ToLua.Push(L, o);
 			return 1;
 		}
 		catch (Exception e)
@@ -129,7 +265,7 @@ public class ResMgrWrap
 	}
 
 	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
-	static int OnUserDestroy(IntPtr L)
+	static int OnMoudleDestroy(IntPtr L)
 	{
 		try
 		{
@@ -139,7 +275,7 @@ public class ResMgrWrap
 			{
 				ResMgr obj = (ResMgr)ToLua.CheckObject<ResMgr>(L, 1);
 				string arg0 = ToLua.CheckString(L, 2);
-				obj.OnUserDestroy(arg0);
+				obj.OnMoudleDestroy(arg0);
 				return 0;
 			}
 			else if (count == 3)
@@ -147,13 +283,84 @@ public class ResMgrWrap
 				ResMgr obj = (ResMgr)ToLua.CheckObject<ResMgr>(L, 1);
 				string arg0 = ToLua.CheckString(L, 2);
 				bool arg1 = LuaDLL.luaL_checkboolean(L, 3);
-				obj.OnUserDestroy(arg0, arg1);
+				obj.OnMoudleDestroy(arg0, arg1);
 				return 0;
 			}
 			else
 			{
-				return LuaDLL.luaL_throw(L, "invalid arguments to method: ResMgr.OnUserDestroy");
+				return LuaDLL.luaL_throw(L, "invalid arguments to method: ResMgr.OnMoudleDestroy");
 			}
+		}
+		catch (Exception e)
+		{
+			return LuaDLL.toluaL_exception(L, e);
+		}
+	}
+
+	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
+	static int AddPreLoadAsset(IntPtr L)
+	{
+		try
+		{
+			ToLua.CheckArgsCount(L, 3);
+			ResMgr obj = (ResMgr)ToLua.CheckObject<ResMgr>(L, 1);
+			string arg0 = ToLua.CheckString(L, 2);
+			int arg1 = (int)LuaDLL.luaL_checknumber(L, 3);
+			obj.AddPreLoadAsset(arg0, arg1);
+			return 0;
+		}
+		catch (Exception e)
+		{
+			return LuaDLL.toluaL_exception(L, e);
+		}
+	}
+
+	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
+	static int StartPreLoad(IntPtr L)
+	{
+		try
+		{
+			int count = LuaDLL.lua_gettop(L);
+
+			if (count == 3)
+			{
+				ResMgr obj = (ResMgr)ToLua.CheckObject<ResMgr>(L, 1);
+				System.Action<int> arg0 = (System.Action<int>)ToLua.CheckDelegate<System.Action<int>>(L, 2);
+				System.Action arg1 = (System.Action)ToLua.CheckDelegate<System.Action>(L, 3);
+				int o = obj.StartPreLoad(arg0, arg1);
+				LuaDLL.lua_pushinteger(L, o);
+				return 1;
+			}
+			else if (count == 4)
+			{
+				ResMgr obj = (ResMgr)ToLua.CheckObject<ResMgr>(L, 1);
+				System.Action<int> arg0 = (System.Action<int>)ToLua.CheckDelegate<System.Action<int>>(L, 2);
+				System.Action arg1 = (System.Action)ToLua.CheckDelegate<System.Action>(L, 3);
+				bool arg2 = LuaDLL.luaL_checkboolean(L, 4);
+				int o = obj.StartPreLoad(arg0, arg1, arg2);
+				LuaDLL.lua_pushinteger(L, o);
+				return 1;
+			}
+			else
+			{
+				return LuaDLL.luaL_throw(L, "invalid arguments to method: ResMgr.StartPreLoad");
+			}
+		}
+		catch (Exception e)
+		{
+			return LuaDLL.toluaL_exception(L, e);
+		}
+	}
+
+	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
+	static int ClearPreList(IntPtr L)
+	{
+		try
+		{
+			ToLua.CheckArgsCount(L, 1);
+			ResMgr obj = (ResMgr)ToLua.CheckObject<ResMgr>(L, 1);
+			obj.ClearPreList();
+			return 0;
 		}
 		catch (Exception e)
 		{

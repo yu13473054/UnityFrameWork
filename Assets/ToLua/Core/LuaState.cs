@@ -119,7 +119,13 @@ namespace LuaInterface
             OpenBaseLibs();
             LuaSetTop(0);
             InitLuaPath();
-            Debugger.Log("Init lua state cost: {0}", Time.realtimeSinceStartup - time);
+
+#if UNITY_EDITOR
+            // 启动LuaDebugger
+//            FBLuaDebugger.initDebug(L);
+//            FBLuaDebugger.enableDebug();
+
+#endif
         }        
 
         void OpenBaseLibs()
@@ -752,6 +758,7 @@ namespace LuaInterface
             if (LuaDLL.lua_pcall(L, args, LuaDLL.LUA_MULTRET, oldTop) != 0)
             {
                 string error = LuaToString(-1);
+                Debugger.LogError( error );
                 throw new LuaException(error, LuaException.GetLastError());
             }            
         }
@@ -946,7 +953,7 @@ namespace LuaInterface
 
             if (beLogMiss)
             {
-                Debugger.Log("Lua function {0} not exists", name);                
+                Debugger.LogError("Lua function {0} not exists", name);                
             }
 
             return null;

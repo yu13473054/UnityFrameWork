@@ -19,25 +19,41 @@ public class TableHandler
     /// 构造
     public TableHandler(string fileName)
     {
+        _fileName = fileName+".txt";
         _recordsNum = 0;
         _fieldsNum = 0;
         _dataBuf = new List<string>();
     }
 
-    /// <summary>
-    /// 打开TXT文件
-    /// </summary>
-    public static TableHandler Open(string fileName, string abName)
+    public static TableHandler OpenFromData(string fileName)
     {
         TableHandler handle = new TableHandler(fileName);
+        handle.Open(fileName, "Data");
+        return handle;
+    }
 
+    public static TableHandler OpenFromResmap(string reskeyName)
+    {
+        TableHandler handle = new TableHandler(reskeyName);
+        handle.Open(reskeyName, ResMgr.Inst.GetResinfoInObj(reskeyName).abName);
+        return handle;
+    }
+
+    public static TableHandler OpenInAB(string fileName, string abName)
+    {
+        TableHandler handle = new TableHandler(fileName);
+        handle.Open(fileName, abName);
+        return handle;
+    }
+
+    void Open(string fileName, string abName)
+    {
         string allText = null;
         if (!Application.isPlaying || GameMain.Inst.ResourceMode == 0)
         {
 #if UNITY_EDITOR
             //拼装出EditorPath
-            abName = abName.ToLower();
-            string editorPath ="Assets/" + abName.Replace("_", "/") + "/" + fileName;
+            string editorPath = "Assets/" + abName.Replace("_", "/") + "/" + fileName + ".txt";
             TextAsset asset = UnityEditor.AssetDatabase.LoadAssetAtPath<TextAsset>(editorPath);
             allText = asset.text;
 #endif
@@ -47,7 +63,7 @@ public class TableHandler
             if (GameMain.Inst.ResourceMode == 2) // 配置文件也放在外部文件夹中，需要从外部文件夹中取得
             {
                 abName = abName.ToLower();
-                string filePath = System.Environment.CurrentDirectory + "/" + abName.Replace("_", "/") + "/" + fileName;
+                string filePath = System.Environment.CurrentDirectory + "/Assets/" + abName.Replace("_", "/") + "/" + fileName + ".txt";
                 allText = CommonUtils.ReadFileText(filePath);
             }
             else if (GameMain.Inst.ResourceMode == 1)
@@ -55,15 +71,14 @@ public class TableHandler
                 //数据文件的使用者为自己，不受UI界面控制
                 TextAsset asset = ResMgr.Inst.LoadAsset<TextAsset>(abName, fileName, abName);
                 allText = asset.text;
+                Resources.UnloadAsset(asset);
             }
         }
         //解析数据
         if (!string.IsNullOrEmpty(allText))
         {
-            handle.Parser(allText);
+            Parser(allText);
         }
-
-        return handle;
     }
 
     /// <summary>
@@ -119,12 +134,9 @@ public class TableHandler
         _fieldsNum = fieldsNum;
     }
 
-    /// <summary>
     /// 取数据
-    /// </summary>
     /// <param name="recordLine">从0开始</param>
     /// <param name="columNum">从0开始</param>
-    /// <returns></returns>
     public string GetValue(int recordLine, int columNum)
     {
         int position = recordLine * _fieldsNum + columNum;
@@ -137,26 +149,17 @@ public class TableHandler
         }
         return _dataBuf[position];
     }
-    /// <summary>
     /// 获取列
-    /// </summary>
-    /// <param name="columnNum"></param>
-    /// <returns></returns>
     public string GetColumn(int columnNum)
     {
         return _columns[columnNum];
     }
-    /// <summary>
     /// 获取记录数
-    /// </summary>
     public int GetRecordsNum()
     {
         return _recordsNum;
     }
-
-    /// <summary>
     /// 获取列数
-    /// </summary>
     public int GetFieldsNum()
     {
         return _fieldsNum;

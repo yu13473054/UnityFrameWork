@@ -3,6 +3,7 @@ using UnityEngine;
 using System.Collections.Generic;
 using System.Text;
 using Object = UnityEngine.Object;
+using System.Collections;
 
 /// <summary>
 /// 策略：
@@ -10,7 +11,6 @@ using Object = UnityEngine.Object;
 /// 2，直接使用已经靠依赖读进来的ab包，需要记录哪些对象使用这个ab包
 /// 3，靠依赖读进来的ab包，记录这些包的使用者为主包的使用者
 /// 4，使用UI作为资源的索引，读取资源时，传入UI名称，当UI界面销毁时，进行资源的释放，需保证所有的UI界面都是唯一实例，不会出现多实例
-/// 5，数据Data文件，获取后，就解析保存了一个数据备份，不需要管理
 /// </summary>
 public class ResMgr : MonoBehaviour
 {
@@ -25,11 +25,15 @@ public class ResMgr : MonoBehaviour
     private AssetBundleManifest _rootManifest;
     private AssetBundle _rootAB;
     private Dictionary<string, AssetBundleInfo> _bundleDic;
-    private Dictionary<string, List<AssetBundleInfo>> _userDic;
-
+    private Dictionary<string, List<AssetBundleInfo>> _moduleDic;
+    Dictionary<string, string[]> _multiLngNameDic;     // 多语言名称映射表
     Dictionary<string, ResmapInfo> _resmap_sprite;    // 图片映射表
     Dictionary<string, ResmapInfo> _resmap_prefab;    // Prefab映射表
     Dictionary<string, ResmapInfo> _resmap_obj;    // 其他资源映射表
+
+    //预加载的资源
+    private List<AssetInfo> _preLoadAssets = new List<AssetInfo>();
+    private List<string> _preLoadABs = new List<string>();
 
     void Awake()
     {
@@ -37,74 +41,52 @@ public class ResMgr : MonoBehaviour
         DontDestroyOnLoad(gameObject);
 
         _bundleDic = new Dictionary<string, AssetBundleInfo>();
-        _userDic = new Dictionary<string, List<AssetBundleInfo>>();
+        _moduleDic = new Dictionary<string, List<AssetBundleInfo>>();
+        _multiLngNameDic = new Dictionary<string, string[]>();
+    }
+
+    public void Init()
+    {
+        _bundleDic.Clear();
+        _moduleDic.Clear();
+        _multiLngNameDic.Clear();
 
         //加载ab依赖关系文件
-        if (GameMain.Inst.ResourceMode==0)
-        {
-
-        }
-        else
+        if (GameMain.Inst.ResourceMode != 0)
         {
             _rootAB = InitAssetBundle("assetbundle");
             _rootManifest = _rootAB.LoadAsset<AssetBundleManifest>("AssetBundleManifest");
         }
-    }
 
-    //加载Prefab，该Prefab需要填写在resmap_prefab.txt文件中
-    public GameObject LoadPrefab(string userName, string reskeyname)
-    {
-        if (_resmap_prefab == null) _resmap_prefab = InitResmap("resmap_prefab.txt");
+        _resmap_sprite = InitResmap("resmap_sprite");
+        _resmap_prefab = InitResmap("resmap_prefab");
+        _resmap_obj = InitResmap("resmap_obj");
 
-        ResmapInfo info;
-        if (_resmap_prefab == null || !_resmap_prefab.TryGetValue(reskeyname,out info))
+        //多语言资源名表
+        TableHandler mutilLngTable = TableHandler.OpenFromData("multiLngConfig");
+        for (int row = 0; row < mutilLngTable.GetRecordsNum(); row++)
         {
-            Debug.LogError("<ResMgr> 映射表中没有这个预制: " + reskeyname);
-            return null;
+            string[] s = new string[mutilLngTable.GetFieldsNum() - 1];
+            for (int i = 1; i < mutilLngTable.GetFieldsNum(); i++)
+            {
+                s[i - 1] = mutilLngTable.GetValue(row, i);
+            }
+            _multiLngNameDic.Add(mutilLngTable.GetValue(row, 0), s);
         }
-        return LoadAsset<GameObject>(userName,reskeyname,info.abName,info.editorPath);
-    }
-
-    //Sprite，该Sprite需要填写在resmap_sprite.txt文件中
-    public Sprite LoadSprite(string userName, string reskeyname)
-    {
-        if (_resmap_sprite == null) _resmap_sprite = InitResmap("resmap_sprite.txt");
-
-        ResmapInfo info;
-        if (_resmap_sprite == null || !_resmap_sprite.TryGetValue(reskeyname, out info))
-        {
-            Debug.LogError("<ResMgr> 映射表中没有这个预制: " + reskeyname);
-            return null;
-        }
-        return LoadAsset<Sprite>(userName, reskeyname, info.abName, info.editorPath);
-    }
-
-    //Object，该Object需要填写在resmap_obj.txt文件中
-    public Object LoadObj(string userName, string reskeyname)
-    {
-        if (_resmap_obj == null) _resmap_obj = InitResmap("resmap_obj.txt");
-
-        ResmapInfo info;
-        if (_resmap_obj == null || !_resmap_obj.TryGetValue(reskeyname, out info))
-        {
-            Debug.LogError("<ResMgr> 映射表中没有这个预制: " + reskeyname);
-            return null;
-        }
-        return LoadAsset<Object>(userName, reskeyname, info.abName, info.editorPath);
     }
 
     /// 初始化Resmap
     Dictionary<string, ResmapInfo> InitResmap(string resmapName)
     {
-        Dictionary<string, ResmapInfo> dic= new Dictionary<string, ResmapInfo>();
-        TableHandler handler = TableHandler.Open(resmapName, "data");
+        Dictionary<string, ResmapInfo> dic = new Dictionary<string, ResmapInfo>();
+        TableHandler handler = TableHandler.OpenFromData(resmapName);
         for (int row = 0; row < handler.GetRecordsNum(); row++)
         {
             ResmapInfo info = new ResmapInfo()
             {
-                key = handler.GetValue(row,0),
-                editorPath = handler.GetValue(row,1),
-                abName = handler.GetValue(row,2),
+                key = handler.GetValue(row, 0),
+                editorPath = handler.GetValue(row, 1),
+                abName = handler.GetValue(row, 2),
 
             };
             dic.Add(info.key, info);
@@ -114,29 +96,94 @@ public class ResMgr : MonoBehaviour
 
     public AssetBundle InitAssetBundle(string abName)
     {
-        if (AppConst.encrypt)
-        {
-            byte[] abContent = CommonUtils.ReadFileBytes(CommonUtils.GetABPath(abName));
-            byte[] abDeCrypt = DecipherUtility.DecryptBytes(abContent);
-            return AssetBundle.LoadFromMemory(abDeCrypt);
-        }
-        else
-        {
-            return AssetBundle.LoadFromFile(CommonUtils.GetABPath(abName));
-        }
+        return AssetBundle.LoadFromFile(CommonUtils.GetABPath(abName));
     }
 
-    public static string ByteText(byte[] bytes)
+    //获取多语言资源名称
+    private string GetResName(string reskeyname)
     {
-        StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < bytes.Length; i++)
+        string[] nameArray;
+        if (_multiLngNameDic.TryGetValue(reskeyname, out nameArray))
         {
-            sb.Append(bytes[i]).Append("  ");
+            return nameArray[GameMain.Inst.lngType - 1];
         }
-        return sb.ToString();
+        return reskeyname;
     }
 
-    public T LoadAsset<T>(string userName, string assetName, string abName, string editorPath) where T : UnityEngine.Object
+    public ResmapInfo GetResinfoInObj(string key)
+    {
+        key = GetResName(key);
+        ResmapInfo info;
+        if (_resmap_obj == null || !_resmap_obj.TryGetValue(key, out info))
+        {
+            Debug.LogError("<ResMgr> 映射表中没有这个资源: " + key);
+            return null;
+        }
+        return info;
+    }
+    public ResmapInfo GetResinfoInPrefab(string reskeyname)
+    {
+        reskeyname = GetResName(reskeyname);
+        ResmapInfo info;
+        if (_resmap_prefab == null || !_resmap_prefab.TryGetValue(reskeyname, out info))
+        {
+            Debug.LogError("<ResMgr> 映射表中没有这个资源: " + reskeyname);
+            return null;
+        }
+        return info;
+    }
+    public ResmapInfo GetResinfoInSprite(string reskeyname)
+    {
+        reskeyname = GetResName(reskeyname);
+
+        ResmapInfo info;
+        if (_resmap_sprite == null || !_resmap_sprite.TryGetValue(reskeyname, out info))
+        {
+            Debug.LogError("<ResMgr> 映射表中没有这个资源: " + reskeyname);
+            return null;
+        }
+        return info;
+    }
+
+    //加载Prefab，该Prefab需要填写在resmap_prefab.txt文件中
+    public GameObject LoadPrefab(string reskeyname, string module)
+    {
+        string assetName = reskeyname;
+        ResmapInfo info = GetResinfoInPrefab(reskeyname);
+        return LoadAsset<GameObject>(module, assetName, info.abName,info.editorPath);
+    }
+
+    //Sprite，该Sprite需要填写在resmap_sprite.txt文件中
+    public Sprite LoadSprite(string reskeyname, string module)
+    {
+        string assetName = reskeyname;
+        ResmapInfo info = GetResinfoInSprite(reskeyname);
+        return LoadAsset<Sprite>(module, assetName, info.abName, info.editorPath);
+    }
+
+    public Texture LoadTexture(string reskeyname, string module)
+    {
+        string assetName = reskeyname;
+        ResmapInfo info = GetResinfoInSprite(reskeyname);
+        return LoadAsset<Texture>(module, assetName, info.abName, info.editorPath);
+    }
+
+    //Object，该Object需要填写在resmap_obj.txt文件中
+    public Object LoadObj(string reskeyname, string module)
+    {
+        string assetName = reskeyname;
+        ResmapInfo info = GetResinfoInObj(reskeyname);
+        return LoadAsset<Object>(module, assetName, info.abName, info.editorPath);
+    }
+
+    public Material LoadMaterial(string reskeyname, string module)
+    {
+        string assetName = reskeyname;
+        ResmapInfo info = GetResinfoInObj(reskeyname);
+        return LoadAsset<Material>(module, assetName, info.abName, info.editorPath);
+    }
+
+    public T LoadAsset<T>(string module, string assetName, string abName, string editorPath = "") where T : UnityEngine.Object
     {
         if (GameMain.Inst.ResourceMode == 0)
 #if UNITY_EDITOR
@@ -145,31 +192,34 @@ public class ResMgr : MonoBehaviour
             return null;
 #endif
         else
-            return LoadAsset<T>(userName, assetName, abName);
-    }
-
-    public T LoadAsset<T>(string userName, string assetName, string ABName) where T : UnityEngine.Object
-    {
-        // 加载AssetBundle
-        AssetBundle ab = LoadAB(userName, ABName);
-        if (ab == null)
         {
-            return default(T);
-        }
+            if(string.IsNullOrEmpty(module))
+            {
+                Debug.LogError("<ResMgr> 模块名不能为空！");
+                return default(T);
+            }
 
-        // 读取assetbundle里的这个文件
-        T asset = ab.LoadAsset<T>(assetName);
-        if (asset == null)
-        {
-            Debug.LogError("<ResMgr> 找不到Asset :" + assetName);
-            return default(T);
-        }
+            // 加载AssetBundle
+            AssetBundle ab = LoadAB(abName, module);
+            if (ab == null)
+            {
+                return default(T);
+            }
 
-        return asset;
+            // 读取assetbundle里的这个文件
+            T asset = ab.LoadAsset<T>(assetName);
+            if (asset == null)
+            {
+                Debug.LogError("<ResMgr> 找不到Asset :" + assetName);
+                return default(T);
+            }
+
+            return asset;
+        }
     }
 
     /// 载入AssetBundle
-    public AssetBundle LoadAB(string userName, string abName)
+    public AssetBundle LoadAB(string abName, string modlue)
     {
         abName = abName.ToLower();
         AssetBundleInfo abInfo = null;
@@ -178,9 +228,10 @@ public class ResMgr : MonoBehaviour
             abInfo = new AssetBundleInfo();
             _bundleDic.Add(abName, abInfo);
 
-            LoadDependencies(userName, abName);//加载该ab包的依赖包
             AssetBundle ab_tmp = InitAssetBundle(abName);//关联数据的素材绑定
             abInfo.ab = ab_tmp;
+            abInfo.ab.name = abName; //手动赋值，打包自动生成的根AB包的Name为空
+            abInfo.dependencies = _rootManifest.GetAllDependencies(abName);
         }
         else
         {
@@ -192,52 +243,48 @@ public class ResMgr : MonoBehaviour
             Debug.LogErrorFormat("<ResMgr> 加载{0}失败！", abName);
             return null;
         }
+
         //记录使用者
-        RecordUser(abInfo, userName);
+        if(RecordModule(abInfo, modlue))
+            LoadDependencies(modlue, abName);//加载该ab包的依赖包
 
         return abInfo.ab;
     }
 
     //按照使用者将AssetBundleInfo分类
-    private void RecordUser(AssetBundleInfo abInfo, string userName)
+    private bool RecordModule(AssetBundleInfo abInfo, string module)
     {
-        if (!_userDic.ContainsKey(userName))
+        if (!_moduleDic.ContainsKey(module))
         {
-            _userDic.Add(userName,new List<AssetBundleInfo>());
+            _moduleDic.Add(module,new List<AssetBundleInfo>());
         }
-        if (abInfo.RecordUser(userName))
+        if (abInfo.RecordMoudle(module))
         {
-            _userDic[userName].Add(abInfo);
+            _moduleDic[module].Add(abInfo);
+            return true;
         }
+        return false;
     }
 
     /// 载入依赖
-    void LoadDependencies(string userName, string abName)
+    void LoadDependencies(string module, string abName)
     {
-        if (_rootManifest == null)
+        AssetBundleInfo abInfo = _bundleDic[abName];
+        if (abInfo == null)
         {
-            Debug.LogError("请先加载_rootManifest!!");
+            Debug.LogErrorFormat("<ResMgr> 查询{0}依赖失败！", abName);
             return;
         }
+
         //获取所有依赖
-        string[] dependencies = _rootManifest.GetAllDependencies(abName);
+        string[] dependencies = abInfo.dependencies;
         if (dependencies.Length == 0) return;
-        //记录依赖
-        if (_bundleDic.ContainsKey(abName))
-        {
-            _bundleDic[abName].dependencies = dependencies;
-        }
-        else
-        {
-            Debug.LogError("没有ab包使用该依赖！");
-            return;
-        }
 
         //增加新加载的ab的引用计数
         for (int i = 0; i < dependencies.Length; i++)
         {
             string depName = dependencies[i];
-            LoadAB(userName,depName);
+            LoadAB(depName, module);
         }
     }
 
@@ -257,8 +304,8 @@ public class ResMgr : MonoBehaviour
         _bundleDic.Clear();
         _bundleDic = null;
 
-        _userDic.Clear();
-        _userDic = null;
+        _moduleDic.Clear();
+        _moduleDic = null;
         Resources.UnloadUnusedAssets();
 
         _inst = null;
@@ -271,10 +318,20 @@ public class ResMgr : MonoBehaviour
         {
             AssetBundleInfo abInfo = _bundleDic[abName];
             //移除所有ab包中的相关使用者
-            List<string> userList = abInfo.userList;
-            for (int i = userList.Count - 1; i >= 0; i--)
+            List<string> moudleList = abInfo.moudleList;
+            for (int i = moudleList.Count - 1; i >= 0; i--)
             {
-                OnUserDestroy(userList[i], unloadAll);
+                string moduleName = moudleList[i];
+                List<AssetBundleInfo> moudleABList = _moduleDic[moduleName];
+                moudleABList.Remove(abInfo);
+                if (moudleABList.Count == 0)
+                    _moduleDic.Remove(moduleName);
+            }
+            //卸载ab包
+            if (!_preLoadABs.Contains(abInfo.ab.name))
+            {
+                _bundleDic.Remove(abInfo.ab.name);
+                abInfo.ab.Unload(unloadAll);
             }
         }
         else
@@ -285,19 +342,19 @@ public class ResMgr : MonoBehaviour
     }
 
     /// 当使用者被销毁时，清除其引用
-    public void OnUserDestroy(string userName, bool unloadAll = true)
+    public void OnMoudleDestroy(string moduleName, bool unloadAll = true)
     {
         // 开发者模式，没有记录ab的使用者
         if (GameMain.Inst == null || GameMain.Inst.ResourceMode == 0) return;
         //防止先调用了ResMgr的OnDestroy方法
-        if(_userDic == null) return;
+        if(_moduleDic == null) return;
 
         //遍历所有的AB包，清除使用者
         List<AssetBundleInfo> abInfoList = null;
-        _userDic.TryGetValue(userName, out abInfoList);
+        _moduleDic.TryGetValue(moduleName, out abInfoList);
         if (abInfoList==null)
         {
-            Debug.LogError("<ResMgr> 竟然没有该UI相关的ab包，不可能出现，请检查传递的使用者名称，当前UI名称："+userName);
+            Debug.LogError("<ResMgr> 竟然没有该UI相关的ab包，不可能出现，请检查传递的使用者名称，当前UI名称："+moduleName);
         }
         else
         {
@@ -305,9 +362,9 @@ public class ResMgr : MonoBehaviour
             {
                 AssetBundleInfo abInfo = abInfoList[i];
                 //移除使用者
-                if (abInfo.userList.Remove(userName))
+                if (abInfo.moudleList.Remove(moduleName))
                 {
-                    if (abInfo.userList.Count == 0)
+                    if (abInfo.moudleList.Count == 0 && !_preLoadABs.Contains(abInfo.ab.name))
                     {
                         //卸载ab包的逻辑
                         abInfo.ab.Unload(unloadAll);
@@ -315,9 +372,190 @@ public class ResMgr : MonoBehaviour
                     }
                 }
             }
-            _userDic.Remove(userName);
+            _moduleDic.Remove(moduleName);
         }
     }
+
+    #region 异步加载
+    // 异步载入协程
+    IEnumerator OnLoadAsset<T>(string abName, string assetName, Action<string, T> action, string moduleName) where T : UnityEngine.Object
+    {
+        // 如果缓存里有先拿缓存
+        AssetBundleInfo bundleInfo;
+        if (!_bundleDic.TryGetValue(abName, out bundleInfo))
+        {
+            yield return OnLoadAB(abName, moduleName);
+            bundleInfo = _bundleDic[abName];
+        }
+
+        AssetBundleRequest request = bundleInfo.ab.LoadAssetAsync<T>(assetName);
+        yield return request;
+
+        // 如果没找到
+        if (request.asset == null)
+        {
+            Debug.LogError("<ResMgr> 找不到Asset :" + assetName);
+            yield break;
+        }
+
+        // 执行回调
+        if (action != null)
+            action(assetName, (T)request.asset);
+    }
+
+    // 异步读AB
+    IEnumerator OnLoadAB(string abName, string moduleName)
+    {
+        AssetBundleInfo abInfo;
+        if (!_bundleDic.TryGetValue(abName, out abInfo))
+        {
+            abInfo = new AssetBundleInfo();
+            _bundleDic.Add(abName, abInfo);
+
+            AssetBundleCreateRequest request = AssetBundle.LoadFromFileAsync(CommonUtils.GetABPath(abName));
+            yield return request;
+            if (request.assetBundle == null)
+            {
+                Debug.LogError("<ResourceManager> 没有此AssetBundle："+abName);
+                yield break;
+            }
+            
+            abInfo.ab = request.assetBundle;
+            abInfo.ab.name = abName;//手动赋值，assetbundle的name属性为空
+            abInfo.dependencies = _rootManifest.GetAllDependencies(abName);
+        }
+
+        //记录使用者
+        if (RecordModule(abInfo, moduleName))
+        {
+            yield return OnLoadDependencies(abName, moduleName);
+        }
+    }
+
+    IEnumerator OnLoadDependencies(string abName, string moduleName)
+    {
+        //获取所有依赖
+        string[] dependencies = _bundleDic[abName].dependencies;
+        if (dependencies.Length == 0) yield break;
+
+        //增加新加载的ab的引用计数
+        for (int i = 0; i < dependencies.Length; i++)
+        {
+            string depName = dependencies[i];
+            yield return OnLoadAB(depName, moduleName);
+        }
+    }
+    #endregion
+
+    #region 预加载
+    //增加预加载资源
+    public void AddPreLoadAsset(string reskeyname, int resType)
+    {
+        ResmapInfo info = null;
+        switch (resType)
+        {
+            case 1://图片
+                info = GetResinfoInSprite(reskeyname);
+                break;
+            case 2://预制体
+                info = GetResinfoInPrefab(reskeyname);
+                break;
+            case 3://其他
+                info = GetResinfoInObj(reskeyname);
+                break;
+        }
+        //保存ab信息
+        if (!_preLoadABs.Contains(info.abName))
+        {
+            _preLoadABs.Add(info.abName);
+        }
+        _preLoadAssets.Add(new AssetInfo(info, resType));
+    }
+
+    /// <summary>
+    /// 开始预加载流程
+    /// </summary>
+    /// <param name="refreshDone"></param> 更新的回调，每加载一个对象，就调用一次
+    /// <param name="finishDone"></param> 加载完成的回调
+    /// <param name="autoClearPreList"></param> 是否在加载完成后，自动清除加载队列
+    /// <returns></returns>
+    public int StartPreLoad(Action<int> refreshDone, Action finishDone, bool autoClearPreList = true)
+    {
+        StartCoroutine(CoStartPreLoad(refreshDone, finishDone, autoClearPreList));
+        return _preLoadAssets.Count;
+    }
+
+    IEnumerator CoStartPreLoad(Action<int> refreshDone, Action finishDone, bool autoClearPreList)
+    {
+        yield return null;
+        for (int i = 0; i < _preLoadAssets.Count; i++)
+        {
+            if (refreshDone != null) refreshDone((i + 1));
+            AssetInfo info = _preLoadAssets[i];
+            // 0：从本地读，1：从AB读
+            if (GameMain.Inst.ResourceMode == 0)
+            {
+#if UNITY_EDITOR
+                switch (info.type)
+                {
+                    case 1:
+                        UnityEditor.AssetDatabase.LoadAssetAtPath<Sprite>(info.resInfo.editorPath);
+                        yield return null;
+                        break;
+                    case 2:
+                        UnityEditor.AssetDatabase.LoadAssetAtPath<GameObject>(info.resInfo.editorPath);
+                        yield return null;
+                        break;
+                    case 3:
+                        UnityEditor.AssetDatabase.LoadAssetAtPath<UnityEngine.Object>(info.resInfo.editorPath);
+                        yield return null;
+                        break;
+                }
+#endif
+            }
+            else
+            {
+                //获取所有依赖
+                string[] dependencies = _rootManifest.GetAllDependencies(info.resInfo.abName);
+                for (int j = 0; j < dependencies.Length; j++)
+                {
+                    string depName = dependencies[j];
+                    if (!_preLoadABs.Contains(depName))
+                    {
+                        _preLoadABs.Add(depName);
+                    }
+                }
+                switch (info.type)
+                {
+                    case 1:
+                        yield return OnLoadAsset<Sprite>(info.resInfo.abName, info.resInfo.key, null, null);
+                        break;
+                    case 2:
+                        yield return OnLoadAsset<GameObject>(info.resInfo.abName, info.resInfo.key, null, null);
+                        break;
+                    case 3:
+                        yield return OnLoadAsset<UnityEngine.Object>(info.resInfo.abName, info.resInfo.key, null, null);
+                        break;
+                }
+            }
+
+        }
+        yield return null;
+        if (finishDone != null) finishDone();
+        finishDone = null;
+        if (autoClearPreList)
+        {
+            ClearPreList();
+        }
+    }
+
+    //清理预加载逻辑
+    public void ClearPreList()
+    {
+        _preLoadAssets.Clear();
+        _preLoadABs.Clear();
+    }
+    #endregion
 }
 
 public class ResmapInfo
@@ -331,24 +569,36 @@ public class AssetBundleInfo
 {
     public string[] dependencies;//该ab包的依赖包
     public AssetBundle ab;
-    public List<string> userList;//记录使用者：被依赖进内存的不记录使用者
+    public List<string> moudleList;//记录使用者：被依赖进内存的不记录使用者
 
     public AssetBundleInfo()
     {
-        userList = new List<string>();
+        moudleList = new List<string>();
     }
 
     /// <summary>
     /// 记录使用者，如果已经记录，则返回false
     /// </summary>
-    public bool RecordUser(string userName)
+    public bool RecordMoudle(string moudle)
     {
-        bool contains = userList.Contains(userName);
+        bool contains = moudleList.Contains(moudle);
         if (!contains)
         {
-            userList.Add(userName);
+            moudleList.Add(moudle);
         }
         return !contains;
     }
 
+}
+
+public struct AssetInfo
+{
+    public ResmapInfo resInfo;
+    public int type; //1：Sprite   2：Prefab    3,obj
+
+    public AssetInfo(ResmapInfo resmapInfo, int type)
+    {
+        this.resInfo = resmapInfo;
+        this.type = type;
+    }
 }

@@ -25,6 +25,7 @@ public class UnityEngine_UI_ImageWrap
 		L.RegVar("fillClockwise", get_fillClockwise, set_fillClockwise);
 		L.RegVar("fillOrigin", get_fillOrigin, set_fillOrigin);
 		L.RegVar("alphaHitTestMinimumThreshold", get_alphaHitTestMinimumThreshold, set_alphaHitTestMinimumThreshold);
+		L.RegVar("useSpriteMesh", get_useSpriteMesh, set_useSpriteMesh);
 		L.RegVar("defaultETC1GraphicMaterial", get_defaultETC1GraphicMaterial, null);
 		L.RegVar("mainTexture", get_mainTexture, null);
 		L.RegVar("hasBorder", get_hasBorder, null);
@@ -344,6 +345,25 @@ public class UnityEngine_UI_ImageWrap
 		catch(Exception e)
 		{
 			return LuaDLL.toluaL_exception(L, e, o, "attempt to index alphaHitTestMinimumThreshold on a nil value");
+		}
+	}
+
+	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
+	static int get_useSpriteMesh(IntPtr L)
+	{
+		object o = null;
+
+		try
+		{
+			o = ToLua.ToObject(L, 1);
+			UnityEngine.UI.Image obj = (UnityEngine.UI.Image)o;
+			bool ret = obj.useSpriteMesh;
+			LuaDLL.lua_pushboolean(L, ret);
+			return 1;
+		}
+		catch(Exception e)
+		{
+			return LuaDLL.toluaL_exception(L, e, o, "attempt to index useSpriteMesh on a nil value");
 		}
 	}
 
@@ -757,6 +777,25 @@ public class UnityEngine_UI_ImageWrap
 		catch(Exception e)
 		{
 			return LuaDLL.toluaL_exception(L, e, o, "attempt to index alphaHitTestMinimumThreshold on a nil value");
+		}
+	}
+
+	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
+	static int set_useSpriteMesh(IntPtr L)
+	{
+		object o = null;
+
+		try
+		{
+			o = ToLua.ToObject(L, 1);
+			UnityEngine.UI.Image obj = (UnityEngine.UI.Image)o;
+			bool arg0 = LuaDLL.luaL_checkboolean(L, 2);
+			obj.useSpriteMesh = arg0;
+			return 0;
+		}
+		catch(Exception e)
+		{
+			return LuaDLL.toluaL_exception(L, e, o, "attempt to index useSpriteMesh on a nil value");
 		}
 	}
 

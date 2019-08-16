@@ -2,13 +2,6 @@ using System;
 using UnityEngine;
 using System.Collections.Generic;
 
-public enum UILayer
-{
-    FULL = 0,
-    POP = 1,
-    TOP = 2,
-}
-
 public class UIMgr : MonoBehaviour
 {
     #region 初始化
@@ -481,7 +474,7 @@ public class UIMgr : MonoBehaviour
     {
         if (ResMgr.Inst)
         {
-            ResMgr.Inst.OnUserDestroy(uiSystemName);
+            ResMgr.Inst.OnMoudleDestroy(uiSystemName);
         }
     }
 }

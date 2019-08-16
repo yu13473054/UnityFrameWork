@@ -68,7 +68,6 @@ public class SocketClient
             IPAddress[] address = Dns.GetHostAddresses( host );
             if( address.Length == 0 )
             {
-                Debugger.LogError( "host invalid" );
                 return;
             }
             if( address[0].AddressFamily == AddressFamily.InterNetworkV6 )
@@ -86,7 +85,7 @@ public class SocketClient
         }
         catch( Exception e )
         {
-            Close(); Debugger.LogError( e.Message );
+            Close();
         }
     }
 
@@ -119,10 +118,6 @@ public class SocketClient
                 //NetworkStream stream = _client.GetStream();
                 byte[] payload = ms.ToArray();
                 _outStream.BeginWrite( payload, 0, payload.Length, new AsyncCallback( OnWrite ), null );
-            }
-            else
-            {
-                Debugger.LogError( "_client.connected----->>false" );
             }
         }
     }
@@ -185,7 +180,6 @@ public class SocketClient
         {
             returnStr += byteBuffer[i].ToString( "X2" );
         }
-        Debugger.LogError( returnStr );
     }
 
     /// <summary>
@@ -199,7 +193,7 @@ public class SocketClient
         }
         catch( Exception ex )
         {
-            Debugger.LogError( "OnWrite--->>>" + ex.Message );
+            Debug.LogError( "OnWrite--->>>" + ex.Message );
         }
     }
 
