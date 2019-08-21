@@ -25,6 +25,22 @@ public class GameMain : MonoBehaviour
     [Label("语言类型")]
     public int lngType = 0;
 
+    // 包内Steaming地址
+    public static string appABPath;
+    //本地资源路径
+    public static string localABPath;
+
+    // 平台名称
+    #if UNITY_STANDALONE_WIN
+    public static string platformName = "win";
+    #elif UNITY_STANDALONE_OSX
+    public static string platformName = "osx";
+    #elif UNITY_ANDROID
+    public static string platformName = "android";
+    #elif UNITY_IPHONE
+    public static string platformName = "ios";
+    #endif
+
     public int TargetFrameRate
     {
         get { return _targetFrameRate; }
@@ -37,7 +53,11 @@ public class GameMain : MonoBehaviour
     void Awake()
     {
         Inst = this;
+
+        localABPath = Application.persistentDataPath + "/";
+        appABPath = Application.streamingAssetsPath + "/assetbundle/";
     }
+
 }
 
 

@@ -709,6 +709,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1746072688}
+  - component: {fileID: 1746072689}
   m_Layer: 5
   m_Name: Layer_0_FULL
   m_TagString: Untagged
@@ -733,8 +734,29 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
+  m_SizeDelta: {x: 1282, y: 721}
   m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &1746072689
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1746072687}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 34e116394908a4546b1e59c8bd501783, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  method: 0
+  _keepAspect: 1
+  _showWidth: 1280
+  _showHeight: 720
+  _offsetWidth: 0
+  _offsetHeight: 0
+  _manualSet: 0
+  _manualWidth: 1
+  _manualHeight: 1
 --- !u!1 &1788631252
 GameObject:
   m_ObjectHideFlags: 0
@@ -747,7 +769,7 @@ GameObject:
   - component: {fileID: 1788631253}
   - component: {fileID: 1788631255}
   m_Layer: 0
-  m_Name: GameObject
+  m_Name: Boot
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -760,7 +782,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1788631252}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: b1545d35cb5d31e469cff9e3dbc576e9, type: 3}
   m_Name: 

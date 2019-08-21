@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
+using UnityEngine.Networking;
 
 public class ResourceUpdate : MonoBehaviour
 {
@@ -19,7 +20,7 @@ public class ResourceUpdate : MonoBehaviour
     void Start()
     {
         //-----开始检查AB包--------
-        string resDir = AppConst.localABPath;  // 本地存储的ab目录
+        string resDir = GameMain.localABPath;  // 本地存储的ab目录
 
         if (!Directory.Exists(resDir))
             Directory.CreateDirectory(resDir);
@@ -30,11 +31,11 @@ public class ResourceUpdate : MonoBehaviour
     ///进行版本对比
     private IEnumerator CheckVersion()
     {
-        string localVerFile = AppConst.localABPath + VersionFileName;
+        string localVerFile = GameMain.localABPath + VersionFileName;
         ConfigHandler localVerConfig;
         int localVer;
 
-        string appVerFile = AppConst.appABPath.Replace("/assetbundle", "") + VersionFileName;
+        string appVerFile = GameMain.appABPath.Replace("/assetbundle", "") + VersionFileName;
         if (!File.Exists(localVerFile)) //本地不存在版本文件：被删除或者第一次安装
         {
             //本地做一份保存
@@ -75,15 +76,15 @@ public class ResourceUpdate : MonoBehaviour
         }
 
         // 拿远端版本
-        WWW www = new WWW(AppConst.updateHost + AppConst.platformName + "/version.txt");
-        yield return www;
-        if (www.error != null)
+        UnityWebRequest request = UnityWebRequest.Get(AppConst.updateHost + GameMain.platformName + "/version.txt");
+        yield return request;
+        if (request.error != null)
         {
-            Debug.LogError("<ResourceUpdate> 无法获取远端资源版本：" + www.error);
+            Debug.LogError("<ResourceUpdate> 无法获取远端资源版本：" + request.error);
             yield break;
         }
         ConfigHandler remoteVerConfig = new ConfigHandler();
-        remoteVerConfig.Parser(www.bytes);
+        remoteVerConfig.Parser(request.downloadHandler.data);
         // 资源版本
         string remoteVerStr = remoteVerConfig.ReadValue("Resource_Version");
         int remoteVerInt = int.Parse(remoteVerStr);
@@ -103,7 +104,7 @@ public class ResourceUpdate : MonoBehaviour
         if (remoteVerInt > localVer)
         {
             //本地做一份保存
-            File.WriteAllBytes(AppConst.localABPath + VersionFileName, www.bytes);
+            File.WriteAllBytes(GameMain.localABPath + VersionFileName, request.downloadHandler.data);
         }
 
         //检查是否需要更新，防止更新进行到一半时，断网了
@@ -120,7 +121,7 @@ public class ResourceUpdate : MonoBehaviour
     {
         Debug.Log("<ResourceUpdate> 开始释放app内部资源！");
 
-        string appFileListPath = AppConst.appABPath + FileListName;
+        string appFileListPath = GameMain.appABPath + FileListName;
         //释放所有文件到数据目录
         AssetBundle localFileListAB = AssetBundle.LoadFromFile(appFileListPath);
         string[] fileList = localFileListAB
@@ -135,7 +136,7 @@ public class ResourceUpdate : MonoBehaviour
             }
             string fileDesc = fileList[i];
             string fileName = fileDesc.Split('|')[0];
-            File.Copy(AppConst.appABPath + fileName, AppConst.localABPath + fileName, true);
+            File.Copy(GameMain.appABPath + fileName, GameMain.localABPath + fileName, true);
             yield return null;
         }
         Debug.Log("<ResourceUpdate> 解包完成!!!");
@@ -148,19 +149,18 @@ public class ResourceUpdate : MonoBehaviour
         //        StartCoroutine(OnCheckNetwork());
 
         // 下载地址
-        string downloadURL = AppConst.updateHost + AppConst.platformName + "/" + forceVer + "." + remoteVer + "/";
-        string resDir = AppConst.localABPath;
+        string downloadURL = AppConst.updateHost + GameMain.platformName + "/" + forceVer + "." + remoteVer + "/";
+        string resDir = GameMain.localABPath;
 
-        // 远端资源文件表
         // 获取服务器文件列表
-        WWW fileListWWW = new WWW(downloadURL + FileListName);
-        yield return fileListWWW;
-        if (fileListWWW.error != null)
+        UnityWebRequest request = UnityWebRequest.Get(downloadURL + FileListName);
+        yield return request;
+        if (request.error != null)
         {
-            Debug.LogError("<Update> 无法获取远端文件列表：" + fileListWWW.error);
+            Debug.LogError("<Update> 无法获取远端文件列表：" + request.error);
             yield break;
         }
-        AssetBundle remoteFilelistAB = AssetBundle.LoadFromMemory(fileListWWW.bytes);
+        AssetBundle remoteFilelistAB = AssetBundle.LoadFromMemory(request.downloadHandler.data);
         //解析出那些资源需要更新
         string newFileText = remoteFilelistAB.LoadAsset<TextAsset>("filelist").text;
         remoteFilelistAB.Unload(true);
@@ -198,14 +198,15 @@ public class ResourceUpdate : MonoBehaviour
         {
             DownloadTaskInfo taskInfo = _downloadFiles[i];
             Debug.Log("downloading>>" + taskInfo.url);
-            WWW www = new WWW(taskInfo.url); yield return www;
-            if (www.error != null)
+            UnityWebRequest request = UnityWebRequest.Get(taskInfo.url);
+            yield return request;
+            if (request.error != null)
             {
                 //                OnUpdateFailed(taskInfo.filePath);
             }
             else
             {
-                File.WriteAllBytes(taskInfo.filePath, www.bytes);
+                File.WriteAllBytes(taskInfo.filePath, request.downloadHandler.data);
                 if (onShowUpdateUI != null)
                 {
                     onShowUpdateUI();

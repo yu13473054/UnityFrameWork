@@ -7,20 +7,21 @@ public class FullScreenWrap
 	public static void Register(LuaState L)
 	{
 		L.BeginClass(typeof(FullScreen), typeof(UnityEngine.MonoBehaviour));
-		L.RegFunction("Adjust", Adjust);
+		L.RegFunction("Adjust_Size", Adjust_Size);
 		L.RegFunction("__eq", op_Equality);
 		L.RegFunction("__tostring", ToLua.op_ToString);
+		L.RegVar("method", get_method, set_method);
 		L.EndClass();
 	}
 
 	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
-	static int Adjust(IntPtr L)
+	static int Adjust_Size(IntPtr L)
 	{
 		try
 		{
 			ToLua.CheckArgsCount(L, 1);
 			FullScreen obj = (FullScreen)ToLua.CheckObject<FullScreen>(L, 1);
-			obj.Adjust();
+			obj.Adjust_Size();
 			return 0;
 		}
 		catch (Exception e)
@@ -44,6 +45,44 @@ public class FullScreenWrap
 		catch (Exception e)
 		{
 			return LuaDLL.toluaL_exception(L, e);
+		}
+	}
+
+	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
+	static int get_method(IntPtr L)
+	{
+		object o = null;
+
+		try
+		{
+			o = ToLua.ToObject(L, 1);
+			FullScreen obj = (FullScreen)o;
+			FullScreen.AdapterMethod ret = obj.method;
+			ToLua.Push(L, ret);
+			return 1;
+		}
+		catch(Exception e)
+		{
+			return LuaDLL.toluaL_exception(L, e, o, "attempt to index method on a nil value");
+		}
+	}
+
+	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
+	static int set_method(IntPtr L)
+	{
+		object o = null;
+
+		try
+		{
+			o = ToLua.ToObject(L, 1);
+			FullScreen obj = (FullScreen)o;
+			FullScreen.AdapterMethod arg0 = (FullScreen.AdapterMethod)ToLua.CheckObject(L, 2, typeof(FullScreen.AdapterMethod));
+			obj.method = arg0;
+			return 0;
+		}
+		catch(Exception e)
+		{
+			return LuaDLL.toluaL_exception(L, e, o, "attempt to index method on a nil value");
 		}
 	}
 }

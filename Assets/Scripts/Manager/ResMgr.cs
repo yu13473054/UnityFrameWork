@@ -96,7 +96,7 @@ public class ResMgr : MonoBehaviour
 
     public AssetBundle InitAssetBundle(string abName)
     {
-        return AssetBundle.LoadFromFile(CommonUtils.GetABPath(abName));
+        return AssetBundle.LoadFromFile(CommonUtils.GetABPath(abName),0,10);
     }
 
     //获取多语言资源名称
@@ -412,7 +412,7 @@ public class ResMgr : MonoBehaviour
             abInfo = new AssetBundleInfo();
             _bundleDic.Add(abName, abInfo);
 
-            AssetBundleCreateRequest request = AssetBundle.LoadFromFileAsync(CommonUtils.GetABPath(abName));
+            AssetBundleCreateRequest request = AssetBundle.LoadFromFileAsync(CommonUtils.GetABPath(abName), 0, 10);
             yield return request;
             if (request.assetBundle == null)
             {

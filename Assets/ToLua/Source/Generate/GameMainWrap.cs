@@ -11,6 +11,9 @@ public class GameMainWrap
 		L.RegFunction("__tostring", ToLua.op_ToString);
 		L.RegVar("showLog", get_showLog, set_showLog);
 		L.RegVar("lngType", get_lngType, set_lngType);
+		L.RegVar("appABPath", get_appABPath, set_appABPath);
+		L.RegVar("localABPath", get_localABPath, set_localABPath);
+		L.RegVar("platformName", get_platformName, set_platformName);
 		L.RegVar("Inst", get_Inst, null);
 		L.RegVar("TargetFrameRate", get_TargetFrameRate, null);
 		L.RegVar("ResourceMode", get_ResourceMode, null);
@@ -70,6 +73,48 @@ public class GameMainWrap
 		catch(Exception e)
 		{
 			return LuaDLL.toluaL_exception(L, e, o, "attempt to index lngType on a nil value");
+		}
+	}
+
+	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
+	static int get_appABPath(IntPtr L)
+	{
+		try
+		{
+			LuaDLL.lua_pushstring(L, GameMain.appABPath);
+			return 1;
+		}
+		catch (Exception e)
+		{
+			return LuaDLL.toluaL_exception(L, e);
+		}
+	}
+
+	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
+	static int get_localABPath(IntPtr L)
+	{
+		try
+		{
+			LuaDLL.lua_pushstring(L, GameMain.localABPath);
+			return 1;
+		}
+		catch (Exception e)
+		{
+			return LuaDLL.toluaL_exception(L, e);
+		}
+	}
+
+	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
+	static int get_platformName(IntPtr L)
+	{
+		try
+		{
+			LuaDLL.lua_pushstring(L, GameMain.platformName);
+			return 1;
+		}
+		catch (Exception e)
+		{
+			return LuaDLL.toluaL_exception(L, e);
 		}
 	}
 
@@ -160,6 +205,51 @@ public class GameMainWrap
 		catch(Exception e)
 		{
 			return LuaDLL.toluaL_exception(L, e, o, "attempt to index lngType on a nil value");
+		}
+	}
+
+	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
+	static int set_appABPath(IntPtr L)
+	{
+		try
+		{
+			string arg0 = ToLua.CheckString(L, 2);
+			GameMain.appABPath = arg0;
+			return 0;
+		}
+		catch (Exception e)
+		{
+			return LuaDLL.toluaL_exception(L, e);
+		}
+	}
+
+	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
+	static int set_localABPath(IntPtr L)
+	{
+		try
+		{
+			string arg0 = ToLua.CheckString(L, 2);
+			GameMain.localABPath = arg0;
+			return 0;
+		}
+		catch (Exception e)
+		{
+			return LuaDLL.toluaL_exception(L, e);
+		}
+	}
+
+	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
+	static int set_platformName(IntPtr L)
+	{
+		try
+		{
+			string arg0 = ToLua.CheckString(L, 2);
+			GameMain.platformName = arg0;
+			return 0;
+		}
+		catch (Exception e)
+		{
+			return LuaDLL.toluaL_exception(L, e);
 		}
 	}
 }

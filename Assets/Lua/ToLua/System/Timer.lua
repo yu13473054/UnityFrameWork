@@ -3,6 +3,12 @@
 --      All rights reserved.
 --      Use, modification and distribution are subject to the "MIT License"
 --------------------------------------------------------------------------------
+
+--!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+-- 额外的Timer，我放到了Utils中，注意查看~！！！！
+--!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+
 local setmetatable = setmetatable
 local UpdateBeat = UpdateBeat
 local CoUpdateBeat = CoUpdateBeat
@@ -15,10 +21,16 @@ local mt = {__index = Timer}
 
 --unscaled false 采用deltaTime计时，true 采用 unscaledDeltaTime计时
 function Timer.New(func, duration, loop, unscaled)
-	unscaled = unscaled or false and true	
+	unscaled = unscaled or false and true
 	loop = loop or 1
 	return setmetatable({func = func, duration = duration, time = duration, loop = loop, unscaled = unscaled, running = false}, mt)	
 end
+
+--新增[jaze]:为对象池初始化方法
+function Timer:Ctor(func, duration, loop, unscaled)
+    self:Reset(func, duration, loop, unscaled);
+end
+--[jaze]
 
 function Timer:Start()
 	self.running = true

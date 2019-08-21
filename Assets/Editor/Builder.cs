@@ -35,7 +35,7 @@ public class Builder
             oldFile.MoveTo(ABPATH + "/Tmp");
         else
             oldFile = null;
-
+        DeleteAB("lua_");
         AssetBundleNameAuto.ClearAllABNames();
 
         EditorUtility.DisplayProgressBar("打包前准备", "正在处理Lua文件...", 0.1f);
@@ -45,13 +45,14 @@ public class Builder
         EditorUtility.DisplayProgressBar("打包", "正在打包Lua文件...", 0.5f);
         BuildPipeline.BuildAssetBundles(ABPATH, BuildAssetBundleOptions.ChunkBasedCompression, EditorUserBuildSettings.activeBuildTarget);
 
-        EditorUtility.DisplayProgressBar("收尾", "Lua还原中...", 0.9f);
+        EditorUtility.DisplayProgressBar("收尾", "Lua还原中...", 0.7f);
         LuaEncode.EndEncode();
+        AssetBundleNameAuto.ClearLuaABNames();
 
+        EditorUtility.DisplayProgressBar("收尾", "Lua加密中...", 0.9f);
+        Encrypt("lua_");
         EditorUtility.ClearProgressBar();
         AssetDatabase.Refresh();
-
-        AssetBundleNameAuto.ClearLuaABNames();
 
         // 删除新assetbundle
         UnityEditor.FileUtil.DeleteFileOrDirectory( ABPATH + "/assetbundle" );
@@ -71,6 +72,8 @@ public class Builder
         if( oldFile != null )
             oldFile.MoveTo( ABPATH + "/Tmp" );
 
+        DeleteAB("data");
+
         AssetBundleNameAuto.ClearAllABNames();
         EditorUtility.DisplayProgressBar("打包前准备", "正在生成resmap文件...", 0.1f);
         //重新生成Resmap文件
@@ -80,40 +83,11 @@ public class Builder
 
         EditorUtility.DisplayProgressBar("打包", "正在打包Data文件...", 0.8f);
         BuildPipeline.BuildAssetBundles(ABPATH, BuildAssetBundleOptions.ChunkBasedCompression, EditorUserBuildSettings.activeBuildTarget);
-
-        EditorUtility.ClearProgressBar();
-        AssetDatabase.Refresh();
-
         AssetBundleNameAuto.ClearDataABNames();
-
-        // 删除新assetbundle
-        UnityEditor.FileUtil.DeleteFileOrDirectory( ABPATH + "/assetbundle" );
-        // 还原文件
-        if( oldFile != null )
-            oldFile.MoveTo( ABPATH + "/assetbundle" );
-    }
-
-    [MenuItem( "打包/Shader(不上传)", false, 103 )]
-    static void BuildShader()
-    {
-        // 创建文件夹
-        Directory.CreateDirectory( ABPATH );
-
-        // 重命名assetbundle
-        FileInfo oldFile = new FileInfo( ABPATH + "/assetbundle" );
-        if( oldFile != null )
-            oldFile.MoveTo( ABPATH + "/Tmp" );
-
-        AssetBundleNameAuto.ClearAllABNames();
-        AssetBundleNameAuto.SetShaderABNames();
-
-        EditorUtility.DisplayProgressBar( "打包", "正在打包Shader文件...", 0.5f );
-        BuildPipeline.BuildAssetBundles( ABPATH, BuildAssetBundleOptions.ChunkBasedCompression, EditorUserBuildSettings.activeBuildTarget );
-
+        EditorUtility.DisplayProgressBar("收尾", "Data加密中...", 0.9f);
+        Encrypt("data");
         EditorUtility.ClearProgressBar();
         AssetDatabase.Refresh();
-
-        AssetBundleNameAuto.ClearLuaABNames();
 
         // 删除新assetbundle
         UnityEditor.FileUtil.DeleteFileOrDirectory( ABPATH + "/assetbundle" );
@@ -127,7 +101,6 @@ public class Builder
     {
         EditorUtility.DisplayProgressBar("准备", "删除Manifest文件...", 0.1f);
         RemoveManifest();
-
         EditorUtility.DisplayProgressBar("准备", "增加版本号...", 0.3f);
         // 版本号处理 ：修改app配置的版本号，每次打包+1
         ConfigHandlerEditor resverIni = ConfigHandlerEditor.Open(Application.streamingAssetsPath + "/version.txt");
@@ -136,11 +109,11 @@ public class Builder
 
         // 上传ab
         EditorUtility.DisplayProgressBar("上传", "上传ab...", 0.8f);
-        UploadDirectory(ABPATH, _ftpServerIP + "/" + RES_FOLDER + "/" + AppConst.platformName + "/", new_resource_version.ToString());
+        UploadDirectory(ABPATH, _ftpServerIP + "/" + RES_FOLDER + "/" + GameMain.platformName + "/", new_resource_version.ToString());
 
         EditorUtility.DisplayProgressBar("上传", "上传版本文件...", 0.1f);
         // 上传版本文件
-        UploadFile("Assets/StreamingAssets/version.txt", _ftpServerIP + "/" + RES_FOLDER + "/" + AppConst.platformName + "/version.txt");
+        UploadFile("Assets/StreamingAssets/version.txt", _ftpServerIP + "/" + RES_FOLDER + "/" + GameMain.platformName + "/version.txt");
         EditorUtility.ClearProgressBar();
     }
 
@@ -201,10 +174,13 @@ public class Builder
         // 创建文件列表
         EditorUtility.DisplayProgressBar( "统计", "生成FileList...", 0.9f );
         BuildFileList();
+        AssetBundleNameAuto.ClearAllABNames();
 
+        EditorUtility.DisplayProgressBar("统计", "ab加密中...", 1f);
+        Encrypt();
         EditorUtility.ClearProgressBar();
         AssetDatabase.Refresh();
-        AssetBundleNameAuto.ClearAllABNames();
+
     }
 
     // 生成文件列表
@@ -276,6 +252,44 @@ public class Builder
             AssetDatabase.Refresh();
         }
     }
+
+    //删除ab包
+    static void DeleteAB(string filter)
+    {
+        string[] files = Directory.GetFiles(ABPATH);
+        for (int i = 0; i < files.Length; i++)
+        {
+            string path = files[i];
+            string fileName = Path.GetFileName(path);
+            if (fileName.Contains(filter))
+            {
+                File.Delete(path);
+            }
+        }
+    }
+
+    #region 加密
+    //10位
+    private static byte[] headBytes = { 1, 2, 3, 4, 5, 6, 12, 32, 3, 45};
+    static void Encrypt(string filter = "")
+    {
+        List<byte> result = new List<byte>();
+        string[] files = Directory.GetFiles(ABPATH);
+        for(int i =0; i< files.Length; i++)
+        {
+            string path = files[i];
+            string fileName = Path.GetFileName(path);
+            if (fileName.Contains(".meta") || fileName.Contains(".manifest")) continue;
+            if (string.IsNullOrEmpty(filter) || fileName.Contains(filter))
+            {
+                result.Clear();
+                result.AddRange(headBytes);
+                result.AddRange(File.ReadAllBytes(path));
+                File.WriteAllBytes(path, result.ToArray());
+            }
+        }
+    }
+    #endregion
 
     /************************************************************************/
     // FTP

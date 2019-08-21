@@ -13,9 +13,6 @@ public class AppConstWrap
 		L.RegVar("updateHost", get_updateHost, set_updateHost);
 		L.RegVar("loginHost", get_loginHost, set_loginHost);
 		L.RegVar("platID", get_platID, set_platID);
-		L.RegVar("appABPath", get_appABPath, set_appABPath);
-		L.RegVar("localABPath", get_localABPath, set_localABPath);
-		L.RegVar("platformName", get_platformName, set_platformName);
 		L.EndClass();
 	}
 
@@ -101,48 +98,6 @@ public class AppConstWrap
 	}
 
 	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
-	static int get_appABPath(IntPtr L)
-	{
-		try
-		{
-			LuaDLL.lua_pushstring(L, AppConst.appABPath);
-			return 1;
-		}
-		catch (Exception e)
-		{
-			return LuaDLL.toluaL_exception(L, e);
-		}
-	}
-
-	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
-	static int get_localABPath(IntPtr L)
-	{
-		try
-		{
-			LuaDLL.lua_pushstring(L, AppConst.localABPath);
-			return 1;
-		}
-		catch (Exception e)
-		{
-			return LuaDLL.toluaL_exception(L, e);
-		}
-	}
-
-	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
-	static int get_platformName(IntPtr L)
-	{
-		try
-		{
-			LuaDLL.lua_pushstring(L, AppConst.platformName);
-			return 1;
-		}
-		catch (Exception e)
-		{
-			return LuaDLL.toluaL_exception(L, e);
-		}
-	}
-
-	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
 	static int set_updateHost(IntPtr L)
 	{
 		try
@@ -179,51 +134,6 @@ public class AppConstWrap
 		{
 			int arg0 = (int)LuaDLL.luaL_checknumber(L, 2);
 			AppConst.platID = arg0;
-			return 0;
-		}
-		catch (Exception e)
-		{
-			return LuaDLL.toluaL_exception(L, e);
-		}
-	}
-
-	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
-	static int set_appABPath(IntPtr L)
-	{
-		try
-		{
-			string arg0 = ToLua.CheckString(L, 2);
-			AppConst.appABPath = arg0;
-			return 0;
-		}
-		catch (Exception e)
-		{
-			return LuaDLL.toluaL_exception(L, e);
-		}
-	}
-
-	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
-	static int set_localABPath(IntPtr L)
-	{
-		try
-		{
-			string arg0 = ToLua.CheckString(L, 2);
-			AppConst.localABPath = arg0;
-			return 0;
-		}
-		catch (Exception e)
-		{
-			return LuaDLL.toluaL_exception(L, e);
-		}
-	}
-
-	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
-	static int set_platformName(IntPtr L)
-	{
-		try
-		{
-			string arg0 = ToLua.CheckString(L, 2);
-			AppConst.platformName = arg0;
 			return 0;
 		}
 		catch (Exception e)
