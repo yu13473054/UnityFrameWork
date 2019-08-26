@@ -109,11 +109,11 @@ public class Builder
 
         // 上传ab
         EditorUtility.DisplayProgressBar("上传", "上传ab...", 0.8f);
-        UploadDirectory(ABPATH, _ftpServerIP + "/" + RES_FOLDER + "/" + GameMain.platformName + "/", new_resource_version.ToString());
+        UploadDirectory(ABPATH, _ftpServerIP + "/" + RES_FOLDER + "/" + GameMain.Inst.platformName + "/", new_resource_version.ToString());
 
         EditorUtility.DisplayProgressBar("上传", "上传版本文件...", 0.1f);
         // 上传版本文件
-        UploadFile("Assets/StreamingAssets/version.txt", _ftpServerIP + "/" + RES_FOLDER + "/" + GameMain.platformName + "/version.txt");
+        UploadFile("Assets/StreamingAssets/version.txt", _ftpServerIP + "/" + RES_FOLDER + "/" + GameMain.Inst.platformName + "/version.txt");
         EditorUtility.ClearProgressBar();
     }
 
@@ -146,8 +146,6 @@ public class Builder
         RemoveBuildFile();
         // 创建文件夹
         Directory.CreateDirectory(ABPATH);
-
-        AppConst.Init();
 
         //重新生成Resmap文件
         EditorUtility.DisplayProgressBar("打包前准备", "正在重新生成Resmap文件...", 0.1f);

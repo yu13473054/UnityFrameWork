@@ -164,7 +164,6 @@ public static class WrapList
         _GT(typeof(UIMgr)),
         _GT(typeof(NetworkMgr)),
         _GT(typeof(AudioMgr)),
-        _GT(typeof(AppConst)),
         _GT(typeof(CommonUtils)),
         _GT(typeof(FullScreen)),
 

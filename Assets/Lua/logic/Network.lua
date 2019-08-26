@@ -1,27 +1,6 @@
 -- 网络交互部分，收到的消息分发出去不处理逻辑
---[[ 
-命名：data为与服务器交互的数据，msg为反序列化的Lua Table
-1.回包：
-    1) Socket:
-        监听：Event.Net:AddListener( Res_ResLogin, function( data ) end );
-        解包：local msg = Res_LoginMsg():Unpack( data );
-
-    2) Http:
-        监听：Event.Net:AddListener( EVENT_HTTP_LOGIN, function() end );
-
-2.发包：(嵌套时同理)
-    local msg = Req_LoginMsg();
-    msg.secureCode = Login.SecureCode;
-    msg.version = "1.0.0";
-    Network.Send( msg );
-]]
-
 Network = {};
 Network.Connected = false;
-
-require "protocols/C2GResponseMsg_pb"
-require "protocols/C2GRequestMsgProto_pb"
-require "protocols/VO_pb"
 
 -- 每次发消息都会+1
 local _msgCount = 0;

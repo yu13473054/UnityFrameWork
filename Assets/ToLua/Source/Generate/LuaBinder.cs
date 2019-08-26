@@ -73,7 +73,6 @@ public static class LuaBinder
 		UIMgrWrap.Register(L);
 		NetworkMgrWrap.Register(L);
 		AudioMgrWrap.Register(L);
-		AppConstWrap.Register(L);
 		CommonUtilsWrap.Register(L);
 		FullScreenWrap.Register(L);
 		UISystemWrap.Register(L);

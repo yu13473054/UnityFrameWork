@@ -81,7 +81,7 @@ public class GameMainWrap
 	{
 		try
 		{
-			LuaDLL.lua_pushstring(L, GameMain.appABPath);
+			LuaDLL.lua_pushstring(L, GameMain.Inst.appABPath);
 			return 1;
 		}
 		catch (Exception e)
@@ -95,7 +95,7 @@ public class GameMainWrap
 	{
 		try
 		{
-			LuaDLL.lua_pushstring(L, GameMain.localABPath);
+			LuaDLL.lua_pushstring(L, GameMain.Inst.localABPath);
 			return 1;
 		}
 		catch (Exception e)
@@ -109,7 +109,7 @@ public class GameMainWrap
 	{
 		try
 		{
-			LuaDLL.lua_pushstring(L, GameMain.platformName);
+			LuaDLL.lua_pushstring(L, GameMain.Inst.platformName);
 			return 1;
 		}
 		catch (Exception e)
@@ -214,7 +214,7 @@ public class GameMainWrap
 		try
 		{
 			string arg0 = ToLua.CheckString(L, 2);
-			GameMain.appABPath = arg0;
+			GameMain.Inst.appABPath = arg0;
 			return 0;
 		}
 		catch (Exception e)
@@ -229,7 +229,7 @@ public class GameMainWrap
 		try
 		{
 			string arg0 = ToLua.CheckString(L, 2);
-			GameMain.localABPath = arg0;
+			GameMain.Inst.localABPath = arg0;
 			return 0;
 		}
 		catch (Exception e)
@@ -244,7 +244,7 @@ public class GameMainWrap
 		try
 		{
 			string arg0 = ToLua.CheckString(L, 2);
-			GameMain.platformName = arg0;
+			GameMain.Inst.platformName = arg0;
 			return 0;
 		}
 		catch (Exception e)

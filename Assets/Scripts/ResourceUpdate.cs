@@ -20,7 +20,7 @@ public class ResourceUpdate : MonoBehaviour
     void Start()
     {
         //-----开始检查AB包--------
-        string resDir = GameMain.localABPath;  // 本地存储的ab目录
+        string resDir = GameMain.Inst.localABPath;  // 本地存储的ab目录
 
         if (!Directory.Exists(resDir))
             Directory.CreateDirectory(resDir);
@@ -31,11 +31,11 @@ public class ResourceUpdate : MonoBehaviour
     ///进行版本对比
     private IEnumerator CheckVersion()
     {
-        string localVerFile = GameMain.localABPath + VersionFileName;
+        string localVerFile = GameMain.Inst.localABPath + VersionFileName;
         ConfigHandler localVerConfig;
         int localVer;
 
-        string appVerFile = GameMain.appABPath.Replace("/assetbundle", "") + VersionFileName;
+        string appVerFile = GameMain.Inst.appABPath.Replace("/assetbundle", "") + VersionFileName;
         if (!File.Exists(localVerFile)) //本地不存在版本文件：被删除或者第一次安装
         {
             //本地做一份保存
@@ -76,7 +76,7 @@ public class ResourceUpdate : MonoBehaviour
         }
 
         // 拿远端版本
-        UnityWebRequest request = UnityWebRequest.Get(AppConst.updateHost + GameMain.platformName + "/version.txt");
+        UnityWebRequest request = UnityWebRequest.Get(GameMain.Inst.updateHost + GameMain.Inst.platformName + "/version.txt");
         yield return request;
         if (request.error != null)
         {
@@ -104,7 +104,7 @@ public class ResourceUpdate : MonoBehaviour
         if (remoteVerInt > localVer)
         {
             //本地做一份保存
-            File.WriteAllBytes(GameMain.localABPath + VersionFileName, request.downloadHandler.data);
+            File.WriteAllBytes(GameMain.Inst.localABPath + VersionFileName, request.downloadHandler.data);
         }
 
         //检查是否需要更新，防止更新进行到一半时，断网了
@@ -121,7 +121,7 @@ public class ResourceUpdate : MonoBehaviour
     {
         Debug.Log("<ResourceUpdate> 开始释放app内部资源！");
 
-        string appFileListPath = GameMain.appABPath + FileListName;
+        string appFileListPath = GameMain.Inst.appABPath + FileListName;
         //释放所有文件到数据目录
         AssetBundle localFileListAB = AssetBundle.LoadFromFile(appFileListPath);
         string[] fileList = localFileListAB
@@ -136,7 +136,7 @@ public class ResourceUpdate : MonoBehaviour
             }
             string fileDesc = fileList[i];
             string fileName = fileDesc.Split('|')[0];
-            File.Copy(GameMain.appABPath + fileName, GameMain.localABPath + fileName, true);
+            File.Copy(GameMain.Inst.appABPath + fileName, GameMain.Inst.localABPath + fileName, true);
             yield return null;
         }
         Debug.Log("<ResourceUpdate> 解包完成!!!");
@@ -149,8 +149,8 @@ public class ResourceUpdate : MonoBehaviour
         //        StartCoroutine(OnCheckNetwork());
 
         // 下载地址
-        string downloadURL = AppConst.updateHost + GameMain.platformName + "/" + forceVer + "." + remoteVer + "/";
-        string resDir = GameMain.localABPath;
+        string downloadURL = GameMain.Inst.updateHost + GameMain.Inst.platformName + "/" + forceVer + "." + remoteVer + "/";
+        string resDir = GameMain.Inst.localABPath;
 
         // 获取服务器文件列表
         UnityWebRequest request = UnityWebRequest.Get(downloadURL + FileListName);

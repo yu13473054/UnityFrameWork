@@ -61,9 +61,9 @@ function DlgLogin.OnOpen(gameObject)
     -- 先隐藏部分UI
     _serverName.gameObject:SetActive(false);
 
-    -- 请求服务器列表
-    DlgWait.Open();
-    DlgLogin.LoginStart();
+    -- -- 请求服务器列表
+    -- DlgWait.Open();
+    -- DlgLogin.LoginStart();
 end
 
 -- 界面隐藏时调用

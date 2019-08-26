@@ -48,14 +48,14 @@ public static class CommonUtils
     {
         string abPath = "";
 #if UNITY_EDITOR
-        abPath = GameMain.appABPath + abName;
+        abPath = GameMain.Inst.appABPath + abName;
 #else
         abPath = AppConst.localABPath + abName;
 #endif
         //先在本地缓存中查找文件，如果没有，就从app中直接获取
         if (!File.Exists(abPath))
         {
-            abPath = GameMain.appABPath + abName;
+            abPath = GameMain.Inst.appABPath + abName;
         }
         return abPath;
     }

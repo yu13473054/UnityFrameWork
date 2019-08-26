@@ -26,20 +26,24 @@ public class GameMain : MonoBehaviour
     public int lngType = 0;
 
     // 包内Steaming地址
-    public static string appABPath;
+    public string appABPath;
     //本地资源路径
-    public static string localABPath;
+    public string localABPath;
 
     // 平台名称
     #if UNITY_STANDALONE_WIN
-    public static string platformName = "win";
+    public string platformName = "win";
     #elif UNITY_STANDALONE_OSX
-    public static string platformName = "osx";
-    #elif UNITY_ANDROID
-    public static string platformName = "android";
-    #elif UNITY_IPHONE
-    public static string platformName = "ios";
-    #endif
+    public string platformName = "osx";
+#elif UNITY_ANDROID
+    public string platformName = "android";
+#elif UNITY_IPHONE
+    public string platformName = "ios";
+#endif
+
+    public string updateHost;
+    public string loginHost;
+    public int platID;
 
     public int TargetFrameRate
     {

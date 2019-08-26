@@ -36,8 +36,6 @@ public class Boot : MonoBehaviour
 
     private IEnumerator Init(Action endAction)
     {
-        AppConst.Init();
-
         //如果是通用语言，则根据手机的语言系统进行语言的选择
         if (GameMain.Inst.lngType == 0)
         {
