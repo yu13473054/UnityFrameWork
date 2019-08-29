@@ -1,13 +1,13 @@
 ﻿using UnityEngine;
 using System.Collections;
+using UnityEngine.UI;
 
-namespace UnityEngine.UI
+public class UIRaycast : MaskableGraphic
 {
-	public class UIRaycast : MaskableGraphic
+    public bool fillColor = false;
+    protected override void OnPopulateMesh(VertexHelper toFill)
     {
-		protected override void OnPopulateMesh(VertexHelper toFill)
-		{
-			toFill.Clear();
-		}
-	}
+        if (!fillColor)
+            toFill.Clear();
+    }
 }

@@ -9,6 +9,7 @@ public class UIInputField : InputField {
 
     public UIMod uiMod;
     public int controlID = 0;
+    public bool enableValueChangeEvent = false;
 
     protected override void Start()
     {
@@ -20,6 +21,11 @@ public class UIInputField : InputField {
             uiMod = gameObject.GetComponentInParent<UIMod>();
         }
 #endif
+
+        if (enableValueChangeEvent)
+        {
+            onValueChanged.AddListener(OnValueChange);
+        }
     }
 
     public override void OnSubmit(BaseEventData eventData)
@@ -27,5 +33,11 @@ public class UIInputField : InputField {
         base.OnSubmit(eventData);
         if (uiMod == null) return;
         uiMod.OnEvent(UIEVENT.UIINPUT_SUBMIT, controlID, text);
+    }
+
+    void OnValueChange(string value)
+    {
+        if (uiMod == null) return;
+        uiMod.OnEvent(UIEVENT.UIINPUT_VALUECHANGED, controlID, text);
     }
 }

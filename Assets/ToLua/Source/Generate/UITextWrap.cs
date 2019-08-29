@@ -7,10 +7,30 @@ public class UITextWrap
 	public static void Register(LuaState L)
 	{
 		L.BeginClass(typeof(UIText), typeof(UnityEngine.UI.Text));
+		L.RegFunction("SetText", SetText);
 		L.RegFunction("__eq", op_Equality);
 		L.RegFunction("__tostring", ToLua.op_ToString);
-		L.RegVar("localizationID", get_localizationID, set_localizationID);
+		L.RegVar("textID", get_textID, set_textID);
+		L.RegVar("fontName", get_fontName, set_fontName);
 		L.EndClass();
+	}
+
+	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
+	static int SetText(IntPtr L)
+	{
+		try
+		{
+			int count = LuaDLL.lua_gettop(L);
+			UIText obj = (UIText)ToLua.CheckObject<UIText>(L, 1);
+			string arg0 = ToLua.CheckString(L, 2);
+			object[] arg1 = ToLua.ToParamsObject(L, 3, count - 2);
+			obj.SetText(arg0, arg1);
+			return 0;
+		}
+		catch (Exception e)
+		{
+			return LuaDLL.toluaL_exception(L, e);
+		}
 	}
 
 	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
@@ -32,7 +52,7 @@ public class UITextWrap
 	}
 
 	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
-	static int get_localizationID(IntPtr L)
+	static int get_textID(IntPtr L)
 	{
 		object o = null;
 
@@ -40,18 +60,37 @@ public class UITextWrap
 		{
 			o = ToLua.ToObject(L, 1);
 			UIText obj = (UIText)o;
-			string ret = obj.localizationID;
+			string ret = obj.textID;
 			LuaDLL.lua_pushstring(L, ret);
 			return 1;
 		}
 		catch(Exception e)
 		{
-			return LuaDLL.toluaL_exception(L, e, o, "attempt to index localizationID on a nil value");
+			return LuaDLL.toluaL_exception(L, e, o, "attempt to index textID on a nil value");
 		}
 	}
 
 	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
-	static int set_localizationID(IntPtr L)
+	static int get_fontName(IntPtr L)
+	{
+		object o = null;
+
+		try
+		{
+			o = ToLua.ToObject(L, 1);
+			UIText obj = (UIText)o;
+			string ret = obj.fontName;
+			LuaDLL.lua_pushstring(L, ret);
+			return 1;
+		}
+		catch(Exception e)
+		{
+			return LuaDLL.toluaL_exception(L, e, o, "attempt to index fontName on a nil value");
+		}
+	}
+
+	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
+	static int set_textID(IntPtr L)
 	{
 		object o = null;
 
@@ -60,12 +99,31 @@ public class UITextWrap
 			o = ToLua.ToObject(L, 1);
 			UIText obj = (UIText)o;
 			string arg0 = ToLua.CheckString(L, 2);
-			obj.localizationID = arg0;
+			obj.textID = arg0;
 			return 0;
 		}
 		catch(Exception e)
 		{
-			return LuaDLL.toluaL_exception(L, e, o, "attempt to index localizationID on a nil value");
+			return LuaDLL.toluaL_exception(L, e, o, "attempt to index textID on a nil value");
+		}
+	}
+
+	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
+	static int set_fontName(IntPtr L)
+	{
+		object o = null;
+
+		try
+		{
+			o = ToLua.ToObject(L, 1);
+			UIText obj = (UIText)o;
+			string arg0 = ToLua.CheckString(L, 2);
+			obj.fontName = arg0;
+			return 0;
+		}
+		catch(Exception e)
+		{
+			return LuaDLL.toluaL_exception(L, e, o, "attempt to index fontName on a nil value");
 		}
 	}
 }

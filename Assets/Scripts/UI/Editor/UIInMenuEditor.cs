@@ -16,11 +16,23 @@ public class UIInMenuEditor {
 //    static Sprite dropdownRes = AssetDatabase.GetBuiltinExtraResource<Sprite>("UI/Skin/DropdownArrow.psd");
     static Sprite maskRes = AssetDatabase.GetBuiltinExtraResource<Sprite>("UI/Skin/UIMask.psd");
 
-    [MenuItem("GameObject/UI Extends/UIText &#t", false, 10)]
+    [MenuItem("GameObject/UI Extends/UIText &#t", false, 9)]
     static void AddUIText(MenuCommand menuCommand)
     {
         GameObject go = new GameObject("UIText");
         UIText obj = go.AddComponent<UIText>();
+        obj.rectTransform.sizeDelta = new Vector2(160, 30);
+        DefaultUITextProperty(obj);
+        obj.alignment = TextAnchor.MiddleCenter;
+
+        PlaceUIElementRoot(menuCommand, go);
+    }
+
+    [MenuItem("GameObject/UI Extends/UIRichText", false, 10)]
+    static void AddUIRichText(MenuCommand menuCommand)
+    {
+        GameObject go = new GameObject("UIRichText");
+        UIRichText obj = go.AddComponent<UIRichText>();
         obj.rectTransform.sizeDelta = new Vector2(160, 30);
         DefaultUITextProperty(obj);
         obj.alignment = TextAnchor.MiddleCenter;

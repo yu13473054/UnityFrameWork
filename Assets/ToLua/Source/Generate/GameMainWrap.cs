@@ -14,6 +14,9 @@ public class GameMainWrap
 		L.RegVar("appABPath", get_appABPath, set_appABPath);
 		L.RegVar("localABPath", get_localABPath, set_localABPath);
 		L.RegVar("platformName", get_platformName, set_platformName);
+		L.RegVar("updateHost", get_updateHost, set_updateHost);
+		L.RegVar("loginHost", get_loginHost, set_loginHost);
+		L.RegVar("platID", get_platID, set_platID);
 		L.RegVar("Inst", get_Inst, null);
 		L.RegVar("TargetFrameRate", get_TargetFrameRate, null);
 		L.RegVar("ResourceMode", get_ResourceMode, null);
@@ -79,42 +82,114 @@ public class GameMainWrap
 	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
 	static int get_appABPath(IntPtr L)
 	{
+		object o = null;
+
 		try
 		{
-			LuaDLL.lua_pushstring(L, GameMain.Inst.appABPath);
+			o = ToLua.ToObject(L, 1);
+			GameMain obj = (GameMain)o;
+			string ret = obj.appABPath;
+			LuaDLL.lua_pushstring(L, ret);
 			return 1;
 		}
-		catch (Exception e)
+		catch(Exception e)
 		{
-			return LuaDLL.toluaL_exception(L, e);
+			return LuaDLL.toluaL_exception(L, e, o, "attempt to index appABPath on a nil value");
 		}
 	}
 
 	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
 	static int get_localABPath(IntPtr L)
 	{
+		object o = null;
+
 		try
 		{
-			LuaDLL.lua_pushstring(L, GameMain.Inst.localABPath);
+			o = ToLua.ToObject(L, 1);
+			GameMain obj = (GameMain)o;
+			string ret = obj.localABPath;
+			LuaDLL.lua_pushstring(L, ret);
 			return 1;
 		}
-		catch (Exception e)
+		catch(Exception e)
 		{
-			return LuaDLL.toluaL_exception(L, e);
+			return LuaDLL.toluaL_exception(L, e, o, "attempt to index localABPath on a nil value");
 		}
 	}
 
 	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
 	static int get_platformName(IntPtr L)
 	{
+		object o = null;
+
 		try
 		{
-			LuaDLL.lua_pushstring(L, GameMain.Inst.platformName);
+			o = ToLua.ToObject(L, 1);
+			GameMain obj = (GameMain)o;
+			string ret = obj.platformName;
+			LuaDLL.lua_pushstring(L, ret);
 			return 1;
 		}
-		catch (Exception e)
+		catch(Exception e)
 		{
-			return LuaDLL.toluaL_exception(L, e);
+			return LuaDLL.toluaL_exception(L, e, o, "attempt to index platformName on a nil value");
+		}
+	}
+
+	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
+	static int get_updateHost(IntPtr L)
+	{
+		object o = null;
+
+		try
+		{
+			o = ToLua.ToObject(L, 1);
+			GameMain obj = (GameMain)o;
+			string ret = obj.updateHost;
+			LuaDLL.lua_pushstring(L, ret);
+			return 1;
+		}
+		catch(Exception e)
+		{
+			return LuaDLL.toluaL_exception(L, e, o, "attempt to index updateHost on a nil value");
+		}
+	}
+
+	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
+	static int get_loginHost(IntPtr L)
+	{
+		object o = null;
+
+		try
+		{
+			o = ToLua.ToObject(L, 1);
+			GameMain obj = (GameMain)o;
+			string ret = obj.loginHost;
+			LuaDLL.lua_pushstring(L, ret);
+			return 1;
+		}
+		catch(Exception e)
+		{
+			return LuaDLL.toluaL_exception(L, e, o, "attempt to index loginHost on a nil value");
+		}
+	}
+
+	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
+	static int get_platID(IntPtr L)
+	{
+		object o = null;
+
+		try
+		{
+			o = ToLua.ToObject(L, 1);
+			GameMain obj = (GameMain)o;
+			int ret = obj.platID;
+			LuaDLL.lua_pushinteger(L, ret);
+			return 1;
+		}
+		catch(Exception e)
+		{
+			return LuaDLL.toluaL_exception(L, e, o, "attempt to index platID on a nil value");
 		}
 	}
 
@@ -211,45 +286,114 @@ public class GameMainWrap
 	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
 	static int set_appABPath(IntPtr L)
 	{
+		object o = null;
+
 		try
 		{
+			o = ToLua.ToObject(L, 1);
+			GameMain obj = (GameMain)o;
 			string arg0 = ToLua.CheckString(L, 2);
-			GameMain.Inst.appABPath = arg0;
+			obj.appABPath = arg0;
 			return 0;
 		}
-		catch (Exception e)
+		catch(Exception e)
 		{
-			return LuaDLL.toluaL_exception(L, e);
+			return LuaDLL.toluaL_exception(L, e, o, "attempt to index appABPath on a nil value");
 		}
 	}
 
 	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
 	static int set_localABPath(IntPtr L)
 	{
+		object o = null;
+
 		try
 		{
+			o = ToLua.ToObject(L, 1);
+			GameMain obj = (GameMain)o;
 			string arg0 = ToLua.CheckString(L, 2);
-			GameMain.Inst.localABPath = arg0;
+			obj.localABPath = arg0;
 			return 0;
 		}
-		catch (Exception e)
+		catch(Exception e)
 		{
-			return LuaDLL.toluaL_exception(L, e);
+			return LuaDLL.toluaL_exception(L, e, o, "attempt to index localABPath on a nil value");
 		}
 	}
 
 	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
 	static int set_platformName(IntPtr L)
 	{
+		object o = null;
+
 		try
 		{
+			o = ToLua.ToObject(L, 1);
+			GameMain obj = (GameMain)o;
 			string arg0 = ToLua.CheckString(L, 2);
-			GameMain.Inst.platformName = arg0;
+			obj.platformName = arg0;
 			return 0;
 		}
-		catch (Exception e)
+		catch(Exception e)
 		{
-			return LuaDLL.toluaL_exception(L, e);
+			return LuaDLL.toluaL_exception(L, e, o, "attempt to index platformName on a nil value");
+		}
+	}
+
+	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
+	static int set_updateHost(IntPtr L)
+	{
+		object o = null;
+
+		try
+		{
+			o = ToLua.ToObject(L, 1);
+			GameMain obj = (GameMain)o;
+			string arg0 = ToLua.CheckString(L, 2);
+			obj.updateHost = arg0;
+			return 0;
+		}
+		catch(Exception e)
+		{
+			return LuaDLL.toluaL_exception(L, e, o, "attempt to index updateHost on a nil value");
+		}
+	}
+
+	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
+	static int set_loginHost(IntPtr L)
+	{
+		object o = null;
+
+		try
+		{
+			o = ToLua.ToObject(L, 1);
+			GameMain obj = (GameMain)o;
+			string arg0 = ToLua.CheckString(L, 2);
+			obj.loginHost = arg0;
+			return 0;
+		}
+		catch(Exception e)
+		{
+			return LuaDLL.toluaL_exception(L, e, o, "attempt to index loginHost on a nil value");
+		}
+	}
+
+	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
+	static int set_platID(IntPtr L)
+	{
+		object o = null;
+
+		try
+		{
+			o = ToLua.ToObject(L, 1);
+			GameMain obj = (GameMain)o;
+			int arg0 = (int)LuaDLL.luaL_checknumber(L, 2);
+			obj.platID = arg0;
+			return 0;
+		}
+		catch(Exception e)
+		{
+			return LuaDLL.toluaL_exception(L, e, o, "attempt to index platID on a nil value");
 		}
 	}
 }

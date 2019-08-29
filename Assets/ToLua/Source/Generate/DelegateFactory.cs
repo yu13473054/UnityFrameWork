@@ -43,7 +43,6 @@ public class DelegateFactory
 		dict.Add(typeof(System.Action<string>), factory.System_Action_string);
 		dict.Add(typeof(System.Comparison<string>), factory.System_Comparison_string);
 		dict.Add(typeof(UnityEngine.Canvas.WillRenderCanvases), factory.UnityEngine_Canvas_WillRenderCanvases);
-		dict.Add(typeof(AlignToFinish), factory.AlignToFinish);
 		dict.Add(typeof(UnityEngine.UI.InputField.OnValidateInput), factory.UnityEngine_UI_InputField_OnValidateInput);
 
 		DelegateTraits<System.Action>.Init(factory.System_Action);
@@ -72,7 +71,6 @@ public class DelegateFactory
 		DelegateTraits<System.Action<string>>.Init(factory.System_Action_string);
 		DelegateTraits<System.Comparison<string>>.Init(factory.System_Comparison_string);
 		DelegateTraits<UnityEngine.Canvas.WillRenderCanvases>.Init(factory.UnityEngine_Canvas_WillRenderCanvases);
-		DelegateTraits<AlignToFinish>.Init(factory.AlignToFinish);
 		DelegateTraits<UnityEngine.UI.InputField.OnValidateInput>.Init(factory.UnityEngine_UI_InputField_OnValidateInput);
 
 		TypeTraits<System.Action>.Init(factory.Check_System_Action);
@@ -101,7 +99,6 @@ public class DelegateFactory
 		TypeTraits<System.Action<string>>.Init(factory.Check_System_Action_string);
 		TypeTraits<System.Comparison<string>>.Init(factory.Check_System_Comparison_string);
 		TypeTraits<UnityEngine.Canvas.WillRenderCanvases>.Init(factory.Check_UnityEngine_Canvas_WillRenderCanvases);
-		TypeTraits<AlignToFinish>.Init(factory.Check_AlignToFinish);
 		TypeTraits<UnityEngine.UI.InputField.OnValidateInput>.Init(factory.Check_UnityEngine_UI_InputField_OnValidateInput);
 
 		StackTraits<System.Action>.Push = factory.Push_System_Action;
@@ -130,7 +127,6 @@ public class DelegateFactory
 		StackTraits<System.Action<string>>.Push = factory.Push_System_Action_string;
 		StackTraits<System.Comparison<string>>.Push = factory.Push_System_Comparison_string;
 		StackTraits<UnityEngine.Canvas.WillRenderCanvases>.Push = factory.Push_UnityEngine_Canvas_WillRenderCanvases;
-		StackTraits<AlignToFinish>.Push = factory.Push_AlignToFinish;
 		StackTraits<UnityEngine.UI.InputField.OnValidateInput>.Push = factory.Push_UnityEngine_UI_InputField_OnValidateInput;
 	}
     
@@ -1759,63 +1755,6 @@ public class DelegateFactory
 	}
 
 	void Push_UnityEngine_Canvas_WillRenderCanvases(IntPtr L, UnityEngine.Canvas.WillRenderCanvases o)
-	{
-		ToLua.Push(L, o);
-	}
-
-	class AlignToFinish_Event : LuaDelegate
-	{
-		public AlignToFinish_Event(LuaFunction func) : base(func) { }
-		public AlignToFinish_Event(LuaFunction func, LuaTable self) : base(func, self) { }
-
-		public void Call(int param0)
-		{
-			func.BeginPCall();
-			func.Push(param0);
-			func.PCall();
-			func.EndPCall();
-		}
-
-		public void CallWithSelf(int param0)
-		{
-			func.BeginPCall();
-			func.Push(self);
-			func.Push(param0);
-			func.PCall();
-			func.EndPCall();
-		}
-	}
-
-	public AlignToFinish AlignToFinish(LuaFunction func, LuaTable self, bool flag)
-	{
-		if (func == null)
-		{
-			AlignToFinish fn = delegate(int param0) { };
-			return fn;
-		}
-
-		if(!flag)
-		{
-			AlignToFinish_Event target = new AlignToFinish_Event(func);
-			AlignToFinish d = target.Call;
-			target.method = d.Method;
-			return d;
-		}
-		else
-		{
-			AlignToFinish_Event target = new AlignToFinish_Event(func, self);
-			AlignToFinish d = target.CallWithSelf;
-			target.method = d.Method;
-			return d;
-		}
-	}
-
-	bool Check_AlignToFinish(IntPtr L, int pos)
-	{
-		return TypeChecker.CheckDelegateType(typeof(AlignToFinish), L, pos);
-	}
-
-	void Push_AlignToFinish(IntPtr L, AlignToFinish o)
 	{
 		ToLua.Push(L, o);
 	}

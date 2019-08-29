@@ -16,16 +16,10 @@ public class UIEVENT
     public const int UISLIDER_DRAG = 31;                 // UISlider拖动                0 开始拖动，1 拖动中，2 结束拖动
     public const int UISLIDER_PRESS = 34;                // UISlider按下				    0 按下，1 抬起
 
-    public const int UITIMER_TIMERUNOUT = 39;            // UITimer计时结束
-
-    public const int CAMERA_CLICK = 41;                  // Camera单击，也是抬起			组件的名称作为标志值。无controlID
-	public const int CAMERA_PRESS = 42;                  // Camera按下					组件的名称作为标志值。无controlID
-
     public const int UISCROLLVIEW_DRAG = 51;		     // UIScrollView拖动             0 开始拖动，1 拖动中，2 结束拖动
     public const int UISCROLLVIEW_ONVALUECHANGE = 52;	 // UIScrollView内容发生变化时    Vector2对象
     public const int WRAPCONTENT_ONITEMUPDATE = 53;	     // WrapContent中Item更新        自定义对象：index，Transform
     public const int WRAPCONTENT_ONINITDONE = 54;	     // WrapCoNtent中初始化完成       无
-    public const int UIEVENT_UIWRAPVARCONTENT_ADD = 55;	 // UIWrapVarContent控件变动 		内容编号，GameObject对象
     public const int UISCROLLVIEW_ALIGNTOFINISH = 56;	 // ScrollView对齐完成            对齐过程停止时的itemIndex
 
     public const int UIINPUT_SUBMIT = 61;                // 完成修改
@@ -34,17 +28,8 @@ public class UIEVENT
     public const int UISCROLLBAR_ONVALUECHANGE = 71;	 // UIScrollbar内容发生变化时     float值
     public const int UISCROLLBAR_PRESS = 72;             // UIScrollbar按下				 0 按下，1 抬起
 
-    public const int UIDROP = 81;                        // UI拖动结束
-    public const int UIDRAG = 82;                        // UI拖动：0 开始拖动，1 拖动中
+    public const int UIRICHREXT_CLICK = 81;              // UI富文本点击
 
-    public const int DRAGCOMP_CLICK = 91;                // 角色点击
-    public const int DRAGCOMP_DRAG = 92;                 // 角色拖动 : 0 开始拖动，1 拖动中，2 结束拖动
-    public const int DRAGCOMP_PRESS = 93;                // 角色按下：0 按下，1 抬起
-    public const int DRAGCOMP_ENTER = 94;                // 角色进入区域
-    public const int DRAGCOMP_EXIT = 95;                 // 角色离开区域
-
-
-    public const int UITYPEWRITER_FINNISH = 101;         // 打字机结束
 }
 
 public class UIMod : MonoBehaviour 

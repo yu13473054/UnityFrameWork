@@ -31,7 +31,7 @@ public class PoolMgr
     {
         _defaultPoolRoot = null;
         _objPools.Clear();
-        _gameObjPools.Clear();
+        //_gameObjPools.Clear();
         _inst = null;
     }
 
@@ -40,7 +40,7 @@ public class PoolMgr
     private Transform _defaultPoolRoot;//默认的GameObject缓存节点，需要外部指定
 
     private Dictionary<string, object> _objPools = new Dictionary<string, object>();
-    private Dictionary<string, GameObjectPool> _gameObjPools = new Dictionary<string, GameObjectPool>();
+    //private Dictionary<string, GameObjectPool> _gameObjPools = new Dictionary<string, GameObjectPool>();
 
     private PoolMgr()
     {
@@ -49,52 +49,52 @@ public class PoolMgr
         Object.DontDestroyOnLoad(_defaultPoolRoot.gameObject);
     }
 
-    #region GameObject
+    //#region GameObject
 
-    public GameObjectPool CreatePool(string poolName, GameObject prefab, int initSize = 1, Transform poolCacheRoot = null)
-    {
-        if (!poolCacheRoot) poolCacheRoot = _defaultPoolRoot;
-        var pool = new GameObjectPool(poolName, prefab, initSize, poolCacheRoot);
-        _gameObjPools[poolName] = pool;
-        return pool;
-    }
+    //public GameObjectPool CreatePool(string poolName, GameObject prefab, int initSize = 1, Transform poolCacheRoot = null)
+    //{
+    //    if (!poolCacheRoot) poolCacheRoot = _defaultPoolRoot;
+    //    var pool = new GameObjectPool(poolName, prefab, initSize, poolCacheRoot);
+    //    _gameObjPools[poolName] = pool;
+    //    return pool;
+    //}
 
-    public GameObjectPool GetPool(string poolName)
-    {
-        GameObjectPool reslut = null;
-        _gameObjPools.TryGetValue(poolName, out reslut);
-        return reslut;
-    }
+    //public GameObjectPool GetPool(string poolName)
+    //{
+    //    GameObjectPool reslut = null;
+    //    _gameObjPools.TryGetValue(poolName, out reslut);
+    //    return reslut;
+    //}
 
-    public GameObject Spawn(string poolName)
-    {
-        GameObject result = null;
-        GameObjectPool pool = GetPool(poolName);
-        if (pool != null)
-        {
-            result = pool.NextAvailableObject();
-        }
-        else
-        {
-            Debug.LogError("<PoolMgr> Invalid pool name specified: " + poolName);
-        }
-        return result;
-    }
+    //public GameObject Spawn(string poolName)
+    //{
+    //    GameObject result = null;
+    //    GameObjectPool pool = GetPool(poolName);
+    //    if (pool != null)
+    //    {
+    //        result = pool.NextAvailableObject();
+    //    }
+    //    else
+    //    {
+    //        Debug.LogError("<PoolMgr> Invalid pool name specified: " + poolName);
+    //    }
+    //    return result;
+    //}
 
-    public void Despawn(string poolName, GameObject go)
-    {
-        GameObjectPool pool = GetPool(poolName);
-        if (pool != null)
-        {
-            pool.ReturnObjectToPool(poolName, go);
-        }
-        else
-        {
-            Debug.LogError("<PoolMgr> Invalid pool name specified: " + poolName);
-        }
-    }
+    //public void Despawn(string poolName, GameObject go)
+    //{
+    //    GameObjectPool pool = GetPool(poolName);
+    //    if (pool != null)
+    //    {
+    //        pool.ReturnObjectToPool(poolName, go);
+    //    }
+    //    else
+    //    {
+    //        Debug.LogError("<PoolMgr> Invalid pool name specified: " + poolName);
+    //    }
+    //}
 
-    #endregion
+    //#endregion
 
     #region Object
     public ObjectPool<T> CreateObjPool<T>(Action<T> actionOnGet, Action<T> actionOnRelease) where T : class

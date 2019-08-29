@@ -13,25 +13,24 @@ public enum ItemAlignTo
     Target,//选中的item，会对齐到指定目标的位置
 }
 
-public delegate void AlignToFinish(int itemIndex);
-
 public class UIScrollView : ScrollRect
 {
     public UIMod uiMod;
     public int controlID = 0;
 
+    public bool dragEventOn = false;
+
     public bool constractDragOnFit;
     public ItemAlignTo alignTo = ItemAlignTo.None;
     public RectTransform alignTarget;
     [SerializeField]
-    private int _alignItemIndex=0;
+    private int _alignItemIndex = 0;
     [SerializeField]
     private bool _forceClamp;//对齐到目标时，强制不能拖出边界，某些情况下，必须能拖出边界，慎用！
 
-    public AlignToFinish onAlignToFinish; //对齐过程完成
-//    public EnterTargetBounds onEnterTargetBounds;//开始进入对齐目标的范围
-//    public ToTarget onToTarget;//到达对齐目标的位置
-//    public ExitTargetBounds onExitTargetBounds;//
+    //    public EnterTargetBounds onEnterTargetBounds;//开始进入对齐目标的范围
+    //    public ToTarget onToTarget;//到达对齐目标的位置
+    //    public ExitTargetBounds onExitTargetBounds;//
 
     private bool _isAlignInit;
     private ItemAlignTo _lastAlignTo;
@@ -51,6 +50,7 @@ public class UIScrollView : ScrollRect
     private bool _isDragging;
     private bool _cacuTarget;
     private Vector2 closingVelocity;
+    private bool _startAlign = false;
     private int _lastAlignItemIndex = -1;
 
     protected override void Awake()
@@ -79,7 +79,7 @@ public class UIScrollView : ScrollRect
 
     private void OnValueChange(Vector2 delta)
     {
-        if (uiMod == null) return;
+        if (uiMod == null || !dragEventOn) return;
         uiMod.OnEvent(UIEVENT.UISCROLLVIEW_ONVALUECHANGE, controlID, delta);
     }
 
@@ -99,7 +99,7 @@ public class UIScrollView : ScrollRect
             _isClosing = false;
             _cacuTarget = true;
         }
-        if (eventData.button != PointerEventData.InputButton.Left || !this.IsActive() || uiMod == null) return;
+        if (eventData.button != PointerEventData.InputButton.Left || !this.IsActive() || uiMod == null || !dragEventOn) return;
         uiMod.OnEvent(UIEVENT.UISCROLLVIEW_DRAG, controlID, 0);
     }
 
@@ -130,8 +130,8 @@ public class UIScrollView : ScrollRect
             ForceClamp();
         }
 
-        if (uiMod == null) return;
-        uiMod.OnEvent(UIEVENT.UISCROLLVIEW_DRAG, controlID, 1);
+        //if (uiMod == null) return;
+        //uiMod.OnEvent(UIEVENT.UISCROLLVIEW_DRAG, controlID, 1);
     }
 
     //拖拽时，内容不能拖拽超过对齐边界：不能有回弹效果
@@ -160,7 +160,7 @@ public class UIScrollView : ScrollRect
         _isDragging = false;
         base.OnEndDrag(eventData);
 
-        if (eventData.button != PointerEventData.InputButton.Left || uiMod == null) return;
+        if (eventData.button != PointerEventData.InputButton.Left || uiMod == null || !dragEventOn) return;
         uiMod.OnEvent(UIEVENT.UISCROLLVIEW_DRAG, controlID, 2);
     }
 
@@ -169,8 +169,8 @@ public class UIScrollView : ScrollRect
     {
         //挂载循环列表后，padding值会被修改`
         WrapContent wrapContent = _contentLayout.GetComponent<WrapContent>();
-        
-        if (wrapContent && wrapContent.InitPadding!=null)
+
+        if (wrapContent && wrapContent.InitPadding != null)
         {
             if (horizontal)
             {
@@ -245,15 +245,15 @@ public class UIScrollView : ScrollRect
                 ForceClamp();
             }
 
-            if (_lastAlignItemIndex != _alignItemIndex)
+            if (_startAlign)
             {
+                _startAlign = false;
                 //获取对齐到的item的index值
                 _isClosing = true;
-                _lastAlignItemIndex = _alignItemIndex;
                 if (alignTo == ItemAlignTo.Target)
                 {
-                    CacuItemIndex(_lastAlignItemIndex + 2);
-                    _targetPos = GetTargetPosByTarget(_lastAlignItemIndex + 2);
+                    CacuItemIndex(_alignItemIndex + 2);
+                    _targetPos = GetTargetPosByTarget(_alignItemIndex + 2);
                 }
             }
 
@@ -329,10 +329,9 @@ public class UIScrollView : ScrollRect
     {
         velocity = Vector2.zero;
         _isClosing = false;
-        if (onAlignToFinish != null)
-        {
-            onAlignToFinish(_itemIndex);
-        }
+
+        if (uiMod == null) return;
+        uiMod.OnEvent(UIEVENT.UISCROLLVIEW_ALIGNTOFINISH, controlID, _itemIndex);
     }
 
     /// 设置对齐到某个item上，index从0开始
@@ -343,6 +342,7 @@ public class UIScrollView : ScrollRect
         {
             _alignItemIndex = index;
             _hasClosingAnim = hasAnim;
+            _startAlign = true;
         }
     }
 
@@ -429,7 +429,7 @@ public class UIScrollView : ScrollRect
             _itemSize = grid.cellSize[index];
         }
         //加上0.5是为了防止浮点数计算的误差
-        itemNum = (int) ((content.rect.size[index]+_space - _paddingSize.x - _paddingSize.y) /(_itemSize+_space) + 0.5f);
+        itemNum = (int)((content.rect.size[index] + _space - _paddingSize.x - _paddingSize.y) / (_itemSize + _space) + 0.5f);
         itemNum += 2;//增加padding的两个区域
         CaculateAlignEdges(itemNum, _itemSize);
     }
@@ -507,11 +507,11 @@ public class UIScrollView : ScrollRect
                 //使用坐标对齐
                 for (int i = 0; i < _itemAlignEdges.Length; i++)
                 {
-                    if( (horizontal && 
+                    if ((horizontal &&
                             (_alignToPos <= content.anchoredPosition.x + _itemAlignEdges[i] ||
-                            (i == _itemAlignEdges.Length-1 && _alignToPos >= content.anchoredPosition.x + _itemAlignEdges[i])))
-                     || (vertical && 
-                            (_alignToPos >= content.anchoredPosition.y + _itemAlignEdges[i]  || 
+                            (i == _itemAlignEdges.Length - 1 && _alignToPos >= content.anchoredPosition.x + _itemAlignEdges[i])))
+                     || (vertical &&
+                            (_alignToPos >= content.anchoredPosition.y + _itemAlignEdges[i] ||
                             (i == _itemAlignEdges.Length - 1 && _alignToPos <= content.anchoredPosition.y + _itemAlignEdges[i]))))
                     {
                         CacuItemIndex(i);
@@ -544,7 +544,7 @@ public class UIScrollView : ScrollRect
             {
                 itemPos = (_itemAlignEdges[2] + _itemAlignEdges[1] + _space / 2) / 2;
             }
-           
+
         }
         else if (i == _itemAlignEdges.Length - 1 || i == _itemAlignEdges.Length - 2)
         {
@@ -552,18 +552,18 @@ public class UIScrollView : ScrollRect
             {
                 itemPos = _itemAlignEdges[_itemAlignEdges.Length - 2] -
                           (_itemAlignEdges[_itemAlignEdges.Length - 2] - _itemAlignEdges[_itemAlignEdges.Length - 3] -
-                           _space/2)/2;
+                           _space / 2) / 2;
             }
             else if (vertical)
             {
                 itemPos = _itemAlignEdges[_itemAlignEdges.Length - 2] -
                           (_itemAlignEdges[_itemAlignEdges.Length - 2] - _itemAlignEdges[_itemAlignEdges.Length - 3] +
-                           _space/2)/2;
+                           _space / 2) / 2;
             }
         }
         else
         {
-            itemPos = (_itemAlignEdges[i] + _itemAlignEdges[i - 1])/2;
+            itemPos = (_itemAlignEdges[i] + _itemAlignEdges[i - 1]) / 2;
         }
         return _alignToPos - itemPos;
     }

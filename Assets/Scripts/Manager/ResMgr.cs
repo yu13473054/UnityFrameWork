@@ -39,17 +39,13 @@ public class ResMgr : MonoBehaviour
     {
         _inst = this;
         DontDestroyOnLoad(gameObject);
-
-        _bundleDic = new Dictionary<string, AssetBundleInfo>();
-        _moduleDic = new Dictionary<string, List<AssetBundleInfo>>();
-        _multiLngNameDic = new Dictionary<string, string[]>();
     }
 
     public void Init()
     {
-        _bundleDic.Clear();
-        _moduleDic.Clear();
-        _multiLngNameDic.Clear();
+        _bundleDic = new Dictionary<string, AssetBundleInfo>();
+        _moduleDic = new Dictionary<string, List<AssetBundleInfo>>();
+        _multiLngNameDic = new Dictionary<string, string[]>();
 
         //加载ab依赖关系文件
         if (GameMain.Inst.ResourceMode != 0)
@@ -174,6 +170,13 @@ public class ResMgr : MonoBehaviour
         string assetName = reskeyname;
         ResmapInfo info = GetResinfoInObj(reskeyname);
         return LoadAsset<Object>(module, assetName, info.abName, info.editorPath);
+    }
+
+    public T LoadObj<T>(string reskeyname, string module) where T : UnityEngine.Object
+    {
+        string assetName = reskeyname;
+        ResmapInfo info = GetResinfoInObj(reskeyname);
+        return LoadAsset<T>(module, assetName, info.abName, info.editorPath);
     }
 
     public Material LoadMaterial(string reskeyname, string module)

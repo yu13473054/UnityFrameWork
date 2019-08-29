@@ -40,7 +40,7 @@ public static class Localization
                 string key = multiLngNameTable.GetValue(row, 0);
                 if (key == fileName)
                 {
-                    if (GameMain.Inst.lngType == 0)
+                    if (!GameMain.Inst || GameMain.Inst.lngType == 0)
                     {
                         reskeyName = multiLngNameTable.GetValue(row, 1);
                     }

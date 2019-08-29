@@ -12,6 +12,7 @@ public class UIInputFieldWrap
 		L.RegFunction("__tostring", ToLua.op_ToString);
 		L.RegVar("uiMod", get_uiMod, set_uiMod);
 		L.RegVar("controlID", get_controlID, set_controlID);
+		L.RegVar("enableValueChangeEvent", get_enableValueChangeEvent, set_enableValueChangeEvent);
 		L.EndClass();
 	}
 
@@ -89,6 +90,25 @@ public class UIInputFieldWrap
 	}
 
 	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
+	static int get_enableValueChangeEvent(IntPtr L)
+	{
+		object o = null;
+
+		try
+		{
+			o = ToLua.ToObject(L, 1);
+			UIInputField obj = (UIInputField)o;
+			bool ret = obj.enableValueChangeEvent;
+			LuaDLL.lua_pushboolean(L, ret);
+			return 1;
+		}
+		catch(Exception e)
+		{
+			return LuaDLL.toluaL_exception(L, e, o, "attempt to index enableValueChangeEvent on a nil value");
+		}
+	}
+
+	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
 	static int set_uiMod(IntPtr L)
 	{
 		object o = null;
@@ -123,6 +143,25 @@ public class UIInputFieldWrap
 		catch(Exception e)
 		{
 			return LuaDLL.toluaL_exception(L, e, o, "attempt to index controlID on a nil value");
+		}
+	}
+
+	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
+	static int set_enableValueChangeEvent(IntPtr L)
+	{
+		object o = null;
+
+		try
+		{
+			o = ToLua.ToObject(L, 1);
+			UIInputField obj = (UIInputField)o;
+			bool arg0 = LuaDLL.luaL_checkboolean(L, 2);
+			obj.enableValueChangeEvent = arg0;
+			return 0;
+		}
+		catch(Exception e)
+		{
+			return LuaDLL.toluaL_exception(L, e, o, "attempt to index enableValueChangeEvent on a nil value");
 		}
 	}
 }

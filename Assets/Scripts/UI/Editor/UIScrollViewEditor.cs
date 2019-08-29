@@ -9,6 +9,7 @@ public class UIScrollViewEditor : ScrollRectEditor
 {
     private SerializedProperty _UIModProperty;
     private SerializedProperty _controlIDProperty;
+    private SerializedProperty _eventOnProperty;
     private SerializedProperty _constractDragOnFitProperty;
     private SerializedProperty _alignToProperty;
     private SerializedProperty _alignTargetProperty;
@@ -20,6 +21,7 @@ public class UIScrollViewEditor : ScrollRectEditor
         base.OnEnable();
         _UIModProperty = serializedObject.FindProperty("uiMod");
         _controlIDProperty = serializedObject.FindProperty("controlID");
+        _eventOnProperty = serializedObject.FindProperty("dragEventOn");
         _constractDragOnFitProperty = serializedObject.FindProperty("constractDragOnFit");
         _alignToProperty = serializedObject.FindProperty("alignTo");
         _alignTargetProperty = serializedObject.FindProperty("alignTarget");
@@ -31,6 +33,7 @@ public class UIScrollViewEditor : ScrollRectEditor
     {
         EditorGUILayout.PropertyField(_UIModProperty);
         EditorGUILayout.PropertyField(_controlIDProperty);
+        EditorGUILayout.PropertyField(_eventOnProperty);
 
         serializedObject.ApplyModifiedProperties();
 
@@ -38,21 +41,21 @@ public class UIScrollViewEditor : ScrollRectEditor
 
         EditorGUILayout.PropertyField(_constractDragOnFitProperty);
 
-	    ItemAlignTo alignType = (ItemAlignTo)_alignToProperty.enumValueIndex;
+        ItemAlignTo alignType = (ItemAlignTo)_alignToProperty.enumValueIndex;
         EditorGUILayout.PropertyField(_alignToProperty);
 
         ++EditorGUI.indentLevel;
-	    if (alignType != ItemAlignTo.None)
-	    {
+        if (alignType != ItemAlignTo.None)
+        {
             if (alignType == ItemAlignTo.Target)
-	        {
+            {
                 EditorGUILayout.PropertyField(_alignTargetProperty);
                 EditorGUILayout.PropertyField(_alignItemIndexProperty);
                 EditorGUILayout.PropertyField(_forceClampProperty);
             }
-	    }
+        }
         --EditorGUI.indentLevel;
 
         serializedObject.ApplyModifiedProperties();
-	}
+    }
 }

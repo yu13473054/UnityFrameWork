@@ -17,10 +17,10 @@ public class UIScrollViewWrap
 		L.RegFunction("__tostring", ToLua.op_ToString);
 		L.RegVar("uiMod", get_uiMod, set_uiMod);
 		L.RegVar("controlID", get_controlID, set_controlID);
+		L.RegVar("dragEventOn", get_dragEventOn, set_dragEventOn);
 		L.RegVar("constractDragOnFit", get_constractDragOnFit, set_constractDragOnFit);
 		L.RegVar("alignTo", get_alignTo, set_alignTo);
 		L.RegVar("alignTarget", get_alignTarget, set_alignTarget);
-		L.RegVar("onAlignToFinish", get_onAlignToFinish, set_onAlignToFinish);
 		L.EndClass();
 	}
 
@@ -199,6 +199,25 @@ public class UIScrollViewWrap
 	}
 
 	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
+	static int get_dragEventOn(IntPtr L)
+	{
+		object o = null;
+
+		try
+		{
+			o = ToLua.ToObject(L, 1);
+			UIScrollView obj = (UIScrollView)o;
+			bool ret = obj.dragEventOn;
+			LuaDLL.lua_pushboolean(L, ret);
+			return 1;
+		}
+		catch(Exception e)
+		{
+			return LuaDLL.toluaL_exception(L, e, o, "attempt to index dragEventOn on a nil value");
+		}
+	}
+
+	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
 	static int get_constractDragOnFit(IntPtr L)
 	{
 		object o = null;
@@ -256,25 +275,6 @@ public class UIScrollViewWrap
 	}
 
 	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
-	static int get_onAlignToFinish(IntPtr L)
-	{
-		object o = null;
-
-		try
-		{
-			o = ToLua.ToObject(L, 1);
-			UIScrollView obj = (UIScrollView)o;
-			AlignToFinish ret = obj.onAlignToFinish;
-			ToLua.Push(L, ret);
-			return 1;
-		}
-		catch(Exception e)
-		{
-			return LuaDLL.toluaL_exception(L, e, o, "attempt to index onAlignToFinish on a nil value");
-		}
-	}
-
-	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
 	static int set_uiMod(IntPtr L)
 	{
 		object o = null;
@@ -309,6 +309,25 @@ public class UIScrollViewWrap
 		catch(Exception e)
 		{
 			return LuaDLL.toluaL_exception(L, e, o, "attempt to index controlID on a nil value");
+		}
+	}
+
+	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
+	static int set_dragEventOn(IntPtr L)
+	{
+		object o = null;
+
+		try
+		{
+			o = ToLua.ToObject(L, 1);
+			UIScrollView obj = (UIScrollView)o;
+			bool arg0 = LuaDLL.luaL_checkboolean(L, 2);
+			obj.dragEventOn = arg0;
+			return 0;
+		}
+		catch(Exception e)
+		{
+			return LuaDLL.toluaL_exception(L, e, o, "attempt to index dragEventOn on a nil value");
 		}
 	}
 
@@ -366,25 +385,6 @@ public class UIScrollViewWrap
 		catch(Exception e)
 		{
 			return LuaDLL.toluaL_exception(L, e, o, "attempt to index alignTarget on a nil value");
-		}
-	}
-
-	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
-	static int set_onAlignToFinish(IntPtr L)
-	{
-		object o = null;
-
-		try
-		{
-			o = ToLua.ToObject(L, 1);
-			UIScrollView obj = (UIScrollView)o;
-			AlignToFinish arg0 = (AlignToFinish)ToLua.CheckDelegate<AlignToFinish>(L, 2);
-			obj.onAlignToFinish = arg0;
-			return 0;
-		}
-		catch(Exception e)
-		{
-			return LuaDLL.toluaL_exception(L, e, o, "attempt to index onAlignToFinish on a nil value");
 		}
 	}
 }
