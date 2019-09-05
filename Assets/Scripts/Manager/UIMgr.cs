@@ -467,6 +467,7 @@ public class UIMgr : MonoBehaviour
     {
         UnloadAllUI();
         _inst = null;
+        Debug.Log("<UIMgr> OnDestroy!");
     }
 
     /// 在UI界面被Destroy的时候，需要同时卸载ab包

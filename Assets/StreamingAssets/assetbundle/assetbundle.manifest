@@ -1,21 +1,55 @@
 ManifestFileVersion: 0
-CRC: 3071126726
+CRC: 4283361971
 AssetBundleManifest:
   AssetBundleInfos:
     Info_0:
-      Name: atlas_dlglogin
+      Name: res_atlas_dlglogin
       Dependencies: {}
     Info_1:
-      Name: shader_ui
-      Dependencies: {}
+      Name: res_material_ui
+      Dependencies:
+        Dependency_0: res_shader_ui
     Info_2:
-      Name: sprites_ui_loginbg
+      Name: res_shader_ui
       Dependencies: {}
     Info_3:
-      Name: dlglogin
-      Dependencies:
-        Dependency_0: atlas_dlglogin
-        Dependency_1: sprites_ui_loginbg
+      Name: res_sprites_ui_loginbg
+      Dependencies: {}
     Info_4:
-      Name: dlgwait
+      Name: res_prefab_ui_dlglogin
+      Dependencies:
+        Dependency_0: res_atlas_dlglogin
+        Dependency_1: res_sprites_ui_loginbg
+    Info_5:
+      Name: res_prefab_ui_dlgwait
+      Dependencies: {}
+    Info_6:
+      Name: localization_cn_data_excel
+      Dependencies: {}
+    Info_7:
+      Name: localization_cn_data_txt
+      Dependencies: {}
+    Info_8:
+      Name: localization_en_data_excel
+      Dependencies: {}
+    Info_9:
+      Name: localization_en_data_txt
+      Dependencies: {}
+    Info_10:
+      Name: localization_jp_data_txt
+      Dependencies: {}
+    Info_11:
+      Name: data
+      Dependencies: {}
+    Info_12:
+      Name: lua_logic
+      Dependencies: {}
+    Info_13:
+      Name: lua_tolua
+      Dependencies: {}
+    Info_14:
+      Name: lua_ui
+      Dependencies: {}
+    Info_15:
+      Name: lua_utils
       Dependencies: {}

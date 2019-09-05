@@ -15,7 +15,7 @@ public class MultiLngResDetach {
         new DirInfo("Assets/Localization/{0}/Sprites"),
     };
 
-    [MenuItem("工具/多语言资源引用打断")]
+    [MenuItem("打包/多语言资源引用打断", false, 13)]
     public static void Done()
     {
         List<DirInfo> configs = new List<DirInfo>();

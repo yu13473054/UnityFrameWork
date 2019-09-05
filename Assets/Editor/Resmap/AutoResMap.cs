@@ -116,7 +116,7 @@ public class AutoResMap
         Debug.Log("Delete From Resmap Done!");
     }
 
-    [MenuItem("工具/重新生成所有的Resmap")]
+    [MenuItem("打包/重新生成所有的Resmap", false, 12)]
     public static void AddAllAsset()
     {
         InitData();
@@ -235,7 +235,7 @@ public class AutoResMap
                     info = new ResmapInfo();
                     info.key = fileName;
                     info.editorPath = filePath;
-                    info.abName = AssetBundleNameAuto.GetResABName(filePath);
+                    info.abName = AutoAssetBundleName.GetResABName(filePath);
                     if (!string.IsNullOrEmpty(info.abName))
                     {
                         dic.Add(fileName, info);
@@ -251,7 +251,7 @@ public class AutoResMap
                         Debug.LogErrorFormat("添加的资源已经有重名的键名{0}，请检查！已存在路径{1}，添加的路径{2}", fileName, info.editorPath, filePath);
                         continue;
                     }
-                    string abName = AssetBundleNameAuto.GetResABName(filePath);
+                    string abName = AutoAssetBundleName.GetResABName(filePath);
                     if (string.IsNullOrEmpty(abName)) continue;
                     info.abName = abName;
                     info.editorPath = filePath;

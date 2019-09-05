@@ -31,7 +31,6 @@ public static class WrapList
         typeof(UnityEngine.Resources),
         typeof(UnityEngine.Physics),
         typeof(UnityEngine.RenderSettings),
-        typeof(UnityEngine.QualitySettings),
         typeof(UnityEngine.GL),
         typeof(UnityEngine.Graphics),
     };
@@ -79,7 +78,6 @@ public static class WrapList
         _GT(typeof(Transform)).SetNameSpace(null),
         _GT(typeof(RectTransform)).SetNameSpace(null),
         _GT(typeof(Material)).SetNameSpace(null),
-        _GT(typeof(Light)).SetNameSpace(null),
         _GT(typeof(Rigidbody)).SetNameSpace(null),
         _GT(typeof(Camera)).SetNameSpace(null),
         _GT(typeof(AudioSource)).SetNameSpace(null),
@@ -134,7 +132,6 @@ public static class WrapList
         _GT(typeof(PlayMode)).SetNameSpace(null),
         _GT(typeof(WrapMode)).SetNameSpace(null),
 
-        _GT(typeof(QualitySettings)).SetNameSpace(null),
         _GT(typeof(RenderSettings)).SetNameSpace(null),                                                   
         _GT(typeof(BlendWeights)).SetNameSpace(null),           
         _GT(typeof(RenderTexture)).SetNameSpace(null),

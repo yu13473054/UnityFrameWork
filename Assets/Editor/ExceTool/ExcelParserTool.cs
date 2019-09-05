@@ -31,7 +31,7 @@ public class ExcelParserTool
     static Dictionary<string, Dictionary<string, string>> localIdDic = new Dictionary<string, Dictionary<string, string>>();
     static Dictionary<string, Dictionary<string, string>> localValueDic = new Dictionary<string, Dictionary<string, string>>();
 
-    [MenuItem("工具/生成Excel数据")]
+    [MenuItem("打包/生成Excel数据", false, 11)]
     public static void GenerateDataStructure()
     {
         tableList.Clear();

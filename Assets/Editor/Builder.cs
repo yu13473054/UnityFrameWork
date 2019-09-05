@@ -11,7 +11,7 @@ public class Builder
     const string RES_FOLDER = "";
     const string ABPATH = "Assets/StreamingAssets/assetbundle";
 
-    [MenuItem("打包/资源出包(打包+上传)", false, 1)]
+    [MenuItem("打包/资源出包(打包+上传)", false, 100)]
     static void Build_Upload()
     {
         BuildAll();
@@ -36,18 +36,18 @@ public class Builder
         else
             oldFile = null;
         DeleteAB("lua_");
-        AssetBundleNameAuto.ClearAllABNames();
+        AutoAssetBundleName.ClearAllABNames();
 
         EditorUtility.DisplayProgressBar("打包前准备", "正在处理Lua文件...", 0.1f);
         LuaEncode.StartEncode(EditorUserBuildSettings.activeBuildTarget);
-        AssetBundleNameAuto.SetLuaABNames();
+        AutoAssetBundleName.SetLuaABNames();
 
         EditorUtility.DisplayProgressBar("打包", "正在打包Lua文件...", 0.5f);
         BuildPipeline.BuildAssetBundles(ABPATH, BuildAssetBundleOptions.ChunkBasedCompression, EditorUserBuildSettings.activeBuildTarget);
 
         EditorUtility.DisplayProgressBar("收尾", "Lua还原中...", 0.7f);
         LuaEncode.EndEncode();
-        AssetBundleNameAuto.ClearLuaABNames();
+        AutoAssetBundleName.ClearLuaABNames();
 
         EditorUtility.DisplayProgressBar("收尾", "Lua加密中...", 0.9f);
         Encrypt("lua_");
@@ -74,16 +74,16 @@ public class Builder
 
         DeleteAB("data");
 
-        AssetBundleNameAuto.ClearAllABNames();
+        AutoAssetBundleName.ClearAllABNames();
         EditorUtility.DisplayProgressBar("打包前准备", "正在生成resmap文件...", 0.1f);
         //重新生成Resmap文件
         AutoResMap.AddAllAsset();
         EditorUtility.DisplayProgressBar("打包前准备", "正在处理Data文件...", 0.3f);
-        AssetBundleNameAuto.SetDataABNames();
+        AutoAssetBundleName.SetDataABNames();
 
         EditorUtility.DisplayProgressBar("打包", "正在打包Data文件...", 0.8f);
         BuildPipeline.BuildAssetBundles(ABPATH, BuildAssetBundleOptions.ChunkBasedCompression, EditorUserBuildSettings.activeBuildTarget);
-        AssetBundleNameAuto.ClearDataABNames();
+        AutoAssetBundleName.ClearDataABNames();
         EditorUtility.DisplayProgressBar("收尾", "Data加密中...", 0.9f);
         Encrypt("data");
         EditorUtility.ClearProgressBar();
@@ -141,7 +141,7 @@ public class Builder
 
     static void BuildAll()
     {
-        AssetBundleNameAuto.ClearAllABNames();
+        AutoAssetBundleName.ClearAllABNames();
         // 删除构建的文件
         RemoveBuildFile();
         // 创建文件夹
@@ -156,12 +156,12 @@ public class Builder
 
         // 自动设置AB名
         EditorUtility.DisplayProgressBar("打包前准备", "正在自动设置AB名...", 0.3f);
-        AssetBundleNameAuto.SetResABNames();
-        AssetBundleNameAuto.SetDataABNames();
+        AutoAssetBundleName.SetResABNames();
+        AutoAssetBundleName.SetDataABNames();
         //lua打包特殊处理
         EditorUtility.DisplayProgressBar("打包前准备", "处理Lua文件的AB名...", 0.4f);
         LuaEncode.StartEncode(EditorUserBuildSettings.activeBuildTarget);
-        AssetBundleNameAuto.SetLuaABNames();
+        AutoAssetBundleName.SetLuaABNames();
         // 打包
         EditorUtility.DisplayProgressBar("打包", "AB打包中...", 0.7f);
         BuildPipeline.BuildAssetBundles(ABPATH, BuildAssetBundleOptions.ChunkBasedCompression, EditorUserBuildSettings.activeBuildTarget);
@@ -172,7 +172,7 @@ public class Builder
         // 创建文件列表
         EditorUtility.DisplayProgressBar( "统计", "生成FileList...", 0.9f );
         BuildFileList();
-        AssetBundleNameAuto.ClearAllABNames();
+        AutoAssetBundleName.ClearAllABNames();
 
         EditorUtility.DisplayProgressBar("统计", "ab加密中...", 1f);
         Encrypt();
@@ -265,6 +265,46 @@ public class Builder
             }
         }
     }
+
+    #region 脚本打包
+    public static void Package()
+    {
+        RetieveParam();//获取命令行参数
+        BuildAll();//打包AB包
+        BuildPlayerOptions opt = new BuildPlayerOptions();
+        if (EditorUserBuildSettings.activeBuildTarget == BuildTarget.Android)
+        {
+            PackageAndroid();//平台设置
+            opt.locationPathName = "AAA.apk";
+        }
+        else
+        {
+            Debug.LogError("平台类型错误：" + EditorUserBuildSettings.activeBuildTarget);
+            return;
+        }
+        opt.scenes = new[] { "Assets/Scenes/Boot.unity" };
+        opt.target = EditorUserBuildSettings.activeBuildTarget;
+        opt.options = BuildOptions.None;
+        BuildPipeline.BuildPlayer(opt);
+    }
+
+    //获取参数
+    private static void RetieveParam()
+    {
+        string[] parameters = System.Environment.GetCommandLineArgs();
+        //如果有三个参数，应该这样遍历得到，注意参数如果漏填的情况，需要增加保护机制
+        for(int i = parameters.Length-3; i< parameters.Length; i++)
+        {
+            Debug.Log("参数：" + parameters[i]);
+        }
+    }
+
+    static void PackageAndroid()
+    {
+        EditorUserBuildSettings.androidBuildSubtarget = MobileTextureSubtarget.ETC2; //设置图片压缩模式
+        EditorUserBuildSettings.androidBuildSystem = AndroidBuildSystem.Internal;
+    }
+    #endregion
 
     #region 加密
     //10位

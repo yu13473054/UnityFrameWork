@@ -1,0 +1,22 @@
+#unity的路径
+Unity_Path=/Applications/Unity/Unity.app/Contents/MacOS/Unity
+
+#项目路径
+Project_Path=/Users/jaze/Projects/UnityFrameWork
+
+#日志路径
+Log_Path=$Project_Path/Log.txt
+
+#打包平台
+BuildTarget=Android
+
+#参数
+#Param1=1
+#Param2="a"
+#Param3="cccc"
+
+echo "==============开始打包=============="
+
+$Unity_Path -quit -batchmode -logFile $Log_Path -buildTarget $BuildTarget -executeMethod Builder.Package $Param1 $Param2 $Param3
+
+echo "==============打包结束=============="

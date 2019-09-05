@@ -10,7 +10,6 @@ public class GameMainWrap
 		L.RegFunction("__eq", op_Equality);
 		L.RegFunction("__tostring", ToLua.op_ToString);
 		L.RegVar("showLog", get_showLog, set_showLog);
-		L.RegVar("lngType", get_lngType, set_lngType);
 		L.RegVar("appABPath", get_appABPath, set_appABPath);
 		L.RegVar("localABPath", get_localABPath, set_localABPath);
 		L.RegVar("platformName", get_platformName, set_platformName);
@@ -20,6 +19,7 @@ public class GameMainWrap
 		L.RegVar("Inst", get_Inst, null);
 		L.RegVar("TargetFrameRate", get_TargetFrameRate, null);
 		L.RegVar("ResourceMode", get_ResourceMode, null);
+		L.RegVar("lngType", get_lngType, set_lngType);
 		L.EndClass();
 	}
 
@@ -57,25 +57,6 @@ public class GameMainWrap
 		catch(Exception e)
 		{
 			return LuaDLL.toluaL_exception(L, e, o, "attempt to index showLog on a nil value");
-		}
-	}
-
-	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
-	static int get_lngType(IntPtr L)
-	{
-		object o = null;
-
-		try
-		{
-			o = ToLua.ToObject(L, 1);
-			GameMain obj = (GameMain)o;
-			int ret = obj.lngType;
-			LuaDLL.lua_pushinteger(L, ret);
-			return 1;
-		}
-		catch(Exception e)
-		{
-			return LuaDLL.toluaL_exception(L, e, o, "attempt to index lngType on a nil value");
 		}
 	}
 
@@ -246,6 +227,25 @@ public class GameMainWrap
 	}
 
 	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
+	static int get_lngType(IntPtr L)
+	{
+		object o = null;
+
+		try
+		{
+			o = ToLua.ToObject(L, 1);
+			GameMain obj = (GameMain)o;
+			LngType ret = obj.lngType;
+			ToLua.Push(L, ret);
+			return 1;
+		}
+		catch(Exception e)
+		{
+			return LuaDLL.toluaL_exception(L, e, o, "attempt to index lngType on a nil value");
+		}
+	}
+
+	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
 	static int set_showLog(IntPtr L)
 	{
 		object o = null;
@@ -261,25 +261,6 @@ public class GameMainWrap
 		catch(Exception e)
 		{
 			return LuaDLL.toluaL_exception(L, e, o, "attempt to index showLog on a nil value");
-		}
-	}
-
-	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
-	static int set_lngType(IntPtr L)
-	{
-		object o = null;
-
-		try
-		{
-			o = ToLua.ToObject(L, 1);
-			GameMain obj = (GameMain)o;
-			int arg0 = (int)LuaDLL.luaL_checknumber(L, 2);
-			obj.lngType = arg0;
-			return 0;
-		}
-		catch(Exception e)
-		{
-			return LuaDLL.toluaL_exception(L, e, o, "attempt to index lngType on a nil value");
 		}
 	}
 
@@ -394,6 +375,25 @@ public class GameMainWrap
 		catch(Exception e)
 		{
 			return LuaDLL.toluaL_exception(L, e, o, "attempt to index platID on a nil value");
+		}
+	}
+
+	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
+	static int set_lngType(IntPtr L)
+	{
+		object o = null;
+
+		try
+		{
+			o = ToLua.ToObject(L, 1);
+			GameMain obj = (GameMain)o;
+			LngType arg0 = (LngType)ToLua.CheckObject(L, 2, typeof(LngType));
+			obj.lngType = arg0;
+			return 0;
+		}
+		catch(Exception e)
+		{
+			return LuaDLL.toluaL_exception(L, e, o, "attempt to index lngType on a nil value");
 		}
 	}
 }

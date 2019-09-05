@@ -1,10 +1,7 @@
 fileFormatVersion: 2
 guid: ee0d9c2a65cf5da43964941c9d5d4643
-timeCreated: 1523415281
-licenseType: Pro
-NativeFormatImporter:
+PrefabImporter:
   externalObjects: {}
-  mainObjectFileID: 100100000
   userData: 
-  assetBundleName: dlgwait
+  assetBundleName: 
   assetBundleVariant: 

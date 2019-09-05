@@ -83,8 +83,7 @@ public class DatabaseMgr : MonoBehaviour
     {
         //            ab = null;
         ClearAllData();
+
+        Debug.Log("<DatabaseMgr> OnDestroy");
     }
-
-
-
 }

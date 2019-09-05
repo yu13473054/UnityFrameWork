@@ -1,0 +1,17 @@
+ManifestFileVersion: 0
+CRC: 2842952166
+Hashes:
+  AssetFileHash:
+    serializedVersion: 2
+    Hash: ba0c76e67eaf4d1619cbbdeeb12e04b4
+  TypeTreeHash:
+    serializedVersion: 2
+    Hash: 5ad585dd02dfb5016c0dad519eab8f49
+HashAppended: 0
+ClassTypes:
+- Class: 49
+  Script: {instanceID: 0}
+Assets:
+- Assets/Localization/CN/Data/Excel/AI.txt
+- Assets/Localization/CN/Data/Excel/Localization.txt
+Dependencies: []

@@ -101,7 +101,7 @@ public class ResMgr : MonoBehaviour
         string[] nameArray;
         if (_multiLngNameDic.TryGetValue(reskeyname, out nameArray))
         {
-            return nameArray[GameMain.Inst.lngType - 1];
+            return nameArray[(int)GameMain.Inst.lngType - 1];
         }
         return reskeyname;
     }
@@ -312,6 +312,7 @@ public class ResMgr : MonoBehaviour
         Resources.UnloadUnusedAssets();
 
         _inst = null;
+        Debug.Log("<ResMgr> OnDestroy!");
     }
 
     /// 直接清除指定AB的相关信息，慎用！！！

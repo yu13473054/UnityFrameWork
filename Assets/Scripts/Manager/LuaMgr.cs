@@ -58,12 +58,7 @@ public class LuaMgr : MonoBehaviour
         // 如果是打包模式，读AB，否则读Lua目录
         if (_loader.beZip)
         {
-            _loader.AddBundle("lua_modulelogic");
-            _loader.AddBundle("lua_fightlogic");
-            _loader.AddBundle("lua_fightview");
             _loader.AddBundle("lua_logic");
-            _loader.AddBundle("lua_protobuf");
-            _loader.AddBundle("lua_protocols");
             _loader.AddBundle("lua_tolua");
             _loader.AddBundle("lua_ui");
             _loader.AddBundle("lua_utils");
@@ -119,7 +114,7 @@ public class LuaMgr : MonoBehaviour
 #if !UNITY_EDITOR
         _lua.Dispose();
 #endif
-        Debug.Log("<LuaManager> OnDestroy!");
+        Debug.Log("<LuaMgr> OnDestroy!");
     }
 
     // 封装了下常用的Lua方法调用

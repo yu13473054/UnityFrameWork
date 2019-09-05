@@ -61,7 +61,7 @@ public class FullScreen : MonoBehaviour
 #if UNITY_EDITOR
             Vector2 screenSize = Application.isPlaying ? ((RectTransform)UIMgr.Inst.GetCanvas().transform).sizeDelta : ((RectTransform)rectTrans.GetComponentInParent<Canvas>().rootCanvas.transform).sizeDelta;
 #else
-            Vector2 screenSize = ((RectTransform)UIManager.instance.GetCanvas().transform).sizeDelta;
+            Vector2 screenSize = ((RectTransform)UIMgr.Inst.GetCanvas().transform).sizeDelta;
 #endif
             if (_keepAspect)
             {
@@ -97,7 +97,7 @@ public class FullScreen : MonoBehaviour
 #if UNITY_EDITOR
             Vector2 screenSize = Application.isPlaying ? ((RectTransform)UIMgr.Inst.GetCanvas().transform).sizeDelta : ((RectTransform)rectTrans.GetComponentInParent<Canvas>().rootCanvas.transform).sizeDelta;
 #else
-            Vector2 screenSize = ((RectTransform)UIManager.instance.GetCanvas().transform).sizeDelta;
+            Vector2 screenSize = ((RectTransform)UIMgr.Inst.GetCanvas().transform).sizeDelta;
 #endif
             if (_keepAspect)
             {

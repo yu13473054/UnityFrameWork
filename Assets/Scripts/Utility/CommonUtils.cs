@@ -50,7 +50,7 @@ public static class CommonUtils
 #if UNITY_EDITOR
         abPath = GameMain.Inst.appABPath + abName;
 #else
-        abPath = AppConst.localABPath + abName;
+        abPath = GameMain.Inst.localABPath + abName;
 #endif
         //先在本地缓存中查找文件，如果没有，就从app中直接获取
         if (!File.Exists(abPath))
@@ -133,6 +133,48 @@ public static class CommonUtils
         }
     }
 
+    #endregion
+
+    #region lua 优化方法
+    public static void ResetTrans(GameObject go)
+    {
+        go.transform.localPosition = Vector3.zero;
+        go.transform.localEulerAngles = Vector3.zero;
+        go.transform.localScale = Vector3.one;
+    }
+
+    public static void SetAnchorPos(GameObject go, float x = 0, float y = 0)
+    {
+        ((RectTransform)go.transform).anchoredPosition = new Vector2(x, y);
+    }
+
+    public static void SetLocalPos(GameObject go, float x = 0, float y = 0, float z = 0)
+    {
+        go.transform.localPosition = new Vector3(x, y, z);
+    }
+
+    public static void SetLocalScale(GameObject go, float x = 1, float y = 1, float z = 1)
+    {
+        go.transform.localScale = new Vector3(x, y, z);
+    }
+
+    public static void SetLocalRotation(GameObject go, float x = 0, float y = 0, float z = 0)
+    {
+        go.transform.localEulerAngles = new Vector3(x, y, z);
+    }
+
+    public static void SetParent(GameObject go, GameObject parentGo, bool reset, bool worldPositionStays = false)
+    {
+        SetParent(go, parentGo.transform, reset, worldPositionStays);
+    }
+    public static void SetParent(GameObject go, Transform parent, bool reset, bool worldPositionStays = false)
+    {
+        go.transform.SetParent(parent, worldPositionStays);
+        if (reset)
+        {
+            ResetTrans(go);
+        }
+    }
     #endregion
 
     /// <summary>

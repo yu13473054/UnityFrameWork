@@ -79,6 +79,7 @@ public class AudioMgr : MonoBehaviour
 
         _inst = null;
         _resmapSound.Clear();
+        Debug.Log("<AudioMgr> OnDestroy!");
     }
 
     //读取音效数据

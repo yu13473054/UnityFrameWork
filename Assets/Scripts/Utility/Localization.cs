@@ -48,7 +48,7 @@ public static class Localization
                     {
                         for (int i = 1; i < multiLngNameTable.GetFieldsNum(); i++)
                         {
-                            if (i == GameMain.Inst.lngType)
+                            if (i == (int)GameMain.Inst.lngType)
                             {
                                 reskeyName = multiLngNameTable.GetValue(row, i);
                                 break;

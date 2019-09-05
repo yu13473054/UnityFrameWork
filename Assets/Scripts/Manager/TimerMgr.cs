@@ -204,6 +204,8 @@ public class TimerMgr : MonoBehaviour
         }
         _timerList.Clear();
         _elementPool.Clear();
+
+        Debug.Log("<TimerMgr> OnDestroy");
     }
 
 }

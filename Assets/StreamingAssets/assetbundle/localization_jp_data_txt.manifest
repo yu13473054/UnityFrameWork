@@ -1,0 +1,16 @@
+ManifestFileVersion: 0
+CRC: 1501496670
+Hashes:
+  AssetFileHash:
+    serializedVersion: 2
+    Hash: d46af765b0109536910b67c50de1fef4
+  TypeTreeHash:
+    serializedVersion: 2
+    Hash: 5ad585dd02dfb5016c0dad519eab8f49
+HashAppended: 0
+ClassTypes:
+- Class: 49
+  Script: {instanceID: 0}
+Assets:
+- Assets/Localization/JP/Data/Txt/localization.txt
+Dependencies: []

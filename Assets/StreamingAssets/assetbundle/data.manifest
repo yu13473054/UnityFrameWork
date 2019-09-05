@@ -1,9 +1,9 @@
 ManifestFileVersion: 0
-CRC: 3842821670
+CRC: 1291603295
 Hashes:
   AssetFileHash:
     serializedVersion: 2
-    Hash: a4efd6cabf3e097b6f2c02313c1f74e5
+    Hash: 2b71e57866277ea7197419cd9a19b13a
   TypeTreeHash:
     serializedVersion: 2
     Hash: 5ad585dd02dfb5016c0dad519eab8f49
@@ -12,8 +12,8 @@ ClassTypes:
 - Class: 49
   Script: {instanceID: 0}
 Assets:
-- Assets/Temp/resmap_prefab.txt
-- Assets/Temp/localization.txt
-- Assets/Temp/resmap_sprite.txt
-- Assets/Temp/resmap_obj.txt
+- Assets/Data/resmap_sprite.txt
+- Assets/Data/multiLngConfig.txt
+- Assets/Data/resmap_prefab.txt
+- Assets/Data/resmap_obj.txt
 Dependencies: []
