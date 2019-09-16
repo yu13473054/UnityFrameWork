@@ -1,6 +1,7 @@
 资源键名	资源路径	所在assetBundle名称
 AI_cn	Assets/Localization/CN/Data/Excel/AI.txt	localization_cn_data_excel
 AI_en	Assets/Localization/EN/Data/Excel/AI.txt	localization_en_data_excel
+Audio_cn	Assets/Localization/CN/Data/Excel/Audio.txt	localization_cn_data_excel
 localization_cn	Assets/Localization/CN/Data/Txt/localization.txt	localization_cn_data_txt
 Localization_cn	Assets/Localization/CN/Data/Excel/Localization.txt	localization_cn_data_excel
 localization_en	Assets/Localization/EN/Data/Txt/localization.txt	localization_en_data_txt

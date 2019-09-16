@@ -35,7 +35,7 @@ public class UISlider : Slider
         // 播放按钮音效
         if (audioId > 0)
         {
-            AudioMgr.Inst.Play(audioId);
+            AudioMgr.Inst.Play(audioId, uiMod.resModule);
         }
     }
 

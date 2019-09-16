@@ -1,2 +1,0 @@
-BuildLng=0
-Force_Version=1.0

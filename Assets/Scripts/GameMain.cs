@@ -40,6 +40,9 @@ public class GameMain : MonoBehaviour
     [SerializeField][Label("语言类型")]
     private LngType _lngType = LngType.Auto;
 
+    [SerializeField][Label("音效上限")]
+    private int _audioLimit = 6;
+
     // 包内Steaming地址
     public string appABPath;
     //本地资源路径
@@ -58,6 +61,7 @@ public class GameMain : MonoBehaviour
 
     public string updateHost;
     public string loginHost;
+    public string port;
     public int platID;
 
     public int TargetFrameRate
@@ -73,6 +77,10 @@ public class GameMain : MonoBehaviour
         get { return _lngType; }
         set { _lngType = value; }
     }
+    public int AudioLimit
+    {
+        get { return _audioLimit; }
+    }
 
     void Awake()
     {
@@ -82,6 +90,48 @@ public class GameMain : MonoBehaviour
         appABPath = Application.streamingAssetsPath + "/assetbundle/";
 
         if (!Application.isPlaying) return;
+
+#if !UNITY_EDITOR   //读取配置文件
+        ConfigHandler config = ConfigHandler.Open(CommonUtils.GetABPath("config.txt"));
+        //是否配置多语言
+        string str = config.ReadValue("lngType", "");
+        if (!string.IsNullOrEmpty(str))
+        {
+            _lngType = (LngType)int.Parse(str);
+        }
+        Debug.Log(_lngType);
+        //音效上限
+        str = config.ReadValue("AudioLimit", "");
+        if (!string.IsNullOrEmpty(str))
+        {
+            _audioLimit = int.Parse(str);
+        }
+        //热更地址
+        str = config.ReadValue("updateHost", "");
+        if (!string.IsNullOrEmpty(str))
+        {
+            updateHost = str;
+        }
+        //登录地址
+        str = config.ReadValue("loginHost", "");
+        if (!string.IsNullOrEmpty(str))
+        {
+            loginHost = str;
+        }
+        //登录端口号
+        str = config.ReadValue("port", "");
+        if (!string.IsNullOrEmpty(str))
+        {
+            port = str;
+        }
+        //平台id
+        str = config.ReadValue("platID", "");
+        if (!string.IsNullOrEmpty(str))
+        {
+            platID = int.Parse(str);
+        }
+#endif
+
         gameObject.AddComponent<Boot>();
     }
 

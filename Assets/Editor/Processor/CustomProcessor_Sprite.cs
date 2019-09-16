@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 
-public class CustomProcessor : AssetPostprocessor
+public class CustomProcessor_Sprite : AssetPostprocessor
 {
     private static bool isValid = true;
     private string[] autoDirs =

@@ -20,6 +20,7 @@ public class GameMainWrap
 		L.RegVar("TargetFrameRate", get_TargetFrameRate, null);
 		L.RegVar("ResourceMode", get_ResourceMode, null);
 		L.RegVar("lngType", get_lngType, set_lngType);
+		L.RegVar("AudioLimit", get_AudioLimit, null);
 		L.EndClass();
 	}
 
@@ -242,6 +243,25 @@ public class GameMainWrap
 		catch(Exception e)
 		{
 			return LuaDLL.toluaL_exception(L, e, o, "attempt to index lngType on a nil value");
+		}
+	}
+
+	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
+	static int get_AudioLimit(IntPtr L)
+	{
+		object o = null;
+
+		try
+		{
+			o = ToLua.ToObject(L, 1);
+			GameMain obj = (GameMain)o;
+			int ret = obj.AudioLimit;
+			LuaDLL.lua_pushinteger(L, ret);
+			return 1;
+		}
+		catch(Exception e)
+		{
+			return LuaDLL.toluaL_exception(L, e, o, "attempt to index AudioLimit on a nil value");
 		}
 	}
 

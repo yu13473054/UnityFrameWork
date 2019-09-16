@@ -1,0 +1,2 @@
+sn	name	type	volume	loop
+1	bb	1	0.5	1

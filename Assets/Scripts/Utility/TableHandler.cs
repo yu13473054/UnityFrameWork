@@ -69,7 +69,7 @@ public class TableHandler
             else if (GameMain.Inst.ResourceMode == 1)
             {
                 //数据文件的使用者为自己，不受UI界面控制
-                TextAsset asset = ResMgr.Inst.LoadAsset<TextAsset>(abName, fileName, abName);
+                TextAsset asset = ResMgr.Inst.LoadAsset<TextAsset>("data", fileName, abName);
                 allText = asset.text;
                 Resources.UnloadAsset(asset);
             }

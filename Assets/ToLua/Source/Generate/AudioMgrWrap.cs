@@ -17,8 +17,9 @@ public class AudioMgrWrap
 		L.RegFunction("Mute", Mute);
 		L.RegFunction("__eq", op_Equality);
 		L.RegFunction("__tostring", ToLua.op_ToString);
-		L.RegConstant("AudioClipLimit", 6);
 		L.RegVar("_inst", get__inst, set__inst);
+		L.RegVar("currBgId", get_currBgId, set_currBgId);
+		L.RegVar("currModule", get_currModule, set_currModule);
 		L.RegVar("Inst", get_Inst, null);
 		L.EndClass();
 	}
@@ -30,9 +31,8 @@ public class AudioMgrWrap
 		{
 			ToLua.CheckArgsCount(L, 1);
 			AudioMgr obj = (AudioMgr)ToLua.CheckObject<AudioMgr>(L, 1);
-			System.Collections.IEnumerator o = obj.OnInit();
-			ToLua.Push(L, o);
-			return 1;
+			obj.OnInit();
+			return 0;
 		}
 		catch (Exception e)
 		{
@@ -47,19 +47,11 @@ public class AudioMgrWrap
 		{
 			int count = LuaDLL.lua_gettop(L);
 
-			if (count == 2)
+			if (count == 3)
 			{
 				AudioMgr obj = (AudioMgr)ToLua.CheckObject<AudioMgr>(L, 1);
 				int arg0 = (int)LuaDLL.luaL_checknumber(L, 2);
-				int o = obj.Play(arg0);
-				LuaDLL.lua_pushinteger(L, o);
-				return 1;
-			}
-			else if (count == 3)
-			{
-				AudioMgr obj = (AudioMgr)ToLua.CheckObject<AudioMgr>(L, 1);
-				int arg0 = (int)LuaDLL.luaL_checknumber(L, 2);
-				int arg1 = (int)LuaDLL.luaL_checknumber(L, 3);
+				string arg1 = ToLua.CheckString(L, 3);
 				int o = obj.Play(arg0, arg1);
 				LuaDLL.lua_pushinteger(L, o);
 				return 1;
@@ -68,8 +60,8 @@ public class AudioMgrWrap
 			{
 				AudioMgr obj = (AudioMgr)ToLua.CheckObject<AudioMgr>(L, 1);
 				int arg0 = (int)LuaDLL.luaL_checknumber(L, 2);
-				int arg1 = (int)LuaDLL.luaL_checknumber(L, 3);
-				float arg2 = (float)LuaDLL.luaL_checknumber(L, 4);
+				string arg1 = ToLua.CheckString(L, 3);
+				int arg2 = (int)LuaDLL.luaL_checknumber(L, 4);
 				int o = obj.Play(arg0, arg1, arg2);
 				LuaDLL.lua_pushinteger(L, o);
 				return 1;
@@ -78,10 +70,22 @@ public class AudioMgrWrap
 			{
 				AudioMgr obj = (AudioMgr)ToLua.CheckObject<AudioMgr>(L, 1);
 				int arg0 = (int)LuaDLL.luaL_checknumber(L, 2);
-				int arg1 = (int)LuaDLL.luaL_checknumber(L, 3);
-				float arg2 = (float)LuaDLL.luaL_checknumber(L, 4);
-				bool arg3 = LuaDLL.luaL_checkboolean(L, 5);
+				string arg1 = ToLua.CheckString(L, 3);
+				int arg2 = (int)LuaDLL.luaL_checknumber(L, 4);
+				float arg3 = (float)LuaDLL.luaL_checknumber(L, 5);
 				int o = obj.Play(arg0, arg1, arg2, arg3);
+				LuaDLL.lua_pushinteger(L, o);
+				return 1;
+			}
+			else if (count == 6)
+			{
+				AudioMgr obj = (AudioMgr)ToLua.CheckObject<AudioMgr>(L, 1);
+				int arg0 = (int)LuaDLL.luaL_checknumber(L, 2);
+				string arg1 = ToLua.CheckString(L, 3);
+				int arg2 = (int)LuaDLL.luaL_checknumber(L, 4);
+				float arg3 = (float)LuaDLL.luaL_checknumber(L, 5);
+				bool arg4 = LuaDLL.luaL_checkboolean(L, 6);
+				int o = obj.Play(arg0, arg1, arg2, arg3, arg4);
 				LuaDLL.lua_pushinteger(L, o);
 				return 1;
 			}
@@ -296,6 +300,44 @@ public class AudioMgrWrap
 	}
 
 	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
+	static int get_currBgId(IntPtr L)
+	{
+		object o = null;
+
+		try
+		{
+			o = ToLua.ToObject(L, 1);
+			AudioMgr obj = (AudioMgr)o;
+			int ret = obj.currBgId;
+			LuaDLL.lua_pushinteger(L, ret);
+			return 1;
+		}
+		catch(Exception e)
+		{
+			return LuaDLL.toluaL_exception(L, e, o, "attempt to index currBgId on a nil value");
+		}
+	}
+
+	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
+	static int get_currModule(IntPtr L)
+	{
+		object o = null;
+
+		try
+		{
+			o = ToLua.ToObject(L, 1);
+			AudioMgr obj = (AudioMgr)o;
+			string ret = obj.currModule;
+			LuaDLL.lua_pushstring(L, ret);
+			return 1;
+		}
+		catch(Exception e)
+		{
+			return LuaDLL.toluaL_exception(L, e, o, "attempt to index currModule on a nil value");
+		}
+	}
+
+	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
 	static int get_Inst(IntPtr L)
 	{
 		try
@@ -321,6 +363,44 @@ public class AudioMgrWrap
 		catch (Exception e)
 		{
 			return LuaDLL.toluaL_exception(L, e);
+		}
+	}
+
+	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
+	static int set_currBgId(IntPtr L)
+	{
+		object o = null;
+
+		try
+		{
+			o = ToLua.ToObject(L, 1);
+			AudioMgr obj = (AudioMgr)o;
+			int arg0 = (int)LuaDLL.luaL_checknumber(L, 2);
+			obj.currBgId = arg0;
+			return 0;
+		}
+		catch(Exception e)
+		{
+			return LuaDLL.toluaL_exception(L, e, o, "attempt to index currBgId on a nil value");
+		}
+	}
+
+	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
+	static int set_currModule(IntPtr L)
+	{
+		object o = null;
+
+		try
+		{
+			o = ToLua.ToObject(L, 1);
+			AudioMgr obj = (AudioMgr)o;
+			string arg0 = ToLua.CheckString(L, 2);
+			obj.currModule = arg0;
+			return 0;
+		}
+		catch(Exception e)
+		{
+			return LuaDLL.toluaL_exception(L, e, o, "attempt to index currModule on a nil value");
 		}
 	}
 }

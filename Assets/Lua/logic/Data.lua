@@ -37,18 +37,40 @@ local function ParseAI()
             local key = tonumber( tableHandler:GetValue( records, 0 ) );
             tempTable[key] = {
                 sn = tonumber( tableHandler:GetValue( records, 0 ) ),
-				desc = tonumber( tableHandler:GetValue( records, 1 ) ),
-				v1 = tonumber( tableHandler:GetValue( records, 2 ) ),
-				v2 = tonumber( tableHandler:GetValue( records, 3 ) ),
-				v3 = tableHandler:GetValue( records, 4 ),
-				v4 = ToArray(tableHandler:GetValue( records, 5 ),true),
-				v5 = ToArray(tableHandler:GetValue( records, 6 ),true),
-				v6 = ToArray(tableHandler:GetValue( records, 7 ),false),
-				v7 = tableHandler:GetValue( records, 8 ),
+				v1 = tonumber( tableHandler:GetValue( records, 1 ) ),
+				v2 = tonumber( tableHandler:GetValue( records, 2 ) ),
+				v3 = tableHandler:GetValue( records, 3 ),
+				v4 = ToArray(tableHandler:GetValue( records, 4 ),true),
+				v5 = ToArray(tableHandler:GetValue( records, 5 ),true),
+				v6 = ToArray(tableHandler:GetValue( records, 6 ),false),
+				v7 = tableHandler:GetValue( records, 7 ),
             };
         end
     else
         LogErr(string.format("<Data> 加载表格%s失败！！！", "AI"));
+    end
+    return tempTable;
+end
+
+local function ParseAudio()
+    local tempTable = {};
+
+    --解析数据
+    local tableHandler = TableHandler.New();
+    if tableHandler:OpenFormResmap( "Audio" ) then 
+        local tableRecordsNum = tableHandler:GetRecordsNum() - 1;
+        for records = 0, tableRecordsNum, 1 do
+            local key = tonumber( tableHandler:GetValue( records, 0 ) );
+            tempTable[key] = {
+                sn = tonumber( tableHandler:GetValue( records, 0 ) ),
+				name = tableHandler:GetValue( records, 1 ),
+				type = tonumber( tableHandler:GetValue( records, 2 ) ),
+				volume = tonumber( tableHandler:GetValue( records, 3 ) ),
+				loop = tonumber( tableHandler:GetValue( records, 4 ) ),
+            };
+        end
+    else
+        LogErr(string.format("<Data> 加载表格%s失败！！！", "Audio"));
     end
     return tempTable;
 end
@@ -66,6 +88,19 @@ function Data.AI()
     mt.name = "AI";
     setmetatable(_aI, mt);
     return _aI;
+end-------Do Not Delete-------
+local _audio = nil;
+function Data.Audio()
+    if _audio ~= nil then
+        return _audio;
+    end
+    _audio = ParseAudio();
+    local mt = Clone( mt );
+    mt.name = "Audio";
+    setmetatable(_audio, mt);
+    return _audio;
 end
+
+
 
 -------Permanent-------
