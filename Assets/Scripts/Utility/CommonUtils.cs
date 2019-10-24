@@ -178,16 +178,6 @@ public static class CommonUtils
     #endregion
 
     /// <summary>
-    /// 清理内存
-    /// </summary>
-    public static void ClearMemory()
-    {
-        GC.Collect(); 
-        Resources.UnloadUnusedAssets();
-        LuaMgr.Inst.LuaGC();
-    }
-
-    /// <summary>
     /// 网络可用
     /// </summary>
     public static bool NetAvailable

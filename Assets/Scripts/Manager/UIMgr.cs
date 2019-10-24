@@ -454,7 +454,7 @@ public class UIMgr : MonoBehaviour
             if (uiSystem != null)
             {
                 Destroy(uiSystem.gameObject);
-                OnUIDestroy(uiSystem.uiName);
+                OnUIDestroy(uiSystem.resModule);
             }
         }
 

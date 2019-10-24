@@ -380,6 +380,28 @@ public class ResMgr : MonoBehaviour
         }
     }
 
+    public IEnumerator CoUnloadUnused(AsyncOperation operation, Action<float> progressCB, Action finish)
+    {
+        yield return null;
+        while (!operation.isDone)
+        {
+            if(progressCB!=null)
+                progressCB(operation.progress);
+            yield return null;
+        }
+        if (finish != null)
+            finish();
+    }
+    //卸载未使用的资源
+    public void UnloadUnused(Action<float> progressCB = null, Action finish = null)
+    {
+        AsyncOperation opt = Resources.UnloadUnusedAssets();
+        if(progressCB != null)
+        {
+            StartCoroutine(CoUnloadUnused(opt, progressCB, finish));
+        }
+    }
+
     #region 异步加载
     // 异步载入协程
     IEnumerator OnLoadAsset<T>(string abName, string assetName, Action<string, T> action, string moduleName) where T : UnityEngine.Object
