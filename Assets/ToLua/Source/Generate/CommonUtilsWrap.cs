@@ -437,7 +437,7 @@ public class CommonUtilsWrap
 		try
 		{
 			ToLua.CheckArgsCount(L, 0);
-			CommonUtils.ClearMemory();
+			//CommonUtils.ClearMemory();
 			return 0;
 		}
 		catch (Exception e)
