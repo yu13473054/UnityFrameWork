@@ -1,0 +1,6 @@
+public class #Name#Parser
+{
+    #value#
+}
+***********
+public #keyType# #key# { set; get;}

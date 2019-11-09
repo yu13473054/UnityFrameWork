@@ -2,7 +2,81 @@ using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 
+public class TimerElement
+{
+    /// <summary>
+    /// 0:CD Timer  1:Frame Timer
+    /// </summary>
+    public int type = -1;
+    public object key;//注册key
+    public bool isTimeScale = true;
+    public int loopTimes;//当前已经循环次数
+    public int loopCountLimit = 1; //循环次数上限
+    public float life = -1; //生命周期
+    public TimerEleCallBack callback;
+    public TimerEleCallBack endCB;
+
+    //时间计时器独有参数
+    public float duration;// 时间间隔
+    public float totalExecuteTime;//执行总时长
+
+    public bool isFinish { get; private set; }
+    private float _currTime;
+
+    //执行计时器
+    public void Execute()
+    {
+        float deltaTime = isTimeScale ? Time.deltaTime : Time.unscaledDeltaTime;
+        totalExecuteTime += deltaTime;
+        if (type == 0)//cd Timer
+        {
+            _currTime += deltaTime;
+            if (_currTime >= duration)
+            {
+                _currTime -= duration;
+                loopTimes++;
+                callback(this);
+            }
+        }
+        else if (type == 1)// frame Timer
+        {
+            loopTimes++;//记录执行了多少帧
+            callback(this);
+        }
+
+        if (loopCountLimit > 0 && loopTimes == loopCountLimit)//达到了指定的循环次数
+        {
+            isFinish = true;
+            if(endCB != null)
+                endCB(this);
+        }
+
+        if(life > 0 && totalExecuteTime >= life)
+        {
+            isFinish = true;
+            if (endCB != null)
+                endCB(this);
+        }
+    }
+
+    public void OnDestroy()
+    {
+        type = -1;
+        isTimeScale = true;
+        loopTimes = 0;
+        loopCountLimit = 1;
+        life = -1;
+        callback = null;
+
+        duration = 0;
+        totalExecuteTime = 0;
+
+        isFinish = false;
+        _currTime = 0;
+    }
+}
 public delegate void TimerEleCallBack(TimerElement element);
+
 public class TimerMgr : MonoBehaviour
 {
     #region 初始化
@@ -32,35 +106,12 @@ public class TimerMgr : MonoBehaviour
     {
         for (int i = 0; i < _timerList.Count; i++)
         {
-            TimerElement element_tmp = _timerList[i];
-            element_tmp._executeTime += Time.deltaTime;
-            if (element_tmp._type == 0)//cd Timer
+            TimerElement element = _timerList[i];
+            element.Execute();
+            if (element.isFinish)
             {
-                if (element_tmp._executeTime >= element_tmp._cdTime)
-                {
-                    element_tmp._loopTimes++;
-                    element_tmp._totalExecuteTime += element_tmp._cdTime;//记录这个计时器一共执行了多长时间
-                    element_tmp._callback(element_tmp);
-                    if (element_tmp._isLoop)//loop为true的话,进入下一次循环
-                    {
-                        element_tmp._executeTime -= element_tmp._cdTime;
-                    }
-                    else
-                    {
-                        RemoveTimer(i);
-                        i--;
-                    }
-                }
-            }
-            else if (element_tmp._type == 1)// frame Timer
-            {
-                element_tmp._loopTimes++;//记录执行了多少帧
-                element_tmp._callback(element_tmp);
-                if (element_tmp._executeTime >= element_tmp._totalExecuteTime)//执行时间已经达到
-                {
-                    RemoveTimer(i);
-                    i--;
-                }
+                RemoveTimer(i);
+                i--;
             }
         }
     }
@@ -69,99 +120,85 @@ public class TimerMgr : MonoBehaviour
     /// 每隔多长时间执行一次
     /// </summary>
     /// <param name="key">注册key</param>
-    /// <param name="cd">间隔时间</param>
-    /// <param name="callBack">事件回调(第一个参数是间隔时间 第二个参数是循环了几次)</param>
-    /// <param name="loop">是否循环执行</param>
-    /// <param name="immRun">立即执行的情况下，得到的_totalExecuteTime会有一帧的时间差</param>
-    public void RegisterCDTimer(string key, float cd, TimerEleCallBack callBack, bool loop = false, bool immRun = false)
+    /// <param name="duration">间隔时间</param>
+    /// <param name="callBack">事件回调</param>
+    /// <param name="isTimeScale">是否受TimeScale影响</param>
+    /// <param name="loopCount">循环次数，小于0为无限循环</param>
+    /// <param name="life">生命周期，如果同时指定loopCount，谁先到执行finish</param>
+    /// <param name="endCB">结束回调</param>
+    /// <param name="immRun">立即执行</param>
+    public void RegisterCDTimer(object key, float duration, TimerEleCallBack callBack, bool isTimeScale = true, bool immRun = false,
+        int loopCount = 1, float life = -1, TimerEleCallBack endCB = null)
     {
         if (callBack == null)
         {
             return;
         }
-        TimerElement element_tmp = GetFreeElement();
-        element_tmp._type = 0;
-        element_tmp._key = key;
-        element_tmp._cdTime = cd;
-        element_tmp._callback = callBack;
-        element_tmp._isLoop = loop;
-        _timerList.Add(element_tmp);
+        TimerElement element = GetFreeElement();
+        element.type = 0;
+        element.key = key;
+        element.duration = duration;
+        element.isTimeScale = isTimeScale;
+        element.callback = callBack;
+        element.loopCountLimit = loopCount;
+        element.life = life;
+        element.endCB = endCB;
+
         if (immRun)
-        {
-            element_tmp._loopTimes++;
-            element_tmp._callback(element_tmp);
-        }
+            element.Execute();
+
+        if (!element.isFinish)
+            _timerList.Add(element);
+        else
+            element.OnDestroy();
     }
 
     /// <summary>
-    /// 指定时间内每帧执行回调函数
+    /// 每帧执行回调函数
     /// </summary>
-    /// <param name="totalExecuteTime">执行总时长</param> 
-    /// <param name="callBack"></param>
-    /// <param name="immRun">立即执行的情况下，得到的_executeTime会有一帧的时间差</param>
-    public string RegisterFrameTimer(float totalExecuteTime, TimerEleCallBack callBack, bool immRun = false)
+    public object RegisterFrameTimer(TimerEleCallBack callBack, int loopCount = -1, bool isTimeScale = true, bool immRun = false,
+        float life = -1, TimerEleCallBack endCB = null)
     {
-        TimerElement element_tmp = GetFreeElement();
-        element_tmp._type = 1;
-        element_tmp._key = getUid();
-        element_tmp._executeTime = 0;
-        element_tmp._totalExecuteTime = totalExecuteTime;
-        element_tmp._callback = callBack;
-        _timerList.Add(element_tmp);
+        TimerElement element = GetFreeElement();
+        element.type = 1;
+        element.key = GetUid();
+        element.isTimeScale = isTimeScale;
+        element.loopCountLimit = loopCount;
+        element.callback = callBack;
+        element.life = life;
+        element.endCB = endCB;
+
         if (immRun)
-        {
-            element_tmp._loopTimes++;
-            callBack(element_tmp);
-        }
-        return element_tmp._key;
+            element.Execute();
+
+        if (!element.isFinish)
+            _timerList.Add(element);
+        else
+            element.OnDestroy();
+
+        return element.key;
     }
 
-    bool HasKey(string key, out int index)
-    {
-        for (int i = 0; i < _timerList.Count; i++)
-        {
-            if (_timerList[i]._key == key)
-            {
-                index = i;
-                return true;
-            }
-        }
-        index = -1;
-        return false;
-    }
     /// <summary>
     /// 移除事件
     /// </summary>
     /// <param name="key"></param>
-    public void RemoveTimer(string key)
+    public void RemoveTimer(object key)
     {
-        int index_tmp = 0;
-        bool hasKey_tmp = false;
         for (int i = 0; i < _timerList.Count; i++)
         {
-            if (_timerList[i]._key == key)
+            if (_timerList[i].key == key)
             {
-                index_tmp = i;
-                hasKey_tmp = true;
+                RemoveTimer(i);
                 break;
             }
         }
-
-        if (hasKey_tmp)
-        {
-            RemoveTimer(index_tmp);
-        }
-        else
-        {
-            Debug.Log(string.Format("没有key={0}的Timer,请检查key是否正确！！", key));
-        }
-
     }
 
-    private void RemoveTimer(int index_tmp)
+    private void RemoveTimer(int index)
     {
-        TimerElementRelease(_timerList[index_tmp]);
-        _timerList.RemoveAt(index_tmp);
+        TimerElementRelease(_timerList[index]);
+        _timerList.RemoveAt(index);
     }
 
     /// <summary>
@@ -170,26 +207,26 @@ public class TimerMgr : MonoBehaviour
     /// <returns></returns>
     private TimerElement GetFreeElement()
     {
-        TimerElement element_tmp;
+        TimerElement element;
         if (_elementPool.Count > 0)
         {
-            element_tmp = _elementPool.Pop();
+            element = _elementPool.Pop();
         }
         else
         {
-            element_tmp = new TimerElement();
+            element = new TimerElement();
         }
-        return element_tmp;
+        return element;
     }
 
     private void TimerElementRelease(TimerElement element)
     {
-        element.Clear();
+        element.OnDestroy();
         _elementPool.Push(element);
     }
 
     private uint _idIndex = 0;
-    private string getUid()
+    private string GetUid()
     {
         _idIndex++;
         return _idIndex.ToString();
@@ -200,7 +237,7 @@ public class TimerMgr : MonoBehaviour
     {
         for (int i = 0; i < _timerList.Count; i++)
         {
-            _timerList[i]._callback = null;
+            _timerList[i].callback = null;
         }
         _timerList.Clear();
         _elementPool.Clear();
@@ -208,30 +245,4 @@ public class TimerMgr : MonoBehaviour
         Debug.Log("<TimerMgr> OnDestroy");
     }
 
-}
-
-public class TimerElement
-{
-    /// <summary>
-    /// 0:CD Timer  1:Frame Timer
-    /// </summary>
-    public int _type = -1;
-    public string _key;//注册key
-    public float _cdTime;// 延迟时长
-    public bool _isLoop;//是否循环
-    public float _totalExecuteTime;//执行总时长
-    public TimerEleCallBack _callback;
-    public float _executeTime;// 当前时间
-    public int _loopTimes;//当前已经循环次数
-
-    public void Clear()
-    {
-        _type = -1;
-        _cdTime = 0;
-        _isLoop = false;
-        _totalExecuteTime = 0;
-        _executeTime = 0;
-        _loopTimes = 0;
-        _callback = null;
-    }
 }

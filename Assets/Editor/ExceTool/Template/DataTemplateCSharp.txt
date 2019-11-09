@@ -1,0 +1,118 @@
+using System.Collections.Generic;
+using UnityEngine;
+
+public class Data 
+{
+    private static Data _inst;
+    public static Data Inst
+    {
+        get
+        {
+            if (_inst == null) _inst = new Data();
+            return _inst;
+        }
+    }
+
+    private int[] ToIntArray(string content)
+    {
+        if (string.IsNullOrEmpty(content)) return new int[0];
+        string[] splits = content.Split('|');
+        int[] ts = new int[splits.Length];
+        for(int i = 0; i < splits.Length - 1; i++)
+        {
+            ts[i] = int.Parse(splits[i]);
+        }
+        return ts;
+    }
+    private float[] ToFloatArray(string content)
+    {
+        if (string.IsNullOrEmpty(content)) return new float[0];
+        string[] splits = content.Split('|');
+        float[] ts = new float[splits.Length];
+        for (int i = 0; i < splits.Length - 1; i++)
+        {
+            ts[i] = float.Parse(splits[i]);
+        }
+        return ts;
+    }
+    private double[] ToDoubleArray(string content)
+    {
+        if (string.IsNullOrEmpty(content)) return new double[0];
+        string[] splits = content.Split('|');
+        double[] ts = new double[splits.Length];
+        for (int i = 0; i < splits.Length - 1; i++)
+        {
+            ts[i] = double.Parse(splits[i]);
+        }
+        return ts;
+    }
+    private bool[] ToBoolArray(string content)
+    {
+        if (string.IsNullOrEmpty(content)) return new bool[0];
+        string[] splits = content.Split('|');
+        bool[] ts = new bool[splits.Length];
+        for (int i = 0; i < splits.Length - 1; i++)
+        {
+            ts[i] = splits[i].ToLower().Equals("1");
+        }
+        return ts;
+    }
+    private string[] ToStringArray(string content)
+    {
+        if (string.IsNullOrEmpty(content)) return new string[0];
+        string[] splits = content.Split('|');
+        return splits;
+    }
+
+    #value#
+}
+***********
+    private Dictionary<#keyType#, #Name#Parser> _#LName#Dic;
+    private void Parse#Name#()
+    {
+        _#LName#Dic = new Dictionary<#keyType#, #Name#Parser>();
+        TableHandler handler = TableHandler.OpenFromResmap("#Name#");
+        for(int i = 0; i < handler.GetRecordsNum() - 1; i++)
+        {
+            #keyType# key = #desc#;
+            #Name#Parser info = new #Name#Parser()
+            {
+                #value#
+            };
+
+        }
+    }
+    public #Name#Parser #Name#(#keyType# sn)
+    {
+        if(_#LName#Dic == null)
+            ParseUnit();
+        #Name#Parser parser;
+        if(_#LName#Dic.TryGetValue(sn, out parser))
+        {
+            return parser;
+        }
+        else
+        {
+            Debug.LogErrorFormat("<Data> 表格{0}中不存在第{1}条数据，请检查！", "#Name#", sn);
+            return null;
+        }
+    }
+
+***********
+handler.GetValue( i, #col# )
+***********
+#keyType#.Parse(handler.GetValue(i, #col#))
+***********
+ToIntArray(handler.GetValue(i, #col#))
+***********
+ToFloatArray(handler.GetValue(i, #col#))
+***********
+ToDoubleArray(handler.GetValue(i, #col#))
+***********
+ToBoolArray(handler.GetValue(i, #col#))
+***********
+ToStringArray(handler.GetValue(i, #col#))
+***********
+handler.GetValue(i, #col#).ToLower().Equals("1")
+***********
+#key# = #desc#,

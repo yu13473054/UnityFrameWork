@@ -4,7 +4,7 @@ local _logStr = "<Data> %s中没有第%s条数据，请检查！！！";
 local mt = {
     name = "",
     __index = function(t, key)
-        LogErr(string.format(_logStr, getmetatable( t ).name, key));
+        LogErr(debug.traceback(string.format(_logStr, getmetatable( t ).name, key)));
     end
 }
 
@@ -14,7 +14,7 @@ local function ToArray(content, isNum)
     end
     if content then
         local array = {};
-        local splitResult = string.split( content, ',' );
+        local splitResult = string.split( content, '|' );
         for j = 1, #splitResult, 1 do
             if isNum then
                 table.insert( array, tonumber( splitResult[j] ) );
@@ -27,48 +27,49 @@ local function ToArray(content, isNum)
 end
 
 ***********
-local function Parse#1#()
+Data.table#Name# = nil;
+function Data.Parse#Name#()
     local tempTable = {};
 
     --解析数据
     local tableHandler = TableHandler.New();
-    if tableHandler:OpenFormResmap( "#2#" ) then 
+    if tableHandler:OpenFormResmap( "#Name#" ) then 
         local tableRecordsNum = tableHandler:GetRecordsNum() - 1;
         for records = 0, tableRecordsNum, 1 do
-            local key = #4#;
+            local key = #desc#;
             tempTable[key] = {
-                #5#
+                #value#
             };
         end
     else
-        LogErr(string.format("<Data> 加载表格%s失败！！！", "#2#"));
+        LogErr(string.format("<Data> 加载表格%s失败！！！", "#Name#"));
     end
     return tempTable;
 end
-
-***********
-local #0# = nil;
-function Data.#1#()
-    if #0# ~= nil then
-        return #0#;
+function Data.#Name#()
+    if Data.table#Name# ~= nil then
+        return Data.table#Name#;
     end
-    #0# = Parse#1#();
+    Data.table#Name# = Data.Parse#Name#();
     local mt = Clone( mt );
-    mt.name = "#1#";
-    setmetatable(#0#, mt);
-    return #0#;
+    mt.name = "#Name#";
+    setmetatable(Data.table#Name#, mt);
+    return Data.table#Name#;
 end
 
 ***********
-tonumber( #0# )
+tonumber( tableHandler:GetValue( records, #col# ) )
 ***********
-tableHandler:GetValue( records, #0# )
+tableHandler:GetValue( records, #col# )
 ***********
-#0# = #1#,
+#key# = #desc#,
 ***********
-#0# = ToArray(#1#,#2#),
+#key# = ToArray(tableHandler:GetValue( records, #col# ),#isNum#),
 ***********
-local function Parse#1#(name)
+tableHandler:GetValue( records, #col# ) == "1" and true or false
+***********
+Data.table#Name# = {};
+function Data.Parse#Name#(name)
     local tempTable = {};
 
     --解析数据
@@ -76,9 +77,9 @@ local function Parse#1#(name)
     if tableHandler:OpenFormResmap( name ) then 
         local tableRecordsNum = tableHandler:GetRecordsNum() - 1;
         for records = 0, tableRecordsNum, 1 do
-            local key = #4#;
+            local key = #desc#;
             tempTable[key] = {
-                #5#
+                #value#
             };
         end
     else
@@ -86,21 +87,14 @@ local function Parse#1#(name)
     end
     return tempTable;
 end
-
-***********
-local #0# = {};
-function Data.#1#(name)
-    if #0#[name] ~= nil then
-        return #0#[name];
+function Data.#Name#(name)
+    if Data.table#Name#[name] ~= nil then
+        return Data.table#Name#[name];
     end
 
-    #0#[name] = Parse#1#(name);
+    Data.table#Name#[name] = Parse#Name#(name);
     local mt = Clone( mt );
     mt.name = name;
-    setmetatable(#0#[name], mt);
-    return #0#[name];
+    setmetatable(Data.table#Name#[name], mt);
+    return Data.table#Name#[name];
 end
-
-
-***********
-#0# == "1" and true or false

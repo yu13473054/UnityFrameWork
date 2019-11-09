@@ -1,0 +1,5 @@
+sn	life	speed	checkType	checkValues	trigger	targetType	targetValues	effectList
+1	10	3	0		1	3		1000110|1000111
+2	0	0	0		2	2	2	1000120|1000121
+3	0	0	0		0	3		1000130|1000131
+4	0	0	0		0	0		1000130|1000131

@@ -7,9 +7,6 @@ using System.Text.RegularExpressions;
 using Excel;
 using UnityEditor;
 using UnityEngine;
-/// <summary>
-/// 详细使用规则见：使用规范.docx
-/// </summary>
 
 public class ExcelParserTool
 {
@@ -23,6 +20,7 @@ public class ExcelParserTool
     }
     const int StartRow = 4;
     private static string LuaDir = Application.dataPath + "/Lua/logic";
+    private static string CSharpDir = Application.dataPath + "/Scripts/DataBase";
     //常规配置表
     private static string ExcelDirPath = System.Environment.CurrentDirectory + "/配置表";
     private static string TxtDir = Application.dataPath + "/Localization/{0}/Data/Excel";
@@ -48,6 +46,8 @@ public class ExcelParserTool
         {
             string singleFile = files[i];
             if(!singleFile.EndsWith(".xlsx")) continue;
+            //以CN中的表格结构为模板
+            if (!singleFile.Contains("/CN/")) continue;
             EditorUtility.DisplayProgressBar("解析Excel文件", Path.GetFullPath(singleFile), (i + 1) * 1f / files.Count);
             //获取有效的路径
             string dir = Path.GetDirectoryName(singleFile).Replace(ExcelDirPath,"");
@@ -57,8 +57,11 @@ public class ExcelParserTool
         }
         //创建txt文件
         CreateTxt();
-        //创建解析文件
-        CreateParserFile();
+        //创建Lua解析文件
+        CreateParser_Lua();
+        //创建C#解析文件
+        CreateObj_CSharp();
+        CreateParser_CSharp();
         AssetDatabase.Refresh();
         
         EditorUtility.ClearProgressBar();
@@ -320,11 +323,9 @@ public class ExcelParserTool
         }
     }
 
-    private static void CreateParserFile()
+    private static void CreateParser_Lua()
     {
         string destFilePath = LuaDir + "/" + "Data.lua";
-        string cutLine = "----------CutLine----------";
-        string customLine = "-------Do Not Delete-------";
         string permanentLine = "-------Permanent-------";
 
         //固定文本内容，主要是解析方法
@@ -339,37 +340,23 @@ public class ExcelParserTool
         if (File.Exists(destFilePath))
         {
             string fileText = File.ReadAllText(destFilePath);
-            string[] split = fileText.Split(new []{ cutLine , permanentLine }, StringSplitOptions.None);
-            string oldCustomText = split[1].Trim();
-            if (split.Length > 2)
+            string[] split = fileText.Split(new []{ permanentLine }, StringSplitOptions.None);
+            if (split.Length > 1)
             {
-                permanentStr = split[2].Trim();
-            }
-            if (!string.IsNullOrEmpty(oldCustomText))
-            {
-                string[] textArray = oldCustomText.Split(new []{ customLine }, StringSplitOptions.RemoveEmptyEntries);
-                //按照方法名生成字典，方便查询
-                for (int i = 0; i < textArray.Length; i++)
-                {
-                    string getFuncName = Regex.Match(textArray[i], "Data\\..+\\(.*\\)").Value;
-                    oldCTDic.Add(getFuncName,textArray[i].TrimStart());
-                }
+                permanentStr = split[1].Trim();
             }
         }
 
         //获取模板文件中的内容
         string templateText = File.ReadAllText(Application.dataPath + "/Editor/ExceTool/Template/DataTemplate.lua");
         string[] structTexts = templateText.Split(new [] { "***********" }, StringSplitOptions.None);
-        //去掉模板内容中的首尾换行
+        ////去掉模板内容中的首尾换行
         structTexts[1] = structTexts[1].TrimStart();
-        structTexts[2] = structTexts[2].TrimStart();
-        for (int i = 3; i < 7; i++)
+        for (int i = 2; i < 7; i++)
         {
             structTexts[i] = structTexts[i].Trim();
         }
         structTexts[7] = structTexts[7].TrimStart();
-        structTexts[8] = structTexts[8].TrimStart();
-        structTexts[9] = structTexts[9].TrimStart();
 
         //保存转换成table的方法
         fixedSB.Append(structTexts[0]);
@@ -378,15 +365,6 @@ public class ExcelParserTool
         for (int i = 0; i < tableList.Count; i++)
         {
             TableInfo tableInfo = tableList[i];
-            //以CN中的表格结构为模板
-            if(!tableInfo.dir.StartsWith("CN")) continue;
-
-            //使用单独的解析体
-            string parseFuncText = structTexts[1].Replace("#1#", tableInfo.fileName)
-                    .Replace("#2#", tableInfo.fileName);
-            string funcName = "Data." + tableInfo.fileName + "()";
-            string localFieldName = "_" + tableInfo.fileName.Substring(0, 1).ToLower() + tableInfo.fileName.Substring(1);
-            string dataFuncText = structTexts[2].Replace("#0#", localFieldName).Replace("#1#", tableInfo.fileName);
 
             DataTable table = tableInfo.dataTable;
             DataRow exprotRow = table.Rows[0];
@@ -401,6 +379,7 @@ public class ExcelParserTool
                     break;
                 }
             }
+            //主键
             string key;
             if (type.Contains("[]"))
             {
@@ -415,13 +394,14 @@ public class ExcelParserTool
             else
             {
                 if (type.Contains("string"))
-                    //tableHandler:GetValue( records, 0 )
-                    key = structTexts[4].Replace("#0#", "0");
+                    //tableHandler:GetValue( records, #col# )
+                    key = structTexts[3].Replace("#col#", "0");
                 else
-                    //tonumber( tableHandler:GetValue( records, 0 ) )
-                    key = structTexts[3].Replace("#0#",structTexts[4].Replace("#0#","0"));
+                    //tonumber( tableHandler:GetValue( records, #col# ) )
+                    key = structTexts[2].Replace("#col#", "0");
             }
-            parseFuncText = parseFuncText.Replace("#4#", key);
+            string parseFuncText = structTexts[1].Replace("#Name#", tableInfo.fileName);
+            parseFuncText = parseFuncText.Replace("#desc#", key);
 
             //字段赋值
             StringBuilder fieldValueSb = new StringBuilder();
@@ -444,47 +424,274 @@ public class ExcelParserTool
                         boolValue = "false";
                     else
                         boolValue = "true";
-                    //样式：levels = ToArray(tableHandler:GetValue( records, 2 ), false),
-                    fieldValue = structTexts[6].Replace("#0#", fieldName).Replace("#1#", structTexts[4].Replace("#0#", index.ToString())).Replace("#2#", boolValue);
+                    //样式：#key# = ToArray(tableHandler:GetValue( records, #col# ),#isNum#),
+                    fieldValue = structTexts[5].Replace("#key#", fieldName).Replace("#col#", index.ToString()).Replace("#isNum#", boolValue);
                 }
                 //解析常规
                 else
                 {
+                    //#key# = #desc#,
+                    fieldValue = structTexts[4].Replace("#key#", fieldName);
                     if (type.Contains("string"))
                         //样式：desc = tableHandler:GetValue( records, 1 ),
-                        fieldValue = structTexts[5].Replace("#0#",fieldName).Replace("#1#", structTexts[4].Replace("#0#", index.ToString()));
+                        fieldValue = fieldValue.Replace("#desc#", structTexts[3].Replace("#col#", index.ToString()));
                     else if(type.Contains("bool"))
                         //records == "1" and true or false,
-                        fieldValue = structTexts[5].Replace( "#0#", fieldName ).Replace( "#1#", structTexts[9].Replace( "#0#", structTexts[4].Replace( "#0#", index.ToString() ) ) );
+                        fieldValue = fieldValue.Replace("#desc#", structTexts[6].Replace("#col#", index.ToString()));
                     else
                         //样式：descID = tonumber( tableHandler:GetValue( records, 1 ) ),
-                        fieldValue = structTexts[5].Replace("#0#",fieldName).Replace("#1#", structTexts[3].Replace("#0#", structTexts[4].Replace("#0#", index.ToString())));
+                        fieldValue = fieldValue.Replace("#desc#", structTexts[2].Replace("#col#", index.ToString()));
                 }
                 if (index != 0) fieldValueSb.Append("\t\t\t\t");
                 fieldValueSb.Append(fieldValue);
                 if (j != tableInfo.colCount-1) fieldValueSb.Append("\n");
                 index++;
             }
-            parseFuncText = parseFuncText.Replace("#5#", fieldValueSb.ToString());
-
+            parseFuncText = parseFuncText.Replace("#value#", fieldValueSb.ToString());
             fixedSB.Append(parseFuncText);
-
-            //获取数据方法体
-            if (oldCTDic.ContainsKey(funcName))
-            {
-                //直接使用文件中已经存在的获取数据的方法
-                customSB.Append(customLine).Append("\n").Append(oldCTDic[funcName]);
-            }
-            else
-            {
-                //生成默认的获取数据的方法
-                customSB.Append(customLine).Append("\n").Append(dataFuncText);
-            }
         }
         EditorUtility.DisplayProgressBar("正在生成Lua文件", "Data.lua", 1);
         //存储内容
-        fixedSB.Append(cutLine).Append("\n\n").Append(customSB).Append("\n\n").Append(permanentLine).Append("\n").Append(permanentStr);
+        fixedSB.Append(permanentLine).Append("\n").Append(permanentStr);
         File.WriteAllText(destFilePath, fixedSB.ToString());
+    }
+
+    private static void CreateObj_CSharp()
+    {
+        string parserDir = CSharpDir + "/Parser";
+        if (Directory.Exists(parserDir))
+        {
+            Directory.Delete(parserDir, true);
+        }
+        Directory.CreateDirectory(parserDir);
+
+        //获取模板文件中的内容
+        string templateText = File.ReadAllText(Application.dataPath + "/Editor/ExceTool/Template/ObjTemplateCSharp.txt");
+        string[] structTexts = templateText.Split(new[] { "***********" }, StringSplitOptions.None);
+        //去掉模板内容中的首尾换行
+        structTexts[1] = structTexts[1].Trim();
+
+        //生成新的obj文件
+        for (int k = 0; k < tableList.Count; k++)
+        {
+            TableInfo tableInfo = tableList[k];
+            EditorUtility.DisplayProgressBar("正在生成obj文件", tableInfo.fileName + "Parser.cs", (k + 1) * 1f / tableList.Count);
+
+            StringBuilder sb = new StringBuilder();
+            DataRow exportRow = tableInfo.dataTable.Rows[0];
+            DataRow typeRow = tableInfo.dataTable.Rows[1];
+            //记录字段名称
+            DataRow fieldRow = tableInfo.dataTable.Rows[2];
+            for (int i = 0; i < tableInfo.colCount; i++)
+            {
+                if (!exportRow[i].ToString().Trim().ToLower().Contains("c")) continue;//注释用字段，不导入到文件中
+                string value = fieldRow[i].ToString().Trim();
+                if (string.IsNullOrEmpty(value))
+                {
+                    Debug.LogError(tableInfo.fileName + "表格中字段名不能为空！");
+                    return;
+                }
+                string fieldName = value.Substring(0, 1).ToLower() + value.Substring(1);
+                string type = typeRow[i].ToString().Trim().ToLower();
+                string keyType = "";
+                if (type.Contains("string"))
+                    keyType = "string";
+                else if (type.Contains("int"))
+                    keyType = "int";
+                else if (type.Contains("float"))
+                    keyType = "float";
+                else if (type.Contains("double"))
+                    keyType = "double";
+                else if (type.Contains("bool"))
+                    keyType = "bool";
+                if (type.Contains("[]"))
+                    keyType += "[]";
+                //public #keyType# #key# { set; get;}
+                string fieldValue = structTexts[1].Replace("#keyType#", keyType).Replace("#key#", fieldName);
+                sb.Append(fieldValue);
+                if (i != tableInfo.colCount - 1)
+                {
+                    sb.Append("\n").Append("\t");
+                }
+            }
+            //生成类文件
+            string classTxt = structTexts[0].Replace("#Name#", tableInfo.fileName).Replace("#value#", sb.ToString().Trim());
+            File.WriteAllText(parserDir+"/"+ tableInfo.fileName + "Parser.cs", classTxt);
+        }
+        AssetDatabase.Refresh();
+    }
+
+    private static void CreateParser_CSharp()
+    {
+        string destFilePath = CSharpDir + "/" + "Data.cs";
+        string permanentLine = "/////////////////////Permanent////////////////////";
+
+        //固定文本内容，主要是解析方法
+        StringBuilder fixedSB = new StringBuilder();
+        //永久的内容：手动添加进去的解析方法等等
+        string permanentStr = "";
+
+        //先获取目标文件中自定义的内容
+        Dictionary<string, string> oldCTDic = new Dictionary<string, string>();
+        if (File.Exists(destFilePath))
+        {
+            string fileText = File.ReadAllText(destFilePath);
+            string[] split = fileText.Split(new[] { permanentLine }, StringSplitOptions.None);
+            if (split.Length > 1)
+            {
+                permanentStr = split[1].TrimStart().TrimEnd().TrimEnd('}').TrimEnd();
+            }
+        }
+
+        //获取模板文件中的内容
+        string templateText = File.ReadAllText(Application.dataPath + "/Editor/ExceTool/Template/DataTemplateCSharp.txt");
+        string[] structTexts = templateText.Split(new[] { "***********" }, StringSplitOptions.None);
+        ////去掉模板内容中的首尾换行
+        structTexts[1] = structTexts[1].TrimStart();
+        for (int i = 2; i < 11; i++)
+        {
+            structTexts[i] = structTexts[i].Trim();
+        }
+
+        ////保存转换成table的方法
+        //fixedSB.Append(structTexts[0]);
+
+        //开始生成表格解析内容
+        for (int i = 0; i < tableList.Count; i++)
+        {
+            TableInfo tableInfo = tableList[i];
+
+            DataTable table = tableInfo.dataTable;
+            DataRow exprotRow = table.Rows[0];
+            DataRow typeRow = table.Rows[1];
+            //主键：表格中第一列含有c的为主键
+            string type = "";
+            for (int j = 0; j < tableInfo.colCount; j++)
+            {
+                if (exprotRow[j].ToString().ToLower().Contains("c"))
+                {
+                    type = typeRow[j].ToString().ToLower();
+                    break;
+                }
+            }
+            //主键
+            string key, keyType = "";
+            if (type.Contains("[]"))
+            {
+                Debug.LogErrorFormat("{0}表中的主键不能为数组！请检查", tableInfo.fileName);
+                continue;
+            }
+            else if (type.Contains("bool"))
+            {
+                Debug.LogErrorFormat("{0}表中的主键不能为布尔值！请检查", tableInfo.fileName);
+                continue;
+            }
+            else
+            {
+                if (type.Contains("string"))
+                {
+                    keyType = "string";
+                    //handler:GetValue( i, #col# )
+                    key = structTexts[2].Replace("#col#", "0");
+                }
+                else
+                {
+                    //#keyType#.Parse(handler.GetValue(i, #col#))
+                    key = structTexts[3].Replace("#col#", "0");
+                    if (type.Contains("int"))
+                    {
+                        keyType = "int";
+                        key = key.Replace("#keyType#", "int");
+                    }
+                    else if (type.Contains("float"))
+                    {
+                        keyType = "float";
+                        key = key.Replace("#keyType#", "float");
+                    }
+                    else if (type.Contains("double"))
+                    {
+                        keyType = "double";
+                        key = key.Replace("#keyType#", "double");
+                    }
+                }
+            }
+            string parseFuncText = structTexts[1].Replace("#Name#", tableInfo.fileName).Replace("#keyType#", keyType)
+                .Replace("#desc#", key).Replace("#LName#", tableInfo.fileName.Substring(0, 1).ToLower() + tableInfo.fileName.Substring(1));
+
+            //字段赋值
+            StringBuilder fieldValueSb = new StringBuilder();
+            int index = 0;
+            for (int j = 0; j < tableInfo.colCount; j++)
+            {
+                if (!exprotRow[j].ToString().ToLower().Contains("c"))
+                    continue;
+
+                string fieldName = table.Rows[2][j].ToString().Substring(0, 1).ToLower() +
+                                   table.Rows[2][j].ToString().Substring(1);
+
+                string fieldValue ="";
+                type = typeRow[j].ToString().ToLower();
+                //解析List
+                if (type.Contains("[]"))
+                {
+                    if (type.Contains("string"))
+                        fieldValue = structTexts[8].Replace("#col#", index.ToString());
+                    else if (type.Contains("int"))
+                    {
+                        //ToIntArray(handler:GetValue(i, #col#))
+                        fieldValue = structTexts[4].Replace("#col#", index.ToString());
+                    }
+                    else if (type.Contains("float"))
+                    {
+                        fieldValue = structTexts[5].Replace("#col#", index.ToString());
+                    }
+                    else if (type.Contains("double"))
+                    {
+                        fieldValue = structTexts[6].Replace("#col#", index.ToString());
+                    }
+                    else if (type.Contains("bool"))
+                    {
+                        fieldValue = structTexts[7].Replace("#col#", index.ToString());
+                    }
+                }
+                //解析常规
+                else
+                {
+                    //#keyType#.Parse(handler.GetValue(i, #col#))
+                    fieldValue = structTexts[3].Replace("#col#", index.ToString());
+                    if (type.Contains("string"))
+                        fieldValue = structTexts[2].Replace("#col#", index.ToString());
+                    else if (type.Contains("int"))
+                    {
+                        fieldValue = fieldValue.Replace("#keyType#", "int");
+                    }
+                    else if (type.Contains("float"))
+                    {
+                        fieldValue = fieldValue.Replace("#keyType#", "float");
+                    }
+                    else if (type.Contains("double"))
+                    {
+                        fieldValue = fieldValue.Replace("#keyType#", "double");
+                    }
+                    else if (type.Contains("bool"))
+                    {
+                        //handler:GetValue(i, #col#).ToLower().Equals("1")
+                        fieldValue = structTexts[9].Replace("#col#", index.ToString());
+                    }
+                }
+                if (index != 0) fieldValueSb.Append("\t\t\t\t");
+                fieldValueSb.Append(structTexts[10].Replace("#key#", fieldName).Replace("#desc#", fieldValue));
+                if (j != tableInfo.colCount - 1) fieldValueSb.Append("\n");
+                index++;
+            }
+            parseFuncText = parseFuncText.Replace("#value#", fieldValueSb.ToString());
+            if (i != 0) fixedSB.Append("\t");
+            fixedSB.Append(parseFuncText);
+        }
+        EditorUtility.DisplayProgressBar("正在生成cs文件", "Data.cs", 1);
+        //存储内容
+        fixedSB.Append(permanentLine).Append("\n\t").Append(permanentStr);
+        File.WriteAllText(destFilePath, structTexts[0].Replace("#value#", fixedSB.ToString()));
     }
 
     //检查是否存在重名的表格

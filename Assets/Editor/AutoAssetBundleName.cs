@@ -65,8 +65,7 @@ public class AutoAssetBundleName
         ruleList.Add(new AssetBundlePath(BundleType.Folder, "Assets/Data"));
         ruleList.Add(new AssetBundlePath(BundleType.Folder, "Assets/Lua"));
         ruleList.Add( new AssetBundlePath(BundleType.Folder, "Assets/Res/Shader") );
-        ruleList.Add(new AssetBundlePath(BundleType.Default, "Assets/Res/Prefab/UI"));
-        ruleList.Add(new AssetBundlePath(BundleType.Default, "Assets/Res/Atlas/Common"));
+        ruleList.Add(new AssetBundlePath(BundleType.Default, "Assets/Res/UI/Common"));
     }
 
     [MenuItem("打包/设置所有AssetBundleName", false, 201)]

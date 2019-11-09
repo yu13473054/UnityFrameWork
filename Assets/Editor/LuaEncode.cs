@@ -73,15 +73,13 @@ public class LuaEncode
             else
                 luaexe = "luajit-64";
         }
-        Directory.SetCurrentDirectory(exedir);
+        Directory.SetCurrentDirectory(exedir);//windows平台需要切换到对应目录
         ProcessStartInfo info = new ProcessStartInfo();
         info.FileName = luaexe;
         info.Arguments = "-b -g " + srcFile + " " + outFile;
         info.WindowStyle = ProcessWindowStyle.Hidden;
         info.UseShellExecute = isWin;
         info.ErrorDialog = true;
-
-        UnityEngine.Debug.Log(target + "   " + outFile);
 
         Process pro = Process.Start(info);
         pro.WaitForExit();

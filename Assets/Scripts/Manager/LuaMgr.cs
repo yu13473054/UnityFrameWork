@@ -60,6 +60,7 @@ public class LuaMgr : MonoBehaviour
         {
             _loader.AddBundle("lua_logic");
             _loader.AddBundle("lua_tolua");
+            _loader.AddBundle("lua_module");
             _loader.AddBundle("lua_ui");
             _loader.AddBundle("lua_utils");
         }
