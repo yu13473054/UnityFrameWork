@@ -3,7 +3,7 @@
 /// </summary>
 public class BulletEffect
 {
-    public void Init(sn, Unit activeUnit, targetUnit)
+    public void Init(int sn, Unit activeUnit, Unit targetUnit)
     {
 
     }
