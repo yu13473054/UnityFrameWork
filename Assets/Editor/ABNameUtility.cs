@@ -6,7 +6,7 @@ using UnityEditor;
 using UnityEngine;
 using Debug = UnityEngine.Debug;
 
-public class AutoAssetBundleName
+public class ABNameUtility
 {
     enum BundleType
     {
@@ -139,15 +139,15 @@ public class AutoAssetBundleName
             for (int i = 0; i < splits.Length; i++)
             {
                 int lngType = Int32.Parse(splits[i]);
-                if (lngType == 0 || lngType >= AutoResMap.LocalTypeList.Length) continue;
+                if (lngType == 0 || lngType >= ResmapUtility.LocalTypeList.Length) continue;
                 lngDic.Add(lngType, lngType);
             }
             //剔除不需要的多语言
-            for (int i = 0; i < AutoResMap.LocalTypeList.Length; i++)
+            for (int i = 0; i < ResmapUtility.LocalTypeList.Length; i++)
             {
                 if (!lngDic.ContainsKey(i + 1))
                 {
-                    ClearABNames("Assets/Localization/" + AutoResMap.LocalTypeList[i]);
+                    ClearABNames("Assets/Localization/" + ResmapUtility.LocalTypeList[i]);
                 }
             }
         }

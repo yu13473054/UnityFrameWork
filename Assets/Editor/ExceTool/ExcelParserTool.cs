@@ -45,12 +45,12 @@ public class ExcelParserTool
         for (int i = 0; i < files.Count; i++)
         {
             string singleFile = files[i];
-            if(!singleFile.EndsWith(".xlsx")) continue;
+            if (!singleFile.EndsWith(".xlsx")) continue;
             //以CN中的表格结构为模板
             if (!singleFile.Contains("/CN/")) continue;
             EditorUtility.DisplayProgressBar("解析Excel文件", Path.GetFullPath(singleFile), (i + 1) * 1f / files.Count);
             //获取有效的路径
-            string dir = Path.GetDirectoryName(singleFile).Replace(ExcelDirPath,"");
+            string dir = Path.GetDirectoryName(singleFile).Replace(ExcelDirPath, "");
             if (!string.IsNullOrEmpty(dir)) dir = dir.TrimStart('/', '\\');
             //解析Excel并保存
             ParserSingleFile(singleFile, dir);
@@ -63,7 +63,7 @@ public class ExcelParserTool
         CreateObj_CSharp();
         CreateParser_CSharp();
         AssetDatabase.Refresh();
-        
+
         EditorUtility.ClearProgressBar();
         Debug.Log("所有Excel文件对应的解析文件创建完成");
     }
@@ -117,7 +117,7 @@ public class ExcelParserTool
                     fileName = tableName,
                     dir = dir
                 };
-                if (!CheckRepeat(tableName,dir))
+                if (!CheckRepeat(tableName, dir))
                 {
                     tableList.Add(tableInfo);
                 }
@@ -130,10 +130,10 @@ public class ExcelParserTool
         List<string> addList = new List<string>();
 
         //清理旧的txt文件:保留文件名称首字母小写的数据文件
-        foreach (string dir in AutoResMap.LocalTypeList)
+        foreach (string dir in ResmapUtility.LocalTypeList)
         {
             string dirPath = string.Format(TxtDir, dir);
-            if(Directory.Exists(dirPath))
+            if (Directory.Exists(dirPath))
                 ClearOldTxt(dirPath);
             else
                 Directory.CreateDirectory(dirPath);
@@ -146,7 +146,7 @@ public class ExcelParserTool
         for (int k = 0; k < tableList.Count; k++)
         {
             TableInfo tableInfo = tableList[k];
-            EditorUtility.DisplayProgressBar("正在生成Txt文件", tableInfo.fileName+".txt", (k + 1) * 1f / tableList.Count);
+            EditorUtility.DisplayProgressBar("正在生成Txt文件", tableInfo.fileName + ".txt", (k + 1) * 1f / tableList.Count);
             StringBuilder sb = new StringBuilder();
             DataRow exportRow = tableInfo.dataTable.Rows[0];
             DataRow typeRow = tableInfo.dataTable.Rows[1];
@@ -154,12 +154,12 @@ public class ExcelParserTool
             DataRow fieldRow = tableInfo.dataTable.Rows[2];
             for (int i = 0; i < tableInfo.colCount; i++)
             {
-                if(!exportRow[i].ToString().Trim().ToLower().Contains("c")) continue;//注释用字段，不导入txt文件中
+                if (!exportRow[i].ToString().Trim().ToLower().Contains("c")) continue;//注释用字段，不导入txt文件中
 
                 string value = fieldRow[i].ToString().Trim();
                 if (string.IsNullOrEmpty(value))
                 {
-                    Debug.LogError(tableInfo.fileName+"表格中字段名不能为空！");
+                    Debug.LogError(tableInfo.fileName + "表格中字段名不能为空！");
                     return;
                 }
                 sb.Append(value);
@@ -184,7 +184,8 @@ public class ExcelParserTool
             //多语言文本结构
             string[] dirSplits = tableInfo.dir.Split(new[] { '/' }, 1);
             string localModuleName = dirSplits[0];
-            if (!localIdDic.ContainsKey(localModuleName)) {
+            if (!localIdDic.ContainsKey(localModuleName))
+            {
                 localIdDic.Add(localModuleName, new Dictionary<string, string>());
                 localValueDic.Add(localModuleName, new Dictionary<string, string>());
             }
@@ -206,7 +207,7 @@ public class ExcelParserTool
                     if (string.IsNullOrEmpty(value))
                     {
                         if (format.Contains("t") && !format.Contains("e"))
-                            Debug.LogErrorFormat("表 {0} 中第 {1} 行的 {2} 值不能为空，请检查！", tableInfo.fileName, i+1, fieldRow[j].ToString().Trim());
+                            Debug.LogErrorFormat("表 {0} 中第 {1} 行的 {2} 值不能为空，请检查！", tableInfo.fileName, i + 1, fieldRow[j].ToString().Trim());
                         else
                         {
                             if (type.Contains("[]"))
@@ -227,7 +228,7 @@ public class ExcelParserTool
                         {
                             if (Regex.IsMatch(value, @"[^ 0123456789.|-]"))
                             {
-                                Debug.LogErrorFormat("表 {0} 中第 {1} 行的 {2} 值不合法，请检查！", tableInfo.fileName,i+1, fieldRow[j].ToString().Trim());
+                                Debug.LogErrorFormat("表 {0} 中第 {1} 行的 {2} 值不合法，请检查！", tableInfo.fileName, i + 1, fieldRow[j].ToString().Trim());
                             }
                         }
                         else if (type.Contains("bool"))
@@ -237,17 +238,18 @@ public class ExcelParserTool
                             else
                                 value = TransBool(value);
                         }
-                        else if(type.Contains("string") && format.Contains("t"))//含有多语言文本
+                        else if (type.Contains("string") && format.Contains("t"))//含有多语言文本
                         {
                             if (type.Contains("[]"))
                             {
                                 string[] splits = value.Split('|');
                                 value = "";
-                                for(int m = 0; m < splits.Length; m++)
+                                for (int m = 0; m < splits.Length; m++)
                                 {
                                     string str = splits[m];
                                     string localId;
-                                    if(!localValueDic[localModuleName].TryGetValue(str, out localId)) {//判断字符串是否已经存在
+                                    if (!localValueDic[localModuleName].TryGetValue(str, out localId))
+                                    {//判断字符串是否已经存在
                                         localId = tableInfo.fileName + "_" + fieldRow[j] + "_" + mainKeyStr + "_" + (m + 1);
                                         localIdDic[localModuleName].Add(localId, str);
                                         localValueDic[localModuleName].Add(str, localId);
@@ -284,37 +286,38 @@ public class ExcelParserTool
             string subDirPath = dirSplits.Length > 1 ? dirSplits[1] : "";
             if (string.IsNullOrEmpty(subDirPath))
             {
-                string filePath = string.Format(TxtDir, dirSplits[0]) + "/"+tableInfo.fileName+".txt";
-                File.WriteAllText(filePath,sb.ToString());
+                string filePath = string.Format(TxtDir, dirSplits[0]) + "/" + tableInfo.fileName + ".txt";
+                File.WriteAllText(filePath, sb.ToString());
                 addList.Add(filePath);
             }
             else
             {
                 string dirPath = string.Format(TxtDir, dirSplits[0]) + "/" + subDirPath;
                 Directory.CreateDirectory(dirPath);
-                string filePath = dirPath + "/"+tableInfo.fileName+".txt";
-                File.WriteAllText(filePath,sb.ToString());
+                string filePath = dirPath + "/" + tableInfo.fileName + ".txt";
+                File.WriteAllText(filePath, sb.ToString());
                 addList.Add(filePath);
             }
         }
         CreateLocalFile(addList);//创建多语言文件
         AssetDatabase.Refresh();
 
-        if (addList.Count>0)
+        if (addList.Count > 0)
         {
-            AutoResMap.ToResmapExternal(addList);
+            ResmapUtility.ToResmapExternal(addList);
         }
     }
 
     private static void CreateLocalFile(List<string> addList)
     {
         EditorUtility.DisplayProgressBar("正在生成Localization文件", LocalFile, 1);
-        foreach(var pair in localIdDic)
+        foreach (var pair in localIdDic)
         {
             string moduleName = pair.Key;
             StringBuilder sb = new StringBuilder();
             sb.Append("id\tname\n");
-            foreach(var pair1 in pair.Value) {
+            foreach (var pair1 in pair.Value)
+            {
                 sb.Append(pair1.Key).Append("\t").Append(pair1.Value).Append("\n");
             }
             string filePath = string.Format(TxtDir, moduleName) + "/" + LocalFile;
@@ -336,11 +339,11 @@ public class ExcelParserTool
         string permanentStr = "";
 
         //先获取目标文件中自定义的内容
-        Dictionary<string,string> oldCTDic = new Dictionary<string, string>();
+        Dictionary<string, string> oldCTDic = new Dictionary<string, string>();
         if (File.Exists(destFilePath))
         {
             string fileText = File.ReadAllText(destFilePath);
-            string[] split = fileText.Split(new []{ permanentLine }, StringSplitOptions.None);
+            string[] split = fileText.Split(new[] { permanentLine }, StringSplitOptions.None);
             if (split.Length > 1)
             {
                 permanentStr = split[1].Trim();
@@ -349,7 +352,7 @@ public class ExcelParserTool
 
         //获取模板文件中的内容
         string templateText = File.ReadAllText(Application.dataPath + "/Editor/ExceTool/Template/DataTemplate.lua");
-        string[] structTexts = templateText.Split(new [] { "***********" }, StringSplitOptions.None);
+        string[] structTexts = templateText.Split(new[] { "***********" }, StringSplitOptions.None);
         ////去掉模板内容中的首尾换行
         structTexts[1] = structTexts[1].TrimStart();
         for (int i = 2; i < 7; i++)
@@ -383,7 +386,7 @@ public class ExcelParserTool
             string key;
             if (type.Contains("[]"))
             {
-                Debug.LogErrorFormat("{0}表中的主键不能为数组！请检查",tableInfo.fileName);
+                Debug.LogErrorFormat("{0}表中的主键不能为数组！请检查", tableInfo.fileName);
                 continue;
             }
             else if (type.Contains("bool"))
@@ -435,7 +438,7 @@ public class ExcelParserTool
                     if (type.Contains("string"))
                         //样式：desc = tableHandler:GetValue( records, 1 ),
                         fieldValue = fieldValue.Replace("#desc#", structTexts[3].Replace("#col#", index.ToString()));
-                    else if(type.Contains("bool"))
+                    else if (type.Contains("bool"))
                         //records == "1" and true or false,
                         fieldValue = fieldValue.Replace("#desc#", structTexts[6].Replace("#col#", index.ToString()));
                     else
@@ -444,7 +447,7 @@ public class ExcelParserTool
                 }
                 if (index != 0) fieldValueSb.Append("\t\t\t\t");
                 fieldValueSb.Append(fieldValue);
-                if (j != tableInfo.colCount-1) fieldValueSb.Append("\n");
+                if (j != tableInfo.colCount - 1) fieldValueSb.Append("\n");
                 index++;
             }
             parseFuncText = parseFuncText.Replace("#value#", fieldValueSb.ToString());
@@ -516,7 +519,7 @@ public class ExcelParserTool
             }
             //生成类文件
             string classTxt = structTexts[0].Replace("#Name#", tableInfo.fileName).Replace("#value#", sb.ToString().Trim());
-            File.WriteAllText(parserDir+"/"+ tableInfo.fileName + "Parser.cs", classTxt);
+            File.WriteAllText(parserDir + "/" + tableInfo.fileName + "Parser.cs", classTxt);
         }
         AssetDatabase.Refresh();
     }
@@ -629,7 +632,7 @@ public class ExcelParserTool
                 string fieldName = table.Rows[2][j].ToString().Substring(0, 1).ToLower() +
                                    table.Rows[2][j].ToString().Substring(1);
 
-                string fieldValue ="";
+                string fieldValue = "";
                 type = typeRow[j].ToString().ToLower();
                 //解析List
                 if (type.Contains("[]"))
@@ -699,7 +702,7 @@ public class ExcelParserTool
     {
         foreach (TableInfo info in tableList)
         {
-            if (info.fileName.Equals(fileName, StringComparison.OrdinalIgnoreCase)&& info.dir.Equals(dir, StringComparison.OrdinalIgnoreCase))
+            if (info.fileName.Equals(fileName, StringComparison.OrdinalIgnoreCase) && info.dir.Equals(dir, StringComparison.OrdinalIgnoreCase))
             {
                 Debug.LogError("存在重名表格：" + fileName);
                 return true;
@@ -804,7 +807,7 @@ public class ExcelParserTool
         for (int i = files.Count - 1; i >= 0; i--)
         {
             string filePath = files[i];
-            if(!filePath.EndsWith(".txt")) continue;
+            if (!filePath.EndsWith(".txt")) continue;
             string fileName = Path.GetFileNameWithoutExtension(filePath);
             char firstC = fileName[0];
             if (firstC >= 'a' && firstC <= 'z')

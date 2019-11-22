@@ -9,7 +9,7 @@ using UnityEditor;
 using Debug = UnityEngine.Debug;
 using Object = UnityEngine.Object;
 
-public class AutoResMap
+public class ResmapUtility
 {
     class ResmapInfo
     {
@@ -18,49 +18,63 @@ public class AutoResMap
         public string abName;
     }
 
-    class DirConfig
+    //导入文件的规则：如果指定值不为空，增必须同时满足
+    struct FileRule
     {
-        public DirConfig(string dir, string fileter, string ext)
+        public string filter;
+        public string ext;
+
+        public FileRule(string filter, string ext)
         {
-            this.dir = dir;
-            this.fileter = fileter;
+            this.filter = filter;
             this.ext = ext;
         }
+    }
 
-        public string dir;//生效的文件夹，满足以下规则的内容能被填入resmap中
-        public string fileter;//需要填入的标志字段
-        public string ext;//需要填入的文件类型
+    class DirConfig
+    {
+        public DirConfig(bool allFileInto, params FileRule[] rules)
+        {
+            this.rules = rules;
+            this.allFileInto = allFileInto;
+        }
+
+        public FileRule[] rules;//文件规则，只要满足其中一个规则，则能导入到resmap中
+        public bool allFileInto;//该文件夹下的所有文件是否都能导入
     }
 
     const string DataDir = "Assets/Data/";
     const string MultiLngFile = "multiLngConfig.txt";
 
-    static DirConfig[] DirRules =
-    {
-        new DirConfig("Assets/Res/Icon","",""),
-        new DirConfig("Assets/Res/Prefab","","prefab"),
-        new DirConfig("Assets/Res/Font","","TTF"),
-        new DirConfig("Assets/Res/Font","","TTc"),
-    };    
+    //static DirConfig[] DirRules =
+    //{
+    //    new DirConfig(,"",""),
+    //    new DirConfig("Assets/Res/Prefab","","prefab"),
+    //    new DirConfig("Assets/Res/Font","","TTF"),
+    //    new DirConfig("Assets/Res/Font","","TTc"),
+    //};
 
-    private static DirConfig[] LocalSample =
-    {
-        new DirConfig("Assets/Localization/{0}/Audio","",""),
-        new DirConfig("Assets/Localization/{0}/Data","",""),
-        new DirConfig("Assets/Localization/{0}/Sprites","",""),
-        new DirConfig("Assets/Localization/{0}/Font","","fontsettings"),
-        new DirConfig("Assets/Localization/{0}/Font","","TTF"),
-        new DirConfig("Assets/Localization/{0}/Font","","TTc"),
-        new DirConfig("Assets/Localization/{0}/prefab","","prefab"),
-        new DirConfig("Assets/Localization/{0}/Fx","","prefab"),
-    };
+    //private static DirConfig[] LocalSample =
+    //{
+    //    new DirConfig("Assets/Localization/{0}/Audio","",""),
+    //    new DirConfig("Assets/Localization/{0}/Data","",""),
+    //    new DirConfig("Assets/Localization/{0}/Sprites","",""),
+    //    new DirConfig("Assets/Localization/{0}/Font","","fontsettings"),
+    //    new DirConfig("Assets/Localization/{0}/Font","","TTF"),
+    //    new DirConfig("Assets/Localization/{0}/Font","","TTc"),
+    //    new DirConfig("Assets/Localization/{0}/prefab","","prefab"),
+    //    new DirConfig("Assets/Localization/{0}/Fx","","prefab"),
+    //};
+
+    private static bool _isInit = false;
+    public static bool canAuto2Resmap = true;
 
     public static string[] LocalTypeList =
     {
         "CN", "EN", "JP"
     };
 
-    static Dictionary<string, int> LocalTypeDic;
+    private static Dictionary<string, DirConfig> _dirDic;
 
     //类型收集器
     static List<string> imgList = new List<string>();
@@ -73,25 +87,26 @@ public class AutoResMap
 
     static void InitData()
     {
-        localIsModify = false;
+        if (_isInit) return;
+        _isInit = true;
 
-        LocalTypeDic = new Dictionary<string, int>();
-        List<DirConfig> dirConfigList = new List<DirConfig>(DirRules);
+        _dirDic = new Dictionary<string, DirConfig>();
+        _dirDic.Add("Assets/Res/Icon", new DirConfig(true));
+        _dirDic.Add("Assets/Res/Prefab", new DirConfig(true, new FileRule("", "prefab")));
+        _dirDic.Add("Assets/Res/UI", new DirConfig(false, new FileRule("_dynamic", ""), new FileRule("", "prefab")));
+        _dirDic.Add("Assets/Res/Font", new DirConfig(true, new FileRule("", "fontsettings"), new FileRule("", "TTF"), new FileRule("", "TTc")));
         for (int i = 0; i < LocalTypeList.Length; i++)
         {
-            //本地化索引对应的下标
             string key = LocalTypeList[i];
-            LocalTypeDic.Add(key, i);
+            _dirDic.Add(string.Format("Assets/Localization/{0}/Audio", key), new DirConfig(true));
+            _dirDic.Add(string.Format("Assets/Localization/{0}/Data", key), new DirConfig(true));
+            _dirDic.Add(string.Format("Assets/Localization/{0}/Sprites", key), new DirConfig(true));
+            _dirDic.Add(string.Format("Assets/Localization/{0}/Font", key), new DirConfig(true, new FileRule("", "fontsettings"), new FileRule("", "TTF"), new FileRule("", "TTc")));
+            _dirDic.Add(string.Format("Assets/Localization/{0}/FX", key), new DirConfig(true, new FileRule("", "prefab")));
+            _dirDic.Add(string.Format("Assets/Localization/{0}/Prefab", key), new DirConfig(true, new FileRule("", "prefab")));
 
-            //本地化资源的过滤规则
-            for (int j = 0; j < LocalSample.Length; j++)
-            {
-                DirConfig dirConfig = LocalSample[j];
-                dirConfigList.Add(new DirConfig(string.Format(dirConfig.dir, key), dirConfig.fileter, dirConfig.ext));
-            }
+
         }
-        DirRules = dirConfigList.ToArray();
-
         localResNameConfig = InitLocalResConfig();
     }
 
@@ -116,7 +131,7 @@ public class AutoResMap
         Debug.Log("Delete From Resmap Done!");
     }
 
-    [MenuItem("打包/重新生成所有的Resmap", false, 12)]
+    [MenuItem("打包/重新生成所有的Resmap", false, 21)]
     public static void AddAllAsset()
     {
         InitData();
@@ -126,10 +141,10 @@ public class AutoResMap
         fileList.AddRange(CollectFileByResmap("resmap_obj.txt"));
         fileList.AddRange(CollectFileByResmap("resmap_prefab.txt"));
         fileList.AddRange(CollectFileByResmap("resmap_sprite.txt"));
-        for(int i = DirRules.Length - 1; i >= 0; i--)
+        foreach(var pair in _dirDic)
         {
-            string dirPath = DirRules[i].dir;
-            if (Directory.Exists(dirPath))
+            string dirPath = pair.Key;
+            if (Directory.Exists(dirPath) && pair.Value.allFileInto)
             {
                 GetFilesRecursion(fileList, dirPath);
             }
@@ -138,6 +153,7 @@ public class AutoResMap
         AssetDatabase.DeleteAsset(DataDir + "resmap_obj.txt");
         AssetDatabase.DeleteAsset(DataDir + "resmap_prefab.txt");
         AssetDatabase.DeleteAsset(DataDir + "resmap_sprite.txt");
+        AssetDatabase.DeleteAsset(DataDir + MultiLngFile);
         AssetDatabase.Refresh();
 
         CategorizeInfo(fileList);
@@ -145,19 +161,74 @@ public class AutoResMap
         Debug.Log("重新生成resmap成功！");
     }
 
+    [MenuItem("打包/自动导入resmap(开)", true)]
+    static  bool _IsAutoOn()
+    {
+        return !canAuto2Resmap;
+    }
+    [MenuItem("打包/自动导入resmap(开)", false, 22)]
+    static void IsAutoOn()
+    {
+        canAuto2Resmap = true;
+    }
+
+    [MenuItem("打包/自动导入resmap(关)", true)]
+    static bool _IsAutoOff()
+    {
+        return canAuto2Resmap;
+    }
+    [MenuItem("打包/自动导入resmap(关)", false, 23)]
+    static void IsAutoOff()
+    {
+        canAuto2Resmap = false;
+    }
+
+    static bool CheckValidByProcess(string file)
+    {
+        if (!CanResFile(file)) return false;
+
+        foreach (var pair in _dirDic)
+        {
+            if(pair.Value.allFileInto && file.StartsWith(pair.Key))
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    static void OnPostprocessAllAssets(string[] imports, string[] dels, string[] moves, string[] moveFroms)
+    {
+        if (!canAuto2Resmap) return;
+        InitData();
+        List<string> fileList = new List<string>();
+        for (int i = 0; i < imports.Length; i++)
+        {
+            if (CheckValidByProcess(imports[i]))
+                fileList.Add(imports[i]);
+        }
+        for (int i = 0; i < moves.Length; i++)
+        {
+            if (CheckValidByProcess(moves[i]))
+                fileList.Add(imports[i]);
+        }
+        ToResmapExternal(fileList);
+    }
+
     //同步资源后，动态修改resmap
     public static void ToResmapExternal(List<string> addFile)
     {
+        if (addFile.Count == 0) return;
         for (int i = 0; i < addFile.Count; i++)
         {
             string path = addFile[i];
             int startIndex = path.IndexOf("Assets");
+            if (startIndex == 0) continue;
             addFile[i] = path.Substring(startIndex);
         }
         InitData();
         CategorizeInfo(addFile);
         StartDeal(true);
-        Debug.Log("Add To Resmap Done!");
     }
 
     private static void StartDeal(bool isAdd)
@@ -183,7 +254,7 @@ public class AutoResMap
             localResNameConfig.TryGetValue(fileName, out nameList);
             if (isAdd)
             {
-                if (nameList!= null)
+                if (nameList != null)
                     //已经存在，就直接替换名称
                     nameList[index] = fileName + subfix;
                 else
@@ -192,8 +263,8 @@ public class AutoResMap
                     nameList = new List<string>();
                     for (int j = 0; j < LocalTypeList.Length; j++)
                     {
-                        if(j == index)
-                            nameList.Add(fileName+subfix);
+                        if (j == index)
+                            nameList.Add(fileName + subfix);
                         else
                             nameList.Add(fileName);
                     }
@@ -235,7 +306,7 @@ public class AutoResMap
                     info = new ResmapInfo();
                     info.key = fileName;
                     info.editorPath = filePath;
-                    info.abName = AutoAssetBundleName.GetResABName(filePath);
+                    info.abName = ABNameUtility.GetResABName(filePath);
                     if (!string.IsNullOrEmpty(info.abName))
                     {
                         dic.Add(fileName, info);
@@ -251,7 +322,7 @@ public class AutoResMap
                         Debug.LogErrorFormat("添加的资源已经有重名的键名{0}，请检查！已存在路径{1}，添加的路径{2}", fileName, info.editorPath, filePath);
                         continue;
                     }
-                    string abName = AutoAssetBundleName.GetResABName(filePath);
+                    string abName = ABNameUtility.GetResABName(filePath);
                     if (string.IsNullOrEmpty(abName)) continue;
                     info.abName = abName;
                     info.editorPath = filePath;
@@ -300,7 +371,8 @@ public class AutoResMap
             GenerateTxt(mapTxtName, dic);
         }
 
-        if(!File.Exists(DataDir + mapTxtName)){
+        if (!File.Exists(DataDir + mapTxtName))
+        {
             GenerateTxt(mapTxtName, null);
         }
     }
@@ -334,7 +406,7 @@ public class AutoResMap
     {
         List<string> result = new List<string>();
         Dictionary<string, ResmapInfo> dic = InitResmap(path);
-        foreach(var info in dic)
+        foreach (var info in dic)
         {
             if (File.Exists(info.Value.editorPath))
                 result.Add(info.Value.editorPath);
@@ -377,11 +449,11 @@ public class AutoResMap
         List<string> fileList = new List<string>();
         foreach (string objPath in sourceAssets)
         {
-            if (!objPath.StartsWith("Assets/Res") && !objPath.StartsWith("Assets/Localization") && !objPath.StartsWith("Assets/Data") ) continue;
+            if (!objPath.StartsWith("Assets/Res") && !objPath.StartsWith("Assets/Localization") && !objPath.StartsWith("Assets/Data")) continue;
             //选中文件夹：收集该文件夹中所有的文件
             if (Directory.Exists(objPath))
                 GetFilesRecursion(fileList, objPath);
-            else if(ValidateAsset(objPath)) 
+            else if (CanResFile(objPath))
                 fileList.Add(objPath);
         }
 
@@ -390,6 +462,7 @@ public class AutoResMap
         for (int i = 0; i < fileList.Count; i++)
         {
             string file = fileList[i];
+            if (!ValidateAsset(file)) continue;
             if (file.EndsWith(".png") || file.EndsWith(".jpg"))
             {
                 imgList.Add(file);
@@ -400,7 +473,7 @@ public class AutoResMap
                 prefList.Add(file);
                 sourceAssets.Add(file);
             }
-            else if(!file.EndsWith(".meta"))
+            else if (!file.EndsWith(".meta"))
             {
                 objList.Add(file);
                 sourceAssets.Add(file);
@@ -427,7 +500,7 @@ public class AutoResMap
 
     public static string GetResSubfixByIndex(int index)
     {
-        return "_" + LocalTypeList[index-1].ToLower();
+        return "_" + LocalTypeList[index - 1].ToLower();
     }
 
     private static List<string> GetSelectAssets()
@@ -447,7 +520,8 @@ public class AutoResMap
         StringBuilder sb = new StringBuilder();
         //第一行
         sb.Append("资源键名").Append("\t").Append("资源路径").Append("\t").Append("所在assetBundle名称").Append("\n");
-        if(dic != null){
+        if (dic != null)
+        {
             foreach (ResmapInfo info in dic.Values)
             {
                 sb.Append(info.key).Append("\t").Append(info.editorPath).Append("\t").Append(info.abName).Append("\n");
@@ -465,7 +539,7 @@ public class AutoResMap
         for (int i = 0; i < LocalTypeList.Length; i++)
         {
             sb.Append(LocalTypeList[i]);
-            sb.Append(i == LocalTypeList.Length-1 ? "\n" : "\t");
+            sb.Append(i == LocalTypeList.Length - 1 ? "\n" : "\t");
         }
 
         if (localIsModify)
@@ -480,7 +554,7 @@ public class AutoResMap
                 for (int i = 0; i < count; i++)
                 {
                     sb.Append(pair.Value[i]);
-                    sb.Append(i == count-1 ? "\n" : "\t");
+                    sb.Append(i == count - 1 ? "\n" : "\t");
                 }
             }
             //去掉最后一个换行符
@@ -495,34 +569,32 @@ public class AutoResMap
     //选中的物体为有效可填入资源
     static bool ValidateAsset(string filePath)
     {
-        bool isInRules = false; //是否需要做规则判定
-        foreach (DirConfig config in DirRules)
+        foreach(var pair in _dirDic)
         {
+            string dir = pair.Key;
+            DirConfig config = pair.Value;
             //判读文件是否有效
-            if (filePath.StartsWith(config.dir))
+            if (filePath.StartsWith(dir) && config.rules.Length > 0)
             {
-                isInRules = true;
-                if (!string.IsNullOrEmpty(config.ext))
+                string fileName = Path.GetFileName(filePath);
+                for (int i = 0; i < config.rules.Length; i++)
                 {
-                    bool isValid = filePath.EndsWith(config.ext,StringComparison.OrdinalIgnoreCase);
-                    if (!isValid) continue;
+                    FileRule rule = config.rules[i];
+                    bool result = true;
+                    if (!string.IsNullOrEmpty(rule.filter))
+                    {
+                        result &= fileName.Contains(rule.filter);
+                    }
+                    if (!string.IsNullOrEmpty(rule.ext))
+                    {
+                        result &= fileName.EndsWith(rule.ext);
+                    }
+                    if (result) return true; //满足文件规则
                 }
-                if (!string.IsNullOrEmpty(config.fileter))
-                {
-                    bool isValid = Path.GetFileNameWithoutExtension(filePath).Contains(config.fileter);
-                    if (!isValid) continue;
-                }
-                return true;
+                return false; //所有的文件规则都不满足
             }
         }
-        if (isInRules) //到此，说明所有的规则都不适用
-        {
-            return false;
-        }
-        else
-        {
-            return true;
-        }
+        return true;//至此，说明文件是不受规则影响的文件
 
     }
 
@@ -535,15 +607,14 @@ public class AutoResMap
             return;
         }
 
-        string[] files = Directory.GetFiles(dirPath);
+        string[] files = Directory.GetFiles(dirPath, "*", SearchOption.AllDirectories);
         foreach (string file in files)
         {
             //文件剔除
-            if (file.EndsWith(".meta", StringComparison.Ordinal) || file.EndsWith(".cs", StringComparison.Ordinal)
-                || file.EndsWith(".js", StringComparison.Ordinal) || file.Contains(".svn") || file.Contains(".DS_Store"))
+            if (!CanResFile(file))
                 continue;
             string newFile = NormalizePath(file);
-            if(ValidateAsset(newFile)) resultList.Add(newFile);
+            resultList.Add(newFile);
         }
         string[] childDirPaths = Directory.GetDirectories(dirPath);
         for (int i = 0; i < childDirPaths.Length; i++)
@@ -555,5 +626,11 @@ public class AutoResMap
     static string NormalizePath(string sourcePath)
     {
         return sourcePath.Replace("\\", "/");
+    }
+
+    static bool CanResFile(string file)
+    {
+        return !file.EndsWith(".meta") && !file.EndsWith(".cginc") && !file.EndsWith(".cs") && !file.EndsWith(".spriteatlas")
+            && !file.Contains(".svn") && !file.Contains(".DS_Store");
     }
 }

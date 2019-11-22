@@ -26,28 +26,29 @@ public class Builder
     [MenuItem("打包/Lua打包(不上传)", false, 102)]
     static void BuildLua()
     {
+        ResmapUtility.canAuto2Resmap = false; //不自动导入到resmap中
         // 创建文件夹
         Directory.CreateDirectory(ABPATH);
 
         // 重命名assetbundle
-        FileInfo oldFile = new FileInfo( ABPATH + "/assetbundle" );
+        FileInfo oldFile = new FileInfo(ABPATH + "/assetbundle");
         if (oldFile.Exists)
             oldFile.MoveTo(ABPATH + "/Tmp");
         else
             oldFile = null;
         DeleteAB("lua_");
-        AutoAssetBundleName.ClearAllABNames();
+        ABNameUtility.ClearAllABNames();
 
         EditorUtility.DisplayProgressBar("打包前准备", "正在处理Lua文件...", 0.1f);
         LuaEncode.StartEncode(EditorUserBuildSettings.activeBuildTarget);
-        AutoAssetBundleName.SetLuaABNames();
+        ABNameUtility.SetLuaABNames();
 
         EditorUtility.DisplayProgressBar("打包", "正在打包Lua文件...", 0.5f);
         BuildPipeline.BuildAssetBundles(ABPATH, BuildAssetBundleOptions.ChunkBasedCompression, EditorUserBuildSettings.activeBuildTarget);
 
         EditorUtility.DisplayProgressBar("收尾", "Lua还原中...", 0.7f);
         LuaEncode.EndEncode();
-        AutoAssetBundleName.ClearLuaABNames();
+        ABNameUtility.ClearLuaABNames();
 
         EditorUtility.DisplayProgressBar("收尾", "Lua加密中...", 0.9f);
         Encrypt("lua_");
@@ -55,45 +56,46 @@ public class Builder
         AssetDatabase.Refresh();
 
         // 删除新assetbundle
-        UnityEditor.FileUtil.DeleteFileOrDirectory( ABPATH + "/assetbundle" );
+        UnityEditor.FileUtil.DeleteFileOrDirectory(ABPATH + "/assetbundle");
         // 还原文件
-        if( oldFile != null )
-            oldFile.MoveTo( ABPATH + "/assetbundle" );
+        if (oldFile != null)
+            oldFile.MoveTo(ABPATH + "/assetbundle");
     }
 
     [MenuItem("打包/配置打包(不上传)", false, 103)]
     static void BuildData()
     {
+        ResmapUtility.canAuto2Resmap = false; //不自动导入到resmap中
         // 创建文件夹
         Directory.CreateDirectory(ABPATH);
 
         // 重命名assetbundle
-        FileInfo oldFile = new FileInfo( ABPATH + "/assetbundle" );
-        if( oldFile != null )
-            oldFile.MoveTo( ABPATH + "/Tmp" );
+        FileInfo oldFile = new FileInfo(ABPATH + "/assetbundle");
+        if (oldFile != null)
+            oldFile.MoveTo(ABPATH + "/Tmp");
 
         DeleteAB("data");
 
-        AutoAssetBundleName.ClearAllABNames();
+        ABNameUtility.ClearAllABNames();
         EditorUtility.DisplayProgressBar("打包前准备", "正在生成resmap文件...", 0.1f);
         //重新生成Resmap文件
-        AutoResMap.AddAllAsset();
+        ResmapUtility.AddAllAsset();
         EditorUtility.DisplayProgressBar("打包前准备", "正在处理Data文件...", 0.3f);
-        AutoAssetBundleName.SetDataABNames();
+        ABNameUtility.SetDataABNames();
 
         EditorUtility.DisplayProgressBar("打包", "正在打包Data文件...", 0.8f);
         BuildPipeline.BuildAssetBundles(ABPATH, BuildAssetBundleOptions.ChunkBasedCompression, EditorUserBuildSettings.activeBuildTarget);
-        AutoAssetBundleName.ClearDataABNames();
+        ABNameUtility.ClearDataABNames();
         EditorUtility.DisplayProgressBar("收尾", "Data加密中...", 0.9f);
         Encrypt("data");
         EditorUtility.ClearProgressBar();
         AssetDatabase.Refresh();
 
         // 删除新assetbundle
-        UnityEditor.FileUtil.DeleteFileOrDirectory( ABPATH + "/assetbundle" );
+        UnityEditor.FileUtil.DeleteFileOrDirectory(ABPATH + "/assetbundle");
         // 还原文件
-        if( oldFile != null )
-            oldFile.MoveTo( ABPATH + "/assetbundle" );
+        if (oldFile != null)
+            oldFile.MoveTo(ABPATH + "/assetbundle");
     }
 
     [MenuItem("打包/上传当前版本", false, 104)]
@@ -141,7 +143,9 @@ public class Builder
 
     static void BuildAll()
     {
-        AutoAssetBundleName.ClearAllABNames();
+        ResmapUtility.canAuto2Resmap = false; //不自动导入到resmap中
+
+        ABNameUtility.ClearAllABNames();
         // 删除构建的文件
         RemoveBuildFile();
         // 创建文件夹
@@ -149,19 +153,19 @@ public class Builder
 
         //重新生成Resmap文件
         EditorUtility.DisplayProgressBar("打包前准备", "正在重新生成Resmap文件...", 0.1f);
-        AutoResMap.AddAllAsset();
+        ResmapUtility.AddAllAsset();
         //打断资源引用
         EditorUtility.DisplayProgressBar("打包前准备", "正在打断多语言资源的引用...", 0.2f);
         MultiLngResDetach.Done();
 
         // 自动设置AB名
         EditorUtility.DisplayProgressBar("打包前准备", "正在自动设置AB名...", 0.3f);
-        AutoAssetBundleName.SetResABNames();
-        AutoAssetBundleName.SetDataABNames();
+        ABNameUtility.SetResABNames();
+        ABNameUtility.SetDataABNames();
         //lua打包特殊处理
         EditorUtility.DisplayProgressBar("打包前准备", "处理Lua文件的AB名...", 0.4f);
         LuaEncode.StartEncode(EditorUserBuildSettings.activeBuildTarget);
-        AutoAssetBundleName.SetLuaABNames();
+        ABNameUtility.SetLuaABNames();
         // 打包
         EditorUtility.DisplayProgressBar("打包", "AB打包中...", 0.7f);
         BuildPipeline.BuildAssetBundles(ABPATH, BuildAssetBundleOptions.ChunkBasedCompression, EditorUserBuildSettings.activeBuildTarget);
@@ -170,44 +174,46 @@ public class Builder
         LuaEncode.EndEncode();
 
         // 创建文件列表
-        EditorUtility.DisplayProgressBar( "统计", "生成FileList...", 0.9f );
+        EditorUtility.DisplayProgressBar("统计", "生成FileList...", 0.9f);
         BuildFileList();
-        AutoAssetBundleName.ClearAllABNames();
+        ABNameUtility.ClearAllABNames();
 
         EditorUtility.DisplayProgressBar("统计", "ab加密中...", 1f);
         Encrypt();
         EditorUtility.ClearProgressBar();
         AssetDatabase.Refresh();
-
+        ResmapUtility.canAuto2Resmap = true;
     }
 
     // 生成文件列表
-    [MenuItem( "打包/生成文件列表", false, 501 )]
+    [MenuItem("打包/生成文件列表", false, 501)]
     static void BuildFileList()
     {
+        ResmapUtility.canAuto2Resmap = false; //不自动导入到resmap中
+
         // 创建文件列表，并打包成ab
-        AssetDatabase.CreateFolder( "Assets", "Temp" );
-        string[] files = Directory.GetFiles( ABPATH );
-        using( StreamWriter sw = new StreamWriter( "Assets/Temp/filelist.txt", false ) )
+        AssetDatabase.CreateFolder("Assets", "Temp");
+        string[] files = Directory.GetFiles(ABPATH);
+        using (StreamWriter sw = new StreamWriter("Assets/Temp/filelist.txt", false))
         {
             string fileList = "";
-            for( int i = 0; i < files.Length; i++ )
+            for (int i = 0; i < files.Length; i++)
             {
                 string file = files[i];
-                string ext = Path.GetExtension( file );
-                string fileName = Path.GetFileName( file );
-                if( ext.Equals( ".meta" ) || ext.Equals( ".manifest" ) )
+                string ext = Path.GetExtension(file);
+                string fileName = Path.GetFileName(file);
+                if (ext.Equals(".meta") || ext.Equals(".manifest"))
                     continue;
 
                 // md5 值
-                string md5 = CommonUtils.Md5file( file );
+                string md5 = CommonUtils.Md5file(file);
                 // 文件大小
-                FileInfo fileInfo = new FileInfo( file );
+                FileInfo fileInfo = new FileInfo(file);
                 long size = fileInfo.Length;
                 fileList += fileName + "|" + md5 + "|" + size + "\n";
             }
-            fileList = fileList.TrimEnd( '\n' );
-            sw.Write( fileList );
+            fileList = fileList.TrimEnd('\n');
+            sw.Write(fileList);
             sw.Close();
         }
         AssetDatabase.Refresh();
@@ -216,39 +222,9 @@ public class Builder
         AssetBundleBuild filelistAB = new AssetBundleBuild();
         filelistAB.assetBundleName = "filelist";
         filelistAB.assetNames = new string[] { "Assets/Temp/filelist.txt" };
-        BuildPipeline.BuildAssetBundles( "Assets/Temp", new AssetBundleBuild[] { filelistAB }, BuildAssetBundleOptions.None, EditorUserBuildSettings.activeBuildTarget );
-        File.Copy( "Assets/Temp/filelist", ABPATH + "/filelist", true );
-        UnityEditor.FileUtil.DeleteFileOrDirectory( "Assets/Temp" );
-    }
-
-    // 复制Lua，改后缀以打包
-    static void LuaPrepare(bool isProcess)
-    {
-        DirectoryInfo dir = new DirectoryInfo("Assets/Lua");
-        FileInfo[] files = dir.GetFiles("*.lua", SearchOption.AllDirectories);
-        if (isProcess)
-        {
-            // 生成新的文件
-            foreach (FileInfo file in files)
-            {
-                string path = file.FullName.Replace("\\", "/");
-                UnityEditor.FileUtil.CopyFileOrDirectory(path, path + ".bytes");
-                UnityEditor.FileUtil.DeleteFileOrDirectory(path);
-            }
-            AssetDatabase.Refresh();
-        }
-        else
-        {
-            // 删除生成文件
-            files = dir.GetFiles("*.bytes", SearchOption.AllDirectories);
-            foreach (FileInfo file in files)
-            {
-                string path = file.FullName.Replace("\\", "/");
-                UnityEditor.FileUtil.CopyFileOrDirectory(path, path.TrimEnd(".bytes".ToCharArray()));
-                UnityEditor.FileUtil.DeleteFileOrDirectory(path);
-            }
-            AssetDatabase.Refresh();
-        }
+        BuildPipeline.BuildAssetBundles("Assets/Temp", new AssetBundleBuild[] { filelistAB }, BuildAssetBundleOptions.None, EditorUserBuildSettings.activeBuildTarget);
+        File.Copy("Assets/Temp/filelist", ABPATH + "/filelist", true);
+        UnityEditor.FileUtil.DeleteFileOrDirectory("Assets/Temp");
     }
 
     //删除ab包
@@ -293,7 +269,7 @@ public class Builder
     {
         string[] parameters = System.Environment.GetCommandLineArgs();
         //如果有三个参数，应该这样遍历得到，注意参数如果漏填的情况，需要增加保护机制
-        for(int i = parameters.Length-3; i< parameters.Length; i++)
+        for (int i = parameters.Length - 3; i < parameters.Length; i++)
         {
             Debug.Log("参数：" + parameters[i]);
         }
@@ -308,12 +284,12 @@ public class Builder
 
     #region 加密
     //10位
-    private static byte[] headBytes = { 1, 2, 3, 4, 5, 6, 12, 32, 3, 45};
+    private static byte[] headBytes = { 1, 2, 3, 4, 5, 6, 12, 32, 3, 45 };
     static void Encrypt(string filter = "")
     {
         List<byte> result = new List<byte>();
         string[] files = Directory.GetFiles(ABPATH);
-        for(int i =0; i< files.Length; i++)
+        for (int i = 0; i < files.Length; i++)
         {
             string path = files[i];
             string fileName = Path.GetFileName(path);

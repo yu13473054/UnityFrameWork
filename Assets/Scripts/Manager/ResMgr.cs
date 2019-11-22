@@ -12,6 +12,13 @@ using System.Collections;
 /// 3，靠依赖读进来的ab包，记录这些包的使用者为主包的使用者
 /// 4，使用UI作为资源的索引，读取资源时，传入UI名称，当UI界面销毁时，进行资源的释放，需保证所有的UI界面都是唯一实例，不会出现多实例
 /// </summary>
+
+public class ResModuleType {
+    public const int Permanent = 1;
+    public const int MainDlg = 2;
+    public const int CurrDlg = 3;
+}
+
 public class ResMgr : MonoBehaviour
 {
     #region 初始化

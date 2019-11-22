@@ -20,14 +20,14 @@ public class SVNFileSync
 
     static void Init()
     {
-        if(isInit) return;
-        isInit = true;;
+        if (isInit) return;
+        isInit = true; ;
         //同步的文件路径：路径包含项目名称，需要在同一个目录中
         //同步过来后，文件夹的名称。例如把源/bb中所有的文件都同步到Test/目标/aa文件夹中
         string fullName = Directory.GetParent(Environment.CurrentDirectory).FullName;
         fullName = fullName.Replace('\\', '/');
         _rootPath = fullName.Replace(ClientPath, "") + Path.DirectorySeparatorChar;
-        _configs.Add("Excel",new PathConfig("amber_doc/NPC/程序数据表/Excel表格", "amber_client/NPC/Trunk/配置表", false));
+        _configs.Add("Excel", new PathConfig("amber_doc/NPC/程序数据表/Excel表格", "amber_client/NPC/Trunk/配置表", false));
     }
 
     static void StartDeal(string srcDir, string dstDir, string txt)
@@ -279,7 +279,7 @@ public class SVNFileSync
             //收集需要动态到resmap的文件
             foreach (OptCmdProp cmdProp in cmdPropList)
             {
-                if(cmdProp.isDir) continue; //文件夹直接跳过
+                if (cmdProp.isDir) continue; //文件夹直接跳过
                 switch (cmdProp.opt)
                 {
                     case Opt.New:
@@ -289,8 +289,8 @@ public class SVNFileSync
             }
         }
         AssetDatabase.Refresh();
-        if(addList.Count>0)
-            AutoResMap.ToResmapExternal(addList);
+        if (addList.Count > 0)
+            ResmapUtility.ToResmapExternal(addList);
     }
 
     static void CommitList(List<string> keyList)
