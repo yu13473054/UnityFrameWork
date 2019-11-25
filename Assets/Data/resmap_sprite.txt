@@ -1,1 +1,2 @@
 资源键名	资源路径	所在assetBundle名称
+Cm_Ft_BtnBg_dynamic	Assets/Res/UI/DlgLogin/Cm_Ft_BtnBg_dynamic.png	res_ui_dlglogin

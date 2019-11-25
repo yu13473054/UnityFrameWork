@@ -46,26 +46,6 @@ public class ResmapUtility
     const string DataDir = "Assets/Data/";
     const string MultiLngFile = "multiLngConfig.txt";
 
-    //static DirConfig[] DirRules =
-    //{
-    //    new DirConfig(,"",""),
-    //    new DirConfig("Assets/Res/Prefab","","prefab"),
-    //    new DirConfig("Assets/Res/Font","","TTF"),
-    //    new DirConfig("Assets/Res/Font","","TTc"),
-    //};
-
-    //private static DirConfig[] LocalSample =
-    //{
-    //    new DirConfig("Assets/Localization/{0}/Audio","",""),
-    //    new DirConfig("Assets/Localization/{0}/Data","",""),
-    //    new DirConfig("Assets/Localization/{0}/Sprites","",""),
-    //    new DirConfig("Assets/Localization/{0}/Font","","fontsettings"),
-    //    new DirConfig("Assets/Localization/{0}/Font","","TTF"),
-    //    new DirConfig("Assets/Localization/{0}/Font","","TTc"),
-    //    new DirConfig("Assets/Localization/{0}/prefab","","prefab"),
-    //    new DirConfig("Assets/Localization/{0}/Fx","","prefab"),
-    //};
-
     private static bool _isInit = false;
     public static bool canAuto2Resmap = true;
 

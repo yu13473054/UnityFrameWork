@@ -9,9 +9,9 @@ namespace AssetDanshari
 {
     public static class AssetDanshariUtility
     {
-        public const string Res_Sprite = "Assets/Data/Data/resmap_sprite.txt";
-        public const string Res_Pref = "Assets/Data/Data/resmap_prefab.txt";
-        public const string Res_Obj = "Assets/Data/Data/resmap_obj.txt";
+        public const string Res_Sprite = "Assets/Data/resmap_sprite.txt";
+        public const string Res_Pref = "Assets/Data/resmap_prefab.txt";
+        public const string Res_Obj = "Assets/Data/resmap_obj.txt";
 
         //符合compareCB方法获得文件夹下所有文件 
         public static List<string> GetFileList(string dirPath, Func<string, bool> compareCB)
@@ -33,8 +33,7 @@ namespace AssetDanshari
 
         public static bool ValidFile(string filePath)
         {
-            if (!filePath.EndsWith(".meta") && !filePath.EndsWith(".unity")
-                && !filePath.EndsWith(".DS_Store"))
+            if (!filePath.EndsWith(".meta") && !filePath.EndsWith(".DS_Store"))
                 return true;
             return false;
         }

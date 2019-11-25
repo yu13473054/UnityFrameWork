@@ -55,24 +55,17 @@ namespace AssetDanshari
         private int _id = 0;
 
         protected string[] resDir = {
-            "Assets/Localization",
-            "Assets/Res",
+            "Assets"
         };
         /// <summary>
         /// 获取Asset下所有的文件
         /// </summary>
-        protected List<string> GetAllFile(bool hasResFile = true)
+        protected List<string> GetAllFile()
         {
             List<string> fileList = new List<string>();
             for (int i = 0; i < resDir.Length; i++)
             {
                 fileList.AddRange(AssetDanshariUtility.GetFileList(resDir[i], AssetDanshariUtility.ValidFile));
-            }
-            if (hasResFile)
-            {
-                fileList.Add(AssetDanshariUtility.Res_Obj);
-                fileList.Add(AssetDanshariUtility.Res_Pref);
-                fileList.Add(AssetDanshariUtility.Res_Sprite);
             }
             return fileList;
         }

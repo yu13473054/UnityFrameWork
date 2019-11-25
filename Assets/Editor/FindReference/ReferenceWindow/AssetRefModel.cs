@@ -13,7 +13,7 @@ namespace AssetDanshari
             base.SetDataPaths(queryPaths);
             data = FileListToAssetInfos(queryPaths);
 
-            List<string> resFileList = GetAllFile(false);
+            List<string> resFileList = GetAllFile();
             var searchRetList = AssetDanshariUtility.ResultList(queryPaths.Count, resFileList.Count);
             ThreadDoFilesTextSearchReplace(queryPaths, resFileList, searchRetList);
             
