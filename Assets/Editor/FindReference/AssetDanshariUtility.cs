@@ -33,7 +33,7 @@ namespace AssetDanshari
 
         public static bool ValidFile(string filePath)
         {
-            if (!filePath.EndsWith(".meta") && !filePath.EndsWith(".DS_Store"))
+            if (!filePath.EndsWith(".meta") && !filePath.EndsWith(".DS_Store") && !filePath.Contains(".svn")) 
                 return true;
             return false;
         }
