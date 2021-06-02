@@ -39,7 +39,7 @@ public class UIRichText : UIText, IPointerClickHandler
         base.Awake();
         uiMod = GetComponentInParent<UIMod>();
         if (uiMod)
-            _resModule = uiMod.resModule;
+            _resModule = uiMod.resUtility.moduleName;
         //获取child中所有的image，缓存
         _pools = new List<Image>();
         Image[] collection = GetComponentsInChildren<Image>();
@@ -148,7 +148,7 @@ public class UIRichText : UIText, IPointerClickHandler
     private Sprite LoadSprite(string resName)
     {
         if (Application.isPlaying)
-            return ResMgr.Inst.LoadSprite(resName, _resModule); 
+            return ResMgr.Inst.LoadAsset<Sprite>(resName, 1, _resModule); 
         else
             return null;
     }

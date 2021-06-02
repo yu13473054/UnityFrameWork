@@ -11,7 +11,7 @@ public class UITextWrap
 		L.RegFunction("__eq", op_Equality);
 		L.RegFunction("__tostring", ToLua.op_ToString);
 		L.RegVar("textID", get_textID, set_textID);
-		L.RegVar("fontName", get_fontName, set_fontName);
+		L.RegVar("isGray", null, set_isGray);
 		L.EndClass();
 	}
 
@@ -71,25 +71,6 @@ public class UITextWrap
 	}
 
 	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
-	static int get_fontName(IntPtr L)
-	{
-		object o = null;
-
-		try
-		{
-			o = ToLua.ToObject(L, 1);
-			UIText obj = (UIText)o;
-			string ret = obj.fontName;
-			LuaDLL.lua_pushstring(L, ret);
-			return 1;
-		}
-		catch(Exception e)
-		{
-			return LuaDLL.toluaL_exception(L, e, o, "attempt to index fontName on a nil value");
-		}
-	}
-
-	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
 	static int set_textID(IntPtr L)
 	{
 		object o = null;
@@ -109,7 +90,7 @@ public class UITextWrap
 	}
 
 	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
-	static int set_fontName(IntPtr L)
+	static int set_isGray(IntPtr L)
 	{
 		object o = null;
 
@@ -117,13 +98,13 @@ public class UITextWrap
 		{
 			o = ToLua.ToObject(L, 1);
 			UIText obj = (UIText)o;
-			string arg0 = ToLua.CheckString(L, 2);
-			obj.fontName = arg0;
+			bool arg0 = LuaDLL.luaL_checkboolean(L, 2);
+			obj.isGray = arg0;
 			return 0;
 		}
 		catch(Exception e)
 		{
-			return LuaDLL.toluaL_exception(L, e, o, "attempt to index fontName on a nil value");
+			return LuaDLL.toluaL_exception(L, e, o, "attempt to index isGray on a nil value");
 		}
 	}
 }

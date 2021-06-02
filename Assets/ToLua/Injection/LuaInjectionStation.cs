@@ -67,5 +67,14 @@ namespace LuaInterface
             injectFunctionCache[index] = func;
             injectionFlagCache[index] = injectFlag;
         }
+
+        public static void Clear()
+        {
+            for (int i = 0, len = injectionFlagCache.Length; i < len; ++i)
+            {
+                injectionFlagCache[i] = 0;
+                injectFunctionCache[i] = null;
+            }
+        }
     }
 }

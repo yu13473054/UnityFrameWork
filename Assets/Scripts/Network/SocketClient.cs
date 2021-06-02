@@ -5,7 +5,6 @@ using System.Net;
 using System.Net.Sockets;
 using System.Collections;
 using System.Collections.Generic;
-using LuaInterface;
 
 public class Protocal
 {
@@ -15,28 +14,19 @@ public class Protocal
     public const int EXCEPTION  = -102;     //异常掉线
 }
 
-public enum DisType
-{
-    EXCEPTION,
-    DISCONNECT,
-}
-
 public class SocketClient
 {
     private const int MAX_READ = 8192;
-    public static bool loggedIn = false;
+    private const int HEAD_SIZE = 16;
 
     private TcpClient _client = null;
-    private NetworkStream _outStream = null;
+//    private NetworkStream _outStream = null;
     private MemoryStream _memStream;
     private BinaryReader _reader;
 
     private byte[] byteBuffer = new byte[MAX_READ];
+    private byte[] _sendHeaderBuffer = new byte[HEAD_SIZE];
 
-    // Use this for initialization
-    public SocketClient()
-    {
-    }
 
     /// <summary>
     /// 注册代理
@@ -60,14 +50,16 @@ public class SocketClient
     /// <summary>
     /// 连接服务器
     /// </summary>
-    void ConnectServer( string host, int port )
+    public void ConnectServer( string host, string port )
     {
-        _client = null;
         try
         {
+            Close(); //关闭上次请求的异步连接，在断线重连时，会一直请求
+
             IPAddress[] address = Dns.GetHostAddresses( host );
             if( address.Length == 0 )
             {
+                Debugger.LogError( "host invalid" );
                 return;
             }
             if( address[0].AddressFamily == AddressFamily.InterNetworkV6 )
@@ -81,11 +73,12 @@ public class SocketClient
             _client.SendTimeout = 1000;
             _client.ReceiveTimeout = 1000;
             _client.NoDelay = true;
-            _client.BeginConnect( host, port, new AsyncCallback( OnConnect ), null );
+            _client.BeginConnect( host, int.Parse(port), OnConnect, null );
         }
         catch( Exception e )
         {
             Close();
+            Debugger.Log("<SocketClient> Socket 连接失败！\n"+e.Message);
         }
     }
 
@@ -94,32 +87,56 @@ public class SocketClient
     /// </summary>
     void OnConnect( IAsyncResult asr )
     {
-        _outStream = _client.GetStream();
-        _client.GetStream().BeginRead( byteBuffer, 0, MAX_READ, new AsyncCallback( OnRead ), null );
-        NetworkMgr.AddEvent( Protocal.CONNECT, null );
+        if(_client == null) return; //在重连失败后，调用close方法，会进入回调，此时剔除即可
+        try
+        {
+            _client.GetStream().BeginRead(byteBuffer, 0, MAX_READ, new AsyncCallback(OnRead), null);
+            NetworkMgr.Inst.AddEvent(Protocal.CONNECT, null);
+            if (NetworkMgr.Inst.netStatus == NetStatus.OnReconnect) //重连
+                NetworkMgr.Inst.netStatus = NetStatus.NeedStopReconnect; //非主线程，不能直接关闭携程
+            else if (NetworkMgr.Inst.netStatus == NetStatus.None) //登录连接
+                NetworkMgr.Inst.netStatus = NetStatus.NeedStopConnect;
+        }
+        catch (Exception e)
+        {
+            Close();   //关掉客户端链接
+        }
+    }
+
+    public bool ClientConnected()
+    {
+        return _client != null && _client.Connected;
     }
 
     /// <summary>
     /// 写数据
     /// </summary>
-    public void WriteMessage( byte[] message )
+    public void WriteMessage( int msgID, byte[] message, int cid, int sid = 0)
     {
-        MemoryStream ms = null;
-        using( ms = new MemoryStream() )
+        if (ClientConnected())
         {
-            ms.Position = 0;
-            BinaryWriter writer = new BinaryWriter( ms );
-            ushort msglen = (ushort)message.Length;
-            writer.Write( msglen );
-            writer.Write( message );
-            writer.Flush();
-            if( _client != null && _client.Connected )
+            MemoryStream ms = null;
+            using( ms = new MemoryStream() )
             {
-                //NetworkStream stream = _client.GetStream();
+                ms.Position = 0;
+                BinaryWriter writer = new BinaryWriter( ms );
+                int msglen = (int)message.Length + HEAD_SIZE; //加上消息头
+                SetBufferInt(_sendHeaderBuffer, msglen , 0);
+                SetBufferInt(_sendHeaderBuffer, msgID, 4);
+                SetBufferInt(_sendHeaderBuffer, cid, 8);
+                SetBufferInt(_sendHeaderBuffer, sid, 12);
+                writer.Write(_sendHeaderBuffer, 0, HEAD_SIZE);
+                writer.Write( message );
+                writer.Flush();
                 byte[] payload = ms.ToArray();
-                _outStream.BeginWrite( payload, 0, payload.Length, new AsyncCallback( OnWrite ), null );
+                _client.GetStream().BeginWrite( payload, 0, payload.Length, new AsyncCallback( OnWrite ), null );
             }
         }
+        else
+        {
+            NetworkMgr.Inst.ReConnect();
+        }
+
     }
 
     /// <summary>
@@ -127,9 +144,12 @@ public class SocketClient
     /// </summary>
     void OnRead( IAsyncResult asr )
     {
-        int bytesRead = 0;
+        if ( _client == null )
+            return;
+
         try
         {
+            int bytesRead = 0;
             lock( _client.GetStream() )
             {
                 //读取字节流到缓冲区
@@ -137,8 +157,6 @@ public class SocketClient
             }
             if( bytesRead < 1 )
             {
-                //包尺寸有问题，断线处理
-                OnDisconnected( DisType.DISCONNECT, "bytesRead < 1" );
                 return;
             }
 
@@ -154,31 +172,6 @@ public class SocketClient
         }
         catch( Exception ex )
         {
-            //PrintBytes();
-            OnDisconnected( DisType.EXCEPTION, ex.Message );
-        }
-    }
-
-    /// <summary>
-    /// 丢失链接
-    /// </summary>
-    void OnDisconnected( DisType dis, string msg )
-    {
-        Close();   //关掉客户端链接
-        int protocal = dis == DisType.EXCEPTION ? Protocal.EXCEPTION : Protocal.DISCONNECT;
-        NetworkMgr.AddEvent( protocal, null );
-    }
-
-    /// <summary>
-    /// 打印字节
-    /// </summary>
-    /// <param name="bytes"></param>
-    void PrintBytes()
-    {
-        string returnStr = string.Empty;
-        for( int i = 0; i < byteBuffer.Length; i++ )
-        {
-            returnStr += byteBuffer[i].ToString( "X2" );
         }
     }
 
@@ -189,11 +182,11 @@ public class SocketClient
     {
         try
         {
-            _outStream.EndWrite( r );
+            _client.GetStream().EndWrite( r );
         }
         catch( Exception ex )
         {
-            Debug.LogError( "OnWrite--->>>" + ex.Message );
+            Debugger.LogError( "OnWrite--->>>" + ex.Message );
         }
     }
 
@@ -206,21 +199,25 @@ public class SocketClient
         _memStream.Write( bytes, 0, length );
         //Reset to beginning
         _memStream.Seek( 0, SeekOrigin.Begin );
-        while( RemainingBytes() > 2 )
+        while( RemainingBytes() >= HEAD_SIZE )
         {
-            ushort messageLen = _reader.ReadUInt16();
-            if( RemainingBytes() >= messageLen )
+            int messageLen = readInt32FromNetwork(_reader) - HEAD_SIZE;//减去消息头占用的长度
+            int msgID = readInt32FromNetwork(_reader);
+            int cid = readInt32FromNetwork(_reader);
+            int sid = readInt32FromNetwork(_reader);
+            NetworkMgr.Inst.sid = sid; //记录收到的服务器的包id
+            if ( RemainingBytes() >= messageLen )
             {
                 MemoryStream ms = new MemoryStream();
                 BinaryWriter writer = new BinaryWriter( ms );
                 writer.Write( _reader.ReadBytes( messageLen ) );
                 ms.Seek( 0, SeekOrigin.Begin );
-                OnReceivedMessage( ms );
+                OnReceivedMessage( msgID, ms );
             }
             else
             {
-                //Back up the position two bytes
-                _memStream.Position = _memStream.Position - 2;
+                //Back up the position HEAD_SIZE
+                _memStream.Position = _memStream.Position - HEAD_SIZE;
                 break;
             }
         }
@@ -242,11 +239,11 @@ public class SocketClient
     /// 接收到消息
     /// </summary>
     /// <param name="ms"></param>
-    void OnReceivedMessage( MemoryStream ms )
+    void OnReceivedMessage( int msgID, MemoryStream ms )
     {
         BinaryReader r = new BinaryReader( ms );
         byte[] message = r.ReadBytes( (int)( ms.Length - ms.Position ) );
-        NetworkMgr.AddEvent( 0, message );
+        NetworkMgr.Inst.AddEvent( msgID, message );
     }
 
     /// <summary>
@@ -256,17 +253,34 @@ public class SocketClient
     {
         if( _client != null )
         {
-            if( _client.Connected ) _client.Close();
+            _client.Close();
             _client = null;
         }
-        loggedIn = false;
     }
 
-    /// <summary>
-    /// 发送连接请求
-    /// </summary>
-    public void SendConnect( string host, int port  )
+#region 配合服务器修改了数据做的转换
+    public static void SetBufferInt(byte[] buf, int value, int offset)
     {
-        ConnectServer( host, port );
+        int pos = offset;
+        for (int i = 0; i < 4; i++)
+        {
+            buf[pos++] = (byte)((value >> (24 - 8 * i)) & 0xff);
+        }
     }
+    private int getBufferInt(byte[] buf, int offset = 0)
+    {
+        int result = 0;
+        for (int i = 0; i < 4; i++)
+        {
+            int value = buf[i + offset];
+            result += value << (24 - 8 * i);
+        }
+        return result;
+    }
+    private int readInt32FromNetwork(BinaryReader br)
+    {
+        byte[] buff = br.ReadBytes(4);
+        return getBufferInt(buff);
+    }
+#endregion
 }

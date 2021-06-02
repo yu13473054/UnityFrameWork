@@ -16,6 +16,8 @@ public class UIEVENT
     public const int UISLIDER_DRAG = 31;                 // UISlider拖动                0 开始拖动，1 拖动中，2 结束拖动
     public const int UISLIDER_PRESS = 34;                // UISlider按下				    0 按下，1 抬起
 
+    public const int UITIMER_TIMERUNOUT = 39;            // UITimer计时结束
+
     public const int UISCROLLVIEW_DRAG = 51;		     // UIScrollView拖动             0 开始拖动，1 拖动中，2 结束拖动
     public const int UISCROLLVIEW_ONVALUECHANGE = 52;	 // UIScrollView内容发生变化时    Vector2对象
     public const int WRAPCONTENT_ONITEMUPDATE = 53;	     // WrapContent中Item更新        自定义对象：index，Transform
@@ -32,94 +34,150 @@ public class UIEVENT
 
 }
 
+public enum OpenState
+{
+    Init,
+    needOpen,
+    Open,
+    needClose,
+    Close,
+}
+
+[RequireComponent(typeof(UIItem))]
+[RequireComponent(typeof(ResModuleUtility))]
 public class UIMod : MonoBehaviour 
 {
-	public GameObject[] relatedGameObject;
     public string uiName = "";
-    public string resModule = "";
-	// 事件函数
-	protected LuaFunction _onOpen;
-	protected LuaFunction _onClose;
+    [HideInInspector]
+    public ResModuleUtility resUtility;
+    // 事件函数
 	protected LuaFunction _onEvent;
 
-    private bool _isFirst = true;
+    protected OpenState _openState;
 
-    public bool isFirst
-    {
-        get
-        {
-            return _isFirst;
-        }
-    }
+    private static LuaFunction _uiHelperOpen;
+    private static LuaFunction _uiHelperClose;
+    private static LuaFunction _uiHelperDestroy;
 
-	protected virtual void Awake ()
+    protected virtual void Awake()
 	{
 		// 找到对应脚本的函数 事件函数命名为：obj名字加事件名
 	    if (uiName == "")
 	        uiName = gameObject.name.Replace("(Clone)", "").TrimEnd();
 
-        _onEvent = LuaMgr.Inst.GetFunction( uiName + ".OnEvent" );
-		_onOpen = LuaMgr.Inst.GetFunction( uiName + ".OnOpen" );
-		_onClose = LuaMgr.Inst.GetFunction( uiName + ".OnClose" );
+	    if (resUtility == null)
+	        resUtility = GetComponent<ResModuleUtility>();
 
-        LuaFunction onInit = LuaMgr.Inst.GetFunction( uiName + ".OnInit" );
-		if(onInit != null )
-		{
-            onInit.Call( gameObject );
-		}
-	}
+        _onEvent = LuaMgr.Inst.GetFunction( uiName + ".OnEvent" );
+
+	    if (_uiHelperOpen == null)
+	    {
+	        _uiHelperOpen = LuaMgr.Inst.GetFunction("UIHelper.OnOpen");
+	        _uiHelperClose = LuaMgr.Inst.GetFunction("UIHelper.OnClose");
+	        _uiHelperDestroy = LuaMgr.Inst.GetFunction("UIHelper.OnDestroy");
+	    }
+
+        LuaFunction func = LuaMgr.Inst.GetFunction( uiName + ".OnAwake");
+		if(func != null )
+            func.Call( gameObject );
+
+	    _openState = OpenState.Init;
+    }
 
 	protected virtual void Start()
 	{
-        if (_onOpen != null)
-            _onOpen.Call(gameObject);
-	    _isFirst = false;
+	    if (_openState == OpenState.needOpen)
+            OnOpen();
     }
 
 	protected virtual void OnEnable()
 	{
-	    if (!_isFirst)
-	    {
-		    if( _onOpen != null )
-			    _onOpen.Call( gameObject );
-	    }
+        if (_openState == OpenState.needOpen)
+		    OnOpen();
 	}
 
 	protected virtual void OnDisable()
 	{
-		if( _onClose != null ) 
-			_onClose.Call( gameObject );
+        if(_openState == OpenState.needClose)
+            OnClose();
 	}
 
 	protected virtual void OnDestroy()
 	{
-	    _isFirst = true;
-        LuaFunction onDestroy = LuaMgr.Inst.GetFunction( uiName + ".OnDestroy" );
-        if (onDestroy != null )
-            onDestroy.Call( gameObject );
-	}
+        OnClose(); //如果逻辑上没有关闭过，在销毁的时候调用
 
-	public virtual void OnEvent( int eventID, int controlID, object value )
+	    if (_uiHelperDestroy != null)
+	        _uiHelperDestroy.Call(uiName, gameObject);
+
+    }
+
+    /// <summary>
+    /// 逻辑上的开启，当UI第一次加载，会在Start后调用。否则在OnEnable后调用
+    /// Lua层，可以在该方法中进行界面的初始化
+    /// </summary>
+    protected virtual void OnOpen()
+    {
+        if (_openState == OpenState.Open) return; 
+
+        _openState = OpenState.Open;
+        if (_uiHelperOpen != null)
+            _uiHelperOpen.Call(uiName, gameObject);
+    }
+
+    /// <summary>
+    /// 逻辑上的关闭，某些界面可能会隐藏了，但是并没有调用过Close
+    /// Lua层，可以在该界面中，进行界面的资源回收、监听移除等
+    /// </summary>
+    protected virtual void OnClose()
+    {
+        if (_openState == OpenState.Close) return;
+
+        _openState = OpenState.Close;
+        if (_uiHelperClose != null)
+            _uiHelperClose.Call(uiName, gameObject);
+    }
+
+    public virtual void OnEvent( int eventID, int controlID, object value )
 	{
 		if( _onEvent != null )
-            _onEvent.Call<int,int,object,GameObject>( eventID, controlID, value, gameObject );
+            _onEvent.Call( eventID, controlID, value, gameObject );
 	}
 
-    public Sprite GetSprite(string resName)
+    public virtual void Open()
     {
-        return ResMgr.Inst.LoadSprite(resName, resModule);
+        _openState = OpenState.needOpen;
     }
 
-    public GameObject GetPrefab(string resName, bool dontInst = false)
+    public virtual void Close()
     {
-        if (dontInst)
-            return ResMgr.Inst.LoadPrefab(resName, resModule);
-        else
-            return Instantiate(ResMgr.Inst.LoadPrefab(resName, resModule));
+        _openState = OpenState.needClose;
     }
 
-    public Material GetMaterial(string resName)
+    #region 资源获取
+
+    public Texture GetTexture(string reskeyname, bool isTry = false)
     {
-        return ResMgr.Inst.LoadMaterial(resName, resModule);
+        return resUtility.LoadTexture(reskeyname, isTry);
     }
+
+    public UnityEngine.Object GetObject(string reskeyname, bool isTry = false)
+    {
+        return resUtility.LoadObject(reskeyname, isTry);
+    }
+
+    public Sprite GetSprite(string resName, bool isTry = false)
+    {
+        return resUtility.LoadSprite(resName, isTry);
+    }
+
+    public GameObject GetPrefab(string resName, bool instantiate = false, bool isTry = false)
+    {
+        return resUtility.LoadPrefab(resName, instantiate, isTry);
+    }
+
+    public Material GetMaterial(string resName, bool isTry = false)
+    {
+        return resUtility.LoadMaterial(resName, isTry);
+    }
+    #endregion
 }

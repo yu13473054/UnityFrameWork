@@ -1,0 +1,19 @@
+ManifestFileVersion: 0
+CRC: 2310832738
+Hashes:
+  AssetFileHash:
+    serializedVersion: 2
+    Hash: 501e037b4a70559865f78b743f263d43
+  TypeTreeHash:
+    serializedVersion: 2
+    Hash: 5ad585dd02dfb5016c0dad519eab8f49
+HashAppended: 0
+ClassTypes:
+- Class: 49
+  Script: {instanceID: 0}
+Assets:
+- Assets/Data/resmap_sprite.txt
+- Assets/Data/multiLngConfig.txt
+- Assets/Data/resmap_prefab.txt
+- Assets/Data/resmap_obj.txt
+Dependencies: []

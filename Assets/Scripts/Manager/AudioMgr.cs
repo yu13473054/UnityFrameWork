@@ -122,7 +122,7 @@ public class AudioMgr : MonoBehaviour
             return -1;
         }
         AudioInfo info = _resmapSound[id];
-        AudioClip clip = ResMgr.Inst.LoadObj<AudioClip>(info.name, module);//先加载资源，放置module不一致时，资源被卸载掉
+        AudioClip clip = ResMgr.Inst.LoadAsset<AudioClip>(info.name, 3, module);//先加载资源，放置module不一致时，资源被卸载掉
         int idx = 0;
         switch (info.soundType)
         {

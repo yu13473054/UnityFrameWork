@@ -1,0 +1,20 @@
+ManifestFileVersion: 0
+CRC: 3985576338
+Hashes:
+  AssetFileHash:
+    serializedVersion: 2
+    Hash: 1692932619c601e8ebbedd7f43a740fe
+  TypeTreeHash:
+    serializedVersion: 2
+    Hash: 51a16e16d5113854a16091e54ae5bb0d
+HashAppended: 0
+ClassTypes:
+- Class: 21
+  Script: {instanceID: 0}
+- Class: 48
+  Script: {instanceID: 0}
+Assets:
+- Assets/Res/Material/UI/UI_OutlineEx.mat
+- Assets/Res/Material/UI/UI_UIGrayScale.mat
+Dependencies:
+- F:/Projects/UnityFrameWork/Assets/OriginAB/assetbundle/res_shader

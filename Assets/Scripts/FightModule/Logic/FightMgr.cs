@@ -27,8 +27,8 @@ public class FightMgr
     //析构函数
     private void OnDestroy()
     {
-        PoolMgr.Inst.DestroyPool<Bullet>();
-        PoolMgr.Inst.DestroyPool<BulletLauncher>();
-        PoolMgr.Inst.DestroyPool<BulletEffect>();
+        PoolMgr.Inst.ClearObjPool<Bullet>();
+        PoolMgr.Inst.ClearObjPool<BulletLauncher>();
+        PoolMgr.Inst.ClearObjPool<BulletEffect>();
     }
 }

@@ -8,21 +8,18 @@ public class UIMgrWrap
 	{
 		L.BeginClass(typeof(UIMgr), typeof(UnityEngine.MonoBehaviour));
 		L.RegFunction("Open", Open);
-		L.RegFunction("SetFullStack", SetFullStack);
-		L.RegFunction("Add2FullStack", Add2FullStack);
+		L.RegFunction("StackBackup", StackBackup);
+		L.RegFunction("RevertBackup", RevertBackup);
+		L.RegFunction("RevertTopUI", RevertTopUI);
 		L.RegFunction("Close", Close);
-		L.RegFunction("InstantiateGo", InstantiateGo);
-		L.RegFunction("CloseAll", CloseAll);
+		L.RegFunction("PopBackDlg", PopBackDlg);
 		L.RegFunction("World2ScreenPos", World2ScreenPos);
-		L.RegFunction("OpenCount", OpenCount);
 		L.RegFunction("GetUIRoot", GetUIRoot);
 		L.RegFunction("GetUICamera", GetUICamera);
-		L.RegFunction("GetCanvas", GetCanvas);
 		L.RegFunction("GetLayer", GetLayer);
 		L.RegFunction("UnloadAllUI", UnloadAllUI);
 		L.RegFunction("__eq", op_Equality);
 		L.RegFunction("__tostring", ToLua.op_ToString);
-		L.RegConstant("UIMaxCount", 16);
 		L.RegVar("Inst", get_Inst, null);
 		L.EndClass();
 	}
@@ -46,14 +43,55 @@ public class UIMgrWrap
 	}
 
 	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
-	static int SetFullStack(IntPtr L)
+	static int StackBackup(IntPtr L)
 	{
 		try
 		{
 			int count = LuaDLL.lua_gettop(L);
+
+			if (count == 2)
+			{
+				UIMgr obj = (UIMgr)ToLua.CheckObject<UIMgr>(L, 1);
+				string arg0 = ToLua.CheckString(L, 2);
+				obj.StackBackup(arg0);
+				return 0;
+			}
+			else if (count == 3)
+			{
+				UIMgr obj = (UIMgr)ToLua.CheckObject<UIMgr>(L, 1);
+				string arg0 = ToLua.CheckString(L, 2);
+				bool arg1 = LuaDLL.luaL_checkboolean(L, 3);
+				obj.StackBackup(arg0, arg1);
+				return 0;
+			}
+			else if (count == 4)
+			{
+				UIMgr obj = (UIMgr)ToLua.CheckObject<UIMgr>(L, 1);
+				string arg0 = ToLua.CheckString(L, 2);
+				bool arg1 = LuaDLL.luaL_checkboolean(L, 3);
+				bool arg2 = LuaDLL.luaL_checkboolean(L, 4);
+				obj.StackBackup(arg0, arg1, arg2);
+				return 0;
+			}
+			else
+			{
+				return LuaDLL.luaL_throw(L, "invalid arguments to method: UIMgr.StackBackup");
+			}
+		}
+		catch (Exception e)
+		{
+			return LuaDLL.toluaL_exception(L, e);
+		}
+	}
+
+	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
+	static int RevertBackup(IntPtr L)
+	{
+		try
+		{
+			ToLua.CheckArgsCount(L, 1);
 			UIMgr obj = (UIMgr)ToLua.CheckObject<UIMgr>(L, 1);
-			string[] arg0 = ToLua.CheckParamsString(L, 2, count - 1);
-			obj.SetFullStack(arg0);
+			obj.RevertBackup();
 			return 0;
 		}
 		catch (Exception e)
@@ -63,14 +101,13 @@ public class UIMgrWrap
 	}
 
 	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
-	static int Add2FullStack(IntPtr L)
+	static int RevertTopUI(IntPtr L)
 	{
 		try
 		{
-			int count = LuaDLL.lua_gettop(L);
+			ToLua.CheckArgsCount(L, 1);
 			UIMgr obj = (UIMgr)ToLua.CheckObject<UIMgr>(L, 1);
-			string[] arg0 = ToLua.CheckParamsString(L, 2, count - 1);
-			obj.Add2FullStack(arg0);
+			obj.RevertTopUI();
 			return 0;
 		}
 		catch (Exception e)
@@ -84,26 +121,11 @@ public class UIMgrWrap
 	{
 		try
 		{
-			int count = LuaDLL.lua_gettop(L);
-
-			if (count == 2 && TypeChecker.CheckTypes<UISystem>(L, 2))
-			{
-				UIMgr obj = (UIMgr)ToLua.CheckObject<UIMgr>(L, 1);
-				UISystem arg0 = (UISystem)ToLua.ToObject(L, 2);
-				obj.Close(arg0);
-				return 0;
-			}
-			else if (count == 2 && TypeChecker.CheckTypes<string>(L, 2))
-			{
-				UIMgr obj = (UIMgr)ToLua.CheckObject<UIMgr>(L, 1);
-				string arg0 = ToLua.ToString(L, 2);
-				obj.Close(arg0);
-				return 0;
-			}
-			else
-			{
-				return LuaDLL.luaL_throw(L, "invalid arguments to method: UIMgr.Close");
-			}
+			ToLua.CheckArgsCount(L, 2);
+			UIMgr obj = (UIMgr)ToLua.CheckObject<UIMgr>(L, 1);
+			UISystem arg0 = (UISystem)ToLua.CheckObject<UISystem>(L, 2);
+			obj.Close(arg0);
+			return 0;
 		}
 		catch (Exception e)
 		{
@@ -112,65 +134,15 @@ public class UIMgrWrap
 	}
 
 	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
-	static int InstantiateGo(IntPtr L)
+	static int PopBackDlg(IntPtr L)
 	{
 		try
 		{
-			int count = LuaDLL.lua_gettop(L);
-
-			if (count == 2)
-			{
-				UIMgr obj = (UIMgr)ToLua.CheckObject<UIMgr>(L, 1);
-				UnityEngine.GameObject arg0 = (UnityEngine.GameObject)ToLua.CheckObject(L, 2, typeof(UnityEngine.GameObject));
-				UnityEngine.Transform o = obj.InstantiateGo(arg0);
-				ToLua.Push(L, o);
-				return 1;
-			}
-			else if (count == 3)
-			{
-				UIMgr obj = (UIMgr)ToLua.CheckObject<UIMgr>(L, 1);
-				UnityEngine.GameObject arg0 = (UnityEngine.GameObject)ToLua.CheckObject(L, 2, typeof(UnityEngine.GameObject));
-				UnityEngine.Transform arg1 = (UnityEngine.Transform)ToLua.CheckObject<UnityEngine.Transform>(L, 3);
-				UnityEngine.Transform o = obj.InstantiateGo(arg0, arg1);
-				ToLua.Push(L, o);
-				return 1;
-			}
-			else
-			{
-				return LuaDLL.luaL_throw(L, "invalid arguments to method: UIMgr.InstantiateGo");
-			}
-		}
-		catch (Exception e)
-		{
-			return LuaDLL.toluaL_exception(L, e);
-		}
-	}
-
-	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
-	static int CloseAll(IntPtr L)
-	{
-		try
-		{
-			int count = LuaDLL.lua_gettop(L);
-
-			if (count == 2 && TypeChecker.CheckTypes<string>(L, 2))
-			{
-				UIMgr obj = (UIMgr)ToLua.CheckObject<UIMgr>(L, 1);
-				string arg0 = ToLua.ToString(L, 2);
-				obj.CloseAll(arg0);
-				return 0;
-			}
-			else if (TypeChecker.CheckTypes<UIMgr>(L, 1) && TypeChecker.CheckParamsType<UILayer>(L, 2, count - 1))
-			{
-				UIMgr obj = (UIMgr)ToLua.CheckObject<UIMgr>(L, 1);
-				UILayer[] arg0 = ToLua.ToParamsObject<UILayer>(L, 2, count - 1);
-				obj.CloseAll(arg0);
-				return 0;
-			}
-			else
-			{
-				return LuaDLL.luaL_throw(L, "invalid arguments to method: UIMgr.CloseAll");
-			}
+			ToLua.CheckArgsCount(L, 1);
+			UIMgr obj = (UIMgr)ToLua.CheckObject<UIMgr>(L, 1);
+			UnityEngine.GameObject o = obj.PopBackDlg();
+			ToLua.PushSealed(L, o);
+			return 1;
 		}
 		catch (Exception e)
 		{
@@ -189,23 +161,6 @@ public class UIMgrWrap
 			UnityEngine.Camera arg1 = (UnityEngine.Camera)ToLua.CheckObject(L, 3, typeof(UnityEngine.Camera));
 			UnityEngine.Vector3 o = obj.World2ScreenPos(arg0, arg1);
 			ToLua.Push(L, o);
-			return 1;
-		}
-		catch (Exception e)
-		{
-			return LuaDLL.toluaL_exception(L, e);
-		}
-	}
-
-	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
-	static int OpenCount(IntPtr L)
-	{
-		try
-		{
-			ToLua.CheckArgsCount(L, 1);
-			UIMgr obj = (UIMgr)ToLua.CheckObject<UIMgr>(L, 1);
-			int o = obj.OpenCount();
-			LuaDLL.lua_pushinteger(L, o);
 			return 1;
 		}
 		catch (Exception e)
@@ -249,41 +204,24 @@ public class UIMgrWrap
 	}
 
 	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
-	static int GetCanvas(IntPtr L)
-	{
-		try
-		{
-			ToLua.CheckArgsCount(L, 1);
-			UIMgr obj = (UIMgr)ToLua.CheckObject<UIMgr>(L, 1);
-			UnityEngine.Canvas o = obj.GetCanvas();
-			ToLua.PushSealed(L, o);
-			return 1;
-		}
-		catch (Exception e)
-		{
-			return LuaDLL.toluaL_exception(L, e);
-		}
-	}
-
-	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
 	static int GetLayer(IntPtr L)
 	{
 		try
 		{
 			int count = LuaDLL.lua_gettop(L);
 
-			if (count == 2 && TypeChecker.CheckTypes<UILayer>(L, 2))
+			if (count == 2 && TypeChecker.CheckTypes<int>(L, 2))
 			{
 				UIMgr obj = (UIMgr)ToLua.CheckObject<UIMgr>(L, 1);
-				UILayer arg0 = (UILayer)ToLua.ToObject(L, 2);
+				int arg0 = (int)LuaDLL.lua_tonumber(L, 2);
 				UnityEngine.Transform o = obj.GetLayer(arg0);
 				ToLua.Push(L, o);
 				return 1;
 			}
-			else if (count == 2 && TypeChecker.CheckTypes<int>(L, 2))
+			else if (count == 2 && TypeChecker.CheckTypes<UILayer>(L, 2))
 			{
 				UIMgr obj = (UIMgr)ToLua.CheckObject<UIMgr>(L, 1);
-				int arg0 = (int)LuaDLL.lua_tonumber(L, 2);
+				UILayer arg0 = (UILayer)ToLua.ToObject(L, 2);
 				UnityEngine.Transform o = obj.GetLayer(arg0);
 				ToLua.Push(L, o);
 				return 1;

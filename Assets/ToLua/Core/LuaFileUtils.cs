@@ -237,6 +237,7 @@ namespace LuaInterface
                 if (startPos > 0) //封装出包名
                 {
                     sb.Append("_");
+                    sb.Append(LuaMgr.Inst.cpuTypeStr);
                     sb.Append(fileName, 0, startPos).ToLower().Replace('/', '_');
                 }
                 if (pos > 0) //文件名
@@ -257,7 +258,7 @@ namespace LuaInterface
 
                 //[0] 添加补丁 如果常规下找不到，就在默认的ab包中找lua文件
                 if (zipFile == null)
-                    zipFile = zipMap["lua_tolua"];
+                    zipFile = zipMap["lua_"+ LuaMgr.Inst.cpuTypeStr+"tolua"];
                 //[0]
             }
 

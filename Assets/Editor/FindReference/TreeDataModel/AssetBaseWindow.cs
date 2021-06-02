@@ -14,6 +14,7 @@ namespace AssetDanshari
         private MultiColumnHeaderState _multiColumnHeaderState;
         private SearchField m_SearchField;
         protected AssetTreeView m_AssetTreeView;
+        private Action _onShow;
 
         public static List<string> _queryList;
         public static void CheckPaths<T>(List<string> queryFileList) where T : AssetBaseWindow
@@ -21,6 +22,11 @@ namespace AssetDanshari
             _queryList = queryFileList;
             var window = GetWindow<T>();
             window.Show();
+        }
+
+        void OnEnable()
+        {
+            _onShow = () => { m_AssetTreeView.ExpandAll(); };
         }
 
 
@@ -35,7 +41,15 @@ namespace AssetDanshari
         private void OnGUI()
         {
             Init();
-            DrawGUI(GUIContent.none, false);
+            if (_treeModel.HasData())
+            {
+                DrawGUI(GUIContent.none, false);
+                if (_onShow != null)
+                {
+                    _onShow();
+                    _onShow = null;
+                }
+            }
         }
 
         private void Init()
@@ -75,6 +89,14 @@ namespace AssetDanshari
             var style = AssetDanshariStyle.Get();
             style.InitGUI();
             EditorGUILayout.BeginHorizontal(EditorStyles.toolbar);
+            if (GUILayout.Button(AssetDanshariStyle.Get().expandAll2, EditorStyles.toolbarButton, GUILayout.Width(70f)))
+            {
+                m_AssetTreeView.ExpandAll();
+            }
+            if (GUILayout.Button(AssetDanshariStyle.Get().collapseAll2, EditorStyles.toolbarButton, GUILayout.Width(70f)))
+            {
+                m_AssetTreeView.CollapseAll();
+            }
             EditorGUI.BeginChangeCheck();   
             m_AssetTreeView.searchString = m_SearchField.OnToolbarGUI(m_AssetTreeView.searchString);
             if (EditorGUI.EndChangeCheck() && GUIUtility.keyboardControl == 0)

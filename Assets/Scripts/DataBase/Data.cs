@@ -359,6 +359,70 @@ public class Data
         }
     }
 
+	private Dictionary<int, TeachStructParser> _teachStructDic;
+    private void ParseTeachStruct()
+    {
+        _teachStructDic = new Dictionary<int, TeachStructParser>();
+        TableHandler handler = TableHandler.OpenFromResmap("TeachStruct");
+        for(int i = 0; i < handler.GetRecordsNum() - 1; i++)
+        {
+            int key = int.Parse(handler.GetValue(i, 0));
+            TeachStructParser info = new TeachStructParser()
+            {
+                sn = int.Parse(handler.GetValue(i, 0)),
+				steps = ToIntArray(handler.GetValue(i, 1)),
+            };
+
+        }
+    }
+    public TeachStructParser TeachStruct(int sn)
+    {
+        if(_teachStructDic == null)
+            ParseUnit();
+        TeachStructParser parser;
+        if(_teachStructDic.TryGetValue(sn, out parser))
+        {
+            return parser;
+        }
+        else
+        {
+            Debug.LogErrorFormat("<Data> 表格{0}中不存在第{1}条数据，请检查！", "TeachStruct", sn);
+            return null;
+        }
+    }
+
+	private Dictionary<int, TeachStepParser> _teachStepDic;
+    private void ParseTeachStep()
+    {
+        _teachStepDic = new Dictionary<int, TeachStepParser>();
+        TableHandler handler = TableHandler.OpenFromResmap("TeachStep");
+        for(int i = 0; i < handler.GetRecordsNum() - 1; i++)
+        {
+            int key = int.Parse(handler.GetValue(i, 0));
+            TeachStepParser info = new TeachStepParser()
+            {
+                sn = int.Parse(handler.GetValue(i, 0)),
+				syncSn = int.Parse(handler.GetValue(i, 1)),
+            };
+
+        }
+    }
+    public TeachStepParser TeachStep(int sn)
+    {
+        if(_teachStepDic == null)
+            ParseUnit();
+        TeachStepParser parser;
+        if(_teachStepDic.TryGetValue(sn, out parser))
+        {
+            return parser;
+        }
+        else
+        {
+            Debug.LogErrorFormat("<Data> 表格{0}中不存在第{1}条数据，请检查！", "TeachStep", sn);
+            return null;
+        }
+    }
+
 	private Dictionary<int, AudioParser> _audioDic;
     private void ParseAudio()
     {

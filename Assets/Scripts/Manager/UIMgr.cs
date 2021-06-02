@@ -1,6 +1,7 @@
 using System;
 using UnityEngine;
 using System.Collections.Generic;
+using LuaInterface;
 
 public class UIMgr : MonoBehaviour
 {
@@ -12,18 +13,17 @@ public class UIMgr : MonoBehaviour
     }
     #endregion
 
-    public const int UIMaxCount = 16;
-
     Transform _UIRoot;
     Camera _UICamera;
     //层
     private Dictionary<int, Transform> _layers;
     // 名字查找
     Dictionary<string, UISystem> _UIListByName;
-    // 顺序查找
-    List<UISystem> _UIList;
-    // childUI栈
-    Stack<string> _fullUIStack;
+    // UI栈
+    Stack<string> _uiStack;
+    private List<string> _backup;
+    private Dictionary<string, UIStackInfo> _stackInfoDic;
+    private int _uiCount = 0;
 
     void Awake()
     {
@@ -32,9 +32,11 @@ public class UIMgr : MonoBehaviour
 
         //初始化
         _layers = new Dictionary<int, Transform>();
-        _UIList = new List<UISystem>();
         _UIListByName = new Dictionary<string, UISystem>();
-        _fullUIStack = new Stack<string>();
+
+        _uiStack = new Stack<string>();
+        _stackInfoDic = new Dictionary<string, UIStackInfo>();
+        _backup = new List<string>();
 
         GameObject uiRoot = GameObject.Find("UIRoot");
         if (uiRoot == null)
@@ -66,6 +68,12 @@ public class UIMgr : MonoBehaviour
             _layers[(int)Enum.Parse(typeof(UILayer), layerName[i])] = layer;
         }
 
+        //创建对象池
+        PoolMgr.Inst.CreateObjPool<UIStackInfo>(null, (obj) =>
+        {
+            obj.indexStack.Clear();
+            obj.halfDicByIndex.Clear();
+        });
     }
 
     /// <summary>
@@ -76,68 +84,283 @@ public class UIMgr : MonoBehaviour
     public UISystem Open(string uiName)
     {
         UISystem uiSystem = null;
-        if (_UIListByName.TryGetValue(uiName, out uiSystem))
+        if (!_UIListByName.TryGetValue(uiName, out uiSystem))
         {
-            CloseLastOnOpen(uiSystem);
-            OpenEnd(uiSystem);
-            return uiSystem;
+            //加载新的UI
+            uiSystem = LoadUISystem(uiName);
+            //管理UI
+            _UIListByName.Add(uiName, uiSystem);
         }
 
-        //加载新的UI
-        uiSystem = LoadUISystem(uiName);
-        DestroyOldUI();// 超过最大数量，析构最老的那个
+        OnOpen(uiSystem);
 
-        CloseLastOnOpen(uiSystem);
-        OpenEnd(uiSystem);
-
-        //管理UI
-        _UIList.Add(uiSystem);
-        _UIListByName.Add(uiName, uiSystem);
-
+        uiSystem.gameObject.SetActive(true);
+        uiSystem.transform.SetAsLastSibling(); // 移至队列最后
         return uiSystem;
     }
 
-    /// 打开新的UI时，关闭之前的UI：目前只是针对主界面
-    private void CloseLastOnOpen(UISystem uiSystem)
+    //负责显示UI
+    void OnOpen(UISystem uiSystem)
     {
-        if (uiSystem.layer == UILayer.FULL)
+        //处理堆栈逻辑
+        switch (uiSystem.stackLevel)
         {
-            UISystem lastUISystem = FindCurrFullUI();
-            if (lastUISystem == uiSystem) return;//防止反复重复打开同一个主界面
-            if (lastUISystem == null) return;
-            if (lastUISystem.uiState != UIState.DESTROYONCLOSE)
-            {
-                //把上一个主界面压栈
-                _fullUIStack.Push(lastUISystem.name);
-            }
-            CloseEnd(lastUISystem);
+            case StackLevel.AUTO:
+                string oldUIName = null;
+                if (_uiStack.Count > 0)
+                    oldUIName = _uiStack.Peek();
+
+                if(uiSystem.uiName.Equals(oldUIName)) //打开已经销毁的栈顶界面会出现这种情况
+                    break;
+
+                UIStackInfo stackInfo;
+                if (!string.IsNullOrEmpty(oldUIName))
+                {
+                    //关闭上一个Auto界面和相关的half界面
+                    UISystem oldSys = _UIListByName[oldUIName];
+                    StackRecord(oldSys);
+                    oldSys.gameObject.SetActive(false);
+                    stackInfo = _stackInfoDic[oldUIName];
+                    List<string> halfList;
+                    if (stackInfo.halfDicByIndex.TryGetValue(oldSys.stackIndex, out halfList))
+                    {
+                        for (int i = 0; i < halfList.Count; i++)
+                        {
+                            UISystem halfSys = _UIListByName[halfList[i]];
+                            StackRecord(halfSys);
+                            halfSys.gameObject.SetActive(false);
+                        }
+                    }
+                }
+                RecordStackID(uiSystem);
+                //记录当前堆栈界面
+                _uiStack.Push(uiSystem.uiName);
+                if (!_stackInfoDic.ContainsKey(uiSystem.uiName))
+                {
+                    stackInfo = PoolMgr.Inst.SpawnObj<UIStackInfo>();
+                    _stackInfoDic.Add(uiSystem.uiName, stackInfo);
+                }
+                break;
+            case StackLevel.HALF:
+                if (_uiStack.Count == 0)
+                {
+                    Debug.LogErrorFormat("<UIMgr> 无法直接打开Half界面，必须要有一个已开启的Auto界面！");
+                    return;
+                }
+                string uiName = _uiStack.Peek();
+                UISystem autoSys = _UIListByName[uiName];
+                if (!autoSys.gameObject.activeSelf)
+                {
+                    Debug.LogErrorFormat("<UIMgr> 无法直接打开Half界面，必须要有一个已开启的Auto界面！");
+                    return;
+                }
+                //注意：重新打开已经销毁的half界面，stackIndex会被修改掉
+                stackInfo = _stackInfoDic[uiName];
+                stackInfo.AddHalfUI(autoSys.stackIndex, uiSystem.uiName);
+                RecordStackID(uiSystem);
+                break;
+            case StackLevel.Manual:
+                break;
+        }
+
+        //调用界面的Open
+        UIMod[] childrens = uiSystem.GetComponentsInChildren<UIMod>();
+        for (int i = 0; i < childrens.Length; i++)
+        {
+            childrens[i].Open();
         }
     }
 
-    //负责显示UI
-    void OpenEnd(UISystem uiSystem)
+    public void Close(UISystem uiSystem)
     {
-        ResetToFront(uiSystem);
-        uiSystem.gameObject.SetActive(true);
+        switch (uiSystem.stackLevel)
+        {
+            case StackLevel.AUTO: //打开上一个auto界面
+                string topUIName = _uiStack.Pop();
+                if (topUIName != uiSystem.uiName)
+                {
+                    Debug.LogErrorFormat("<UIMgr> {0}界面不在栈顶，当前栈顶界面为{1}", uiSystem.uiName, topUIName);
+                    return;
+                }
+                RemoveStackInfo(topUIName);
+                RevertTopUI();
+                break;
+            case StackLevel.HALF:  //将half界面从Auto界面中移除掉
+                topUIName = _uiStack.Peek();
+                UIStackInfo info = _stackInfoDic[topUIName];
+                info.RemoveHalfUI(_UIListByName[topUIName].stackIndex, uiSystem.uiName);
+                RemoveStackInfo(uiSystem.uiName);
+                break;
+            case StackLevel.Manual:
+                break;
+        }
+
+        OnClose(uiSystem);
+    }
+
+    void OnClose(UISystem uiSystem)
+    {
+        //调用界面的Close
+        UIMod[] childrens = uiSystem.GetComponentsInChildren<UIMod>();
+        for (int i = 0; i < childrens.Length; i++)
+        {
+            childrens[i].Close();
+        }
+        uiSystem.gameObject.SetActive(false);
+        if (uiSystem.uiState == UIState.DESTROYONCLOSE)
+        {
+            UnloadUI(uiSystem);
+        }
+    }
+
+    void StackRecord(UISystem uiSystem)
+    {
+        uiSystem.StackRecordUI();//lua层需要备份数据
+        UIStackInfo stackInfo;
+        if (!_stackInfoDic.TryGetValue(uiSystem.uiName, out stackInfo))
+        {
+            stackInfo = PoolMgr.Inst.SpawnObj<UIStackInfo>();
+            _stackInfoDic.Add(uiSystem.uiName, stackInfo);
+        }
+        stackInfo.PushIndex(uiSystem.stackIndex);
+    }
+
+    private void RecordStackID(UISystem uiSystem)
+    {
+        _uiCount++;
+        uiSystem.stackIndex = _uiCount;
     }
 
     /// <summary>
-    /// 删除最旧的一个不显示的UI
+    /// 将uiName(包含) 之前的所有UI进行备份
     /// </summary>
-    private void DestroyOldUI()
+    /// <param name="isFirst"> 是否是第一个出现的位置 </param>
+    public void StackBackup(string uiName, bool isFirst = true, bool isClear = true)
     {
-        if (_UIList.Count >= UIMaxCount)
+        _backup.Clear();
+
+        List<string> list = new List<string>(_uiStack);
+        int index;
+        if (isFirst)
         {
-            for (int i = 0; i < _UIList.Count; i++)
+            index = list.LastIndexOf(uiName);
+        }
+        else
+        {
+            index = list.IndexOf(uiName);
+        }
+
+        for (int i = 0; i < list.Count; i++)
+        {
+            string removeUIName = list[i];
+            if (i < index) //不保存的界面，移除缓存数据
             {
-                // 子界面堆栈中的界面不删除
-                UISystem uiSystem = _UIList[i];
-                if (uiSystem.uiState == UIState.NORMAL && !uiSystem.gameObject.activeSelf && !_fullUIStack.Contains(uiSystem.name))
-                {
-                    UnloadUI(uiSystem);
-                    break;
-                }
+                //栈顶界面，还没有缓存index
+                RemoveUIOnBackup(removeUIName, i != 0);
             }
+            else
+            {
+                _backup.Add(removeUIName);
+            }
+        }
+
+        if (isClear)
+            _uiStack.Clear();
+    }
+
+    private void RemoveUIOnBackup(string uiName, bool isRecordIndex)
+    {
+        UISystem uiSystem = _UIListByName[uiName];
+        UIStackInfo info = _stackInfoDic[uiName];
+        switch (uiSystem.stackLevel)
+        {
+            case StackLevel.AUTO:
+                int index;
+                if (isRecordIndex)
+                    index = info.indexStack.Pop();
+                else
+                    index = uiSystem.stackIndex;
+                RemoveStackInfo(uiName);
+                //移除该Index下的half界面
+                List<string> halfList;
+                if (info.halfDicByIndex.TryGetValue(index, out halfList))
+                {
+                    for (int i = 0; i < halfList.Count; i++)
+                    {
+                        RemoveUIOnBackup(halfList[i], isRecordIndex);
+                    }
+                    info.halfDicByIndex.Remove(index);
+                }
+                break;
+            case StackLevel.HALF:
+                if (isRecordIndex)
+                    info.indexStack.Pop(); //移除index
+                RemoveStackInfo(uiName);
+                break;
+        }
+    }
+
+    //将ui堆栈还原成备份的状态
+    public void RevertBackup()
+    {
+        _uiStack.Clear();
+        for (int i = _backup.Count - 1; i >= 0; i--)
+        {
+            _uiStack.Push(_backup[i]);
+        }
+        _backup.Clear();
+    }
+
+    //打开栈顶UI
+    public void RevertTopUI()
+    {
+        if (_uiStack.Count == 0) return; //没有UI了
+        string topUIName = _uiStack.Peek();
+        OnRevert(topUIName);
+    }
+    private void OnRevert(string uiName)
+    {
+        bool needOpen = false;
+        UISystem uiSystem = null;
+        if (!_UIListByName.TryGetValue(uiName, out uiSystem))  //加载UI
+        {
+            uiSystem = LoadUISystem(uiName);
+            _UIListByName.Add(uiName, uiSystem);
+            //先把界面隐藏，之后需要在lua层重新走一遍Open流程
+            uiSystem.gameObject.SetActive(false);
+            needOpen = true;
+        }
+        else
+        {
+            uiSystem.gameObject.SetActive(true);
+            uiSystem.transform.SetAsLastSibling(); // 移至队列最后
+        }
+
+        //处理堆栈逻辑
+        switch (uiSystem.stackLevel)
+        {
+            case StackLevel.AUTO:
+            case StackLevel.HALF:
+                UIStackInfo info;
+                if (_stackInfoDic.TryGetValue(uiSystem.uiName, out info))
+                {
+                    int index = info.indexStack.Pop();
+                    uiSystem.stackIndex = index; //修改为正确的数据索引
+                    uiSystem.StackRevertUI(needOpen); //通知lua层
+                    //打开half界面
+                    List<string> halfList;
+                    if (info.halfDicByIndex.TryGetValue(index, out halfList))
+                    {
+                        halfList = new List<string>(halfList); //复制一份，防止打开销毁的half界面时，list错乱
+                        for (int i = 0; i < halfList.Count; i++)
+                        {
+                            OnRevert(halfList[i]);
+                        }
+                    }
+                }
+                break;
+            case StackLevel.Manual:
+                break;
         }
     }
 
@@ -148,144 +371,42 @@ public class UIMgr : MonoBehaviour
     {
         if (uiSystem == null) return;
         Destroy(uiSystem.gameObject);
-        _UIList.Remove(uiSystem);
         _UIListByName.Remove(uiSystem.uiName);
-        //判断是否需要卸载对应的ab包
-        OnUIDestroy(uiSystem.uiName);
     }
 
-    // 移至队列最后
-    void ResetToFront(UISystem uiSystem)
+    private void RemoveStackInfo(string uiName)
     {
-        //不在管理队列中，属于新添加的UI
-        if (!_UIList.Contains(uiSystem)) return;
-        //已经是最后一个了
-        if (_UIList[_UIList.Count - 1] == uiSystem) return;
-        //移至队尾
-        _UIList.Remove(uiSystem);
-        _UIList.Add(uiSystem);
-        // 设到最前
-        uiSystem.transform.SetAsLastSibling();
-    }
-
-    void Update()
-    {
-#if UNITY_EDITOR || UNITY_ANDROID
-        if (Input.GetKeyUp(KeyCode.Escape))
+        UIStackInfo info;
+        if(_stackInfoDic.TryGetValue(uiName, out info) && info.indexStack.Count == 0) //没有缓存的数据了
         {
-            UISystem uiSystem = null;
-            for (int i = _UIList.Count - 1; i >= 0; i--)
-            {
-                //list中最后的一个可见的全屏界面就是当前显示的全屏界面
-                UISystem tmp = _UIList[i];
-                if ((tmp.layer == UILayer.FULL || tmp.layer == UILayer.POP) && tmp.gameObject.activeSelf)
-                {
-                    uiSystem = tmp;
-                    break;
-                }
-            }
-            if (uiSystem != null)
-            {
-                Close(uiSystem);
-            }
-            else
-            {
-                ExitGame();
-            }
-        }
-#endif
-    }
-
-    /// <summary>
-    /// 重新设置全屏界面堆栈，此方式中，栈底必须是不能再关闭的全屏界面
-    /// </summary>
-    /// <param name="uiNames"></param>
-    public void SetFullStack(params string[] uiNames)
-    {
-        _fullUIStack.Clear();
-        Add2FullStack(uiNames);
-    }
-
-    public void Add2FullStack(params string[] uiNames)
-    {
-        for (int i = 0; i < uiNames.Length; i++)
-        {
-            _fullUIStack.Push(uiNames[i]);
+            PoolMgr.Inst.DespawnObj(info);
+            _stackInfoDic.Remove(uiName);
         }
     }
 
-    // 界面关闭时调用
-    public void Close(string uiName)
+    //获取最上一层能受返回方法控制的界面
+    public GameObject PopBackDlg()
     {
-        UISystem uiSystem = null;
-        if (_UIListByName.TryGetValue(uiName, out uiSystem))
+        for (int i = _UIRoot.childCount - 1; i >= 0; i--)
         {
-            Close(uiSystem);
+            Transform layerTrans = _UIRoot.GetChild(i);
+            for (int j = layerTrans.childCount - 1; j >= 0; j--)
+            {
+                Transform dlgTrans = layerTrans.GetChild(j);
+                if (!dlgTrans.gameObject.activeSelf) continue; //未显示
+                UISystem uiSystem;
+                if (!_UIListByName.TryGetValue(dlgTrans.name, out uiSystem)) continue;
+                if (uiSystem.backOpt == BackOpt.Ignore) continue; //不受返回键影响
+                if (uiSystem.backOpt == BackOpt.Block) return null;
+                return dlgTrans.gameObject;
+            }
         }
-    }
-    public void Close(UISystem uiSystem)
-    {
-        if (uiSystem == null) return;
-        OpenLastOnClose(uiSystem);
-        CloseEnd(uiSystem);
-    }
-
-    //关闭当前界面，打开上一个界面：当前只是针对主界面
-    private void OpenLastOnClose(UISystem uiSystem)
-    {
-        if (uiSystem.layer == UILayer.FULL)
-        {
-            //自动打开上一个全屏界面
-            string uiName = null;
-            while (string.IsNullOrEmpty(uiName) && _fullUIStack.Count > 0)
-            {
-                uiName = _fullUIStack.Pop();
-            }
-            if (string.IsNullOrEmpty(uiName))
-            {
-                //已经没有上一级全屏界面了，需要关闭游戏了
-                ExitGame();
-                return;
-            }
-            UISystem openUI = null;
-            if (!_UIListByName.TryGetValue(uiName, out openUI))
-            {
-                openUI = LoadUISystem(uiName);
-            }
-            if (openUI.layer != UILayer.FULL)
-            {
-                Debug.LogError("<UIMgr> 不是全屏界面：" + uiName);
-            }
-            DestroyOldUI(); // 超过最大数量，析构最老的那个
-
-            if (!_UIListByName.ContainsKey(uiName))
-            {
-                //管理UI
-                _UIList.Add(uiSystem);
-                _UIListByName.Add(uiName, uiSystem);
-            }
-            OpenEnd(openUI);
-        }
-    }
-
-    void CloseEnd(UISystem uiSystem)
-    {
-        uiSystem.gameObject.SetActive(false);
-
-        if (uiSystem.uiState == UIState.DESTROYONCLOSE)
-        {
-            UnloadUI(uiSystem);
-        }
-    }
-
-    void ExitGame()
-    {
-        Debug.Log("所有界面都被关闭了！");
+        return null;
     }
 
     UISystem LoadUISystem(string uiName)
     {
-        GameObject obj = ResMgr.Inst.LoadPrefab(uiName, uiName);
+        GameObject obj = ResMgr.Inst.LoadAsset<GameObject>(uiName, 2, uiName);
         if (obj == null)
         {
             Debug.LogError("<UIMgr> 没有找到UI:" + uiName);
@@ -312,76 +433,6 @@ public class UIMgr : MonoBehaviour
         return uiSystem;
     }
 
-    /// 实例化一个GameObject
-    public Transform InstantiateGo(GameObject go, Transform parent = null)
-    {
-        if (go == null) return null;
-        GameObject inst = Instantiate(go);
-        inst.SetActive(true);
-        if (parent != null)
-        {
-            inst.transform.SetParent(parent, false);
-            inst.transform.localScale = Vector3.one;
-            inst.transform.localPosition = Vector3.zero;
-        }
-        return inst.transform;
-    }
-
-
-    //获取此时的显示full界面
-    UISystem FindCurrFullUI()
-    {
-        for (int i = _UIList.Count - 1; i >= 0; i--)
-        {
-            //list中最后的一个可见的全屏界面就是当前显示的全屏界面
-            UISystem uiSystem = _UIList[i];
-            if (uiSystem.layer == UILayer.FULL && uiSystem.gameObject.activeSelf)
-            {
-                return uiSystem;
-            }
-        }
-        return null;
-    }
-
-    // 关闭所有界面
-    public void CloseAll(params UILayer[] layers)
-    {
-        for (int i = _UIList.Count - 1; i >= 0; i--)
-        {
-            UISystem uiSystem = _UIList[i];
-            if (uiSystem.gameObject.activeSelf)
-            {
-                if (layers == null || layers.Length == 0)//关闭所有界面
-                {
-                    CloseEnd(uiSystem);
-                }
-                else
-                {
-                    for (int j = 0; j < layers.Length; j++)
-                    {
-                        if (uiSystem.layer == layers[j])
-                        {
-                            CloseEnd(uiSystem);
-                            break;
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-    // 关闭所有带词缀的界面
-    public void CloseAll(string prefix)
-    {
-        for (int i = _UIList.Count - 1; i >= 0; i--)
-        {
-            if (_UIList[i].gameObject.activeSelf && _UIList[i].gameObject.name.Contains(prefix))
-            {
-                Close(_UIList[i]);
-            }
-        }
-    }
-
     /// <summary>
     /// 将场景中的世界坐标转换成UI坐标
     /// </summary>
@@ -395,22 +446,6 @@ public class UIMgr : MonoBehaviour
         return uiPos;
     }
 
-
-    // 除Layer0界面打开的个数
-    public int OpenCount()
-    {
-        int count = 0;
-        for (int i = _UIList.Count - 1; i >= 0; i--)
-        {
-            if (_UIList[i].gameObject.activeSelf && _UIList[i].layer == UILayer.POP)
-            {
-                count++;
-            }
-        }
-
-        return count;
-    }
-
     // UI 根节点
     public Transform GetUIRoot()
     {
@@ -421,12 +456,6 @@ public class UIMgr : MonoBehaviour
     public Camera GetUICamera()
     {
         return _UICamera;
-    }
-
-    // 获得画布
-    public Canvas GetCanvas()
-    {
-        return _UIRoot.GetComponent<Canvas>();
     }
 
     // 获得对应层
@@ -454,13 +483,9 @@ public class UIMgr : MonoBehaviour
             if (uiSystem != null)
             {
                 Destroy(uiSystem.gameObject);
-                OnUIDestroy(uiSystem.resModule);
             }
         }
-
-        _UIList.Clear();
         _UIListByName.Clear();
-        _fullUIStack.Clear();
     }
 
     void OnDestroy()
@@ -469,13 +494,39 @@ public class UIMgr : MonoBehaviour
         _inst = null;
         Debug.Log("<UIMgr> OnDestroy!");
     }
+}
 
-    /// 在UI界面被Destroy的时候，需要同时卸载ab包
-    private void OnUIDestroy(string uiSystemName)
+// 单个UI界面的堆栈信息
+public class UIStackInfo
+{
+    public Stack<int> indexStack = new Stack<int>();
+    public Dictionary<int, List<string>> halfDicByIndex = new Dictionary<int, List<string>>();
+
+    public void AddHalfUI(int index, string uiName)
     {
-        if (ResMgr.Inst)
+        List<string> list;
+        if (!halfDicByIndex.TryGetValue(index, out list))
         {
-            ResMgr.Inst.OnMoudleDestroy(uiSystemName);
+            list = new List<string>();
+            halfDicByIndex.Add(index, list);
+        }
+        list.Remove(uiName);
+        list.Add(uiName);
+    }
+
+    public void RemoveHalfUI(int index, string uiName)
+    {
+        List<string> list = halfDicByIndex[index];
+        list.Remove(uiName);
+        if (list.Count == 0)
+        {
+            halfDicByIndex.Remove(index);
         }
     }
+
+    public void PushIndex(int index)
+    {
+        indexStack.Push(index);
+    }
+
 }

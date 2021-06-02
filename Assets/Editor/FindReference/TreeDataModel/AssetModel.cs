@@ -6,6 +6,7 @@ using System.Threading;
 using UnityEngine;
 using UnityEditor;
 using System.Diagnostics;
+using System.Security.Cryptography;
 using Debug = UnityEngine.Debug;
 
 namespace AssetDanshari
@@ -19,6 +20,7 @@ namespace AssetDanshari
             public string displayName;
             public bool isRst;
             public object bindObj;
+            public bool deleted;
 
             public List<AssetInfo> children;
 
@@ -54,22 +56,6 @@ namespace AssetDanshari
 
         private int _id = 0;
 
-        protected string[] resDir = {
-            "Assets"
-        };
-        /// <summary>
-        /// 获取Asset下所有的文件
-        /// </summary>
-        protected List<string> GetAllFile()
-        {
-            List<string> fileList = new List<string>();
-            for (int i = 0; i < resDir.Length; i++)
-            {
-                fileList.AddRange(AssetDanshariUtility.GetFileList(resDir[i], AssetDanshariUtility.ValidFile));
-            }
-            return fileList;
-        }
-
         protected int GetAutoId()
         {
             return _id++;
@@ -81,7 +67,7 @@ namespace AssetDanshari
         /// <returns></returns>
         public bool HasData()
         {
-            return data != null;
+            return data != null && data.Count > 0;
         }
 
         public virtual void SetDataPaths(List<string> queryPaths)
@@ -117,7 +103,7 @@ namespace AssetDanshari
 
         #region  多线程执行
 
-        private class JobFileTextSearchReplace
+        private class JobFileTextSearch
         {
             private string _filePath;
             private List<string> _depList;
@@ -128,7 +114,7 @@ namespace AssetDanshari
             public ManualResetEvent doneEvent;
             public string exception;
 
-            public JobFileTextSearchReplace(string path, List<string> pattenList, bool[] rsts)
+            public JobFileTextSearch(string path, List<string> pattenList, bool[] rsts)
             {
                 _filePath = path;
                 _pattenList = pattenList;
@@ -136,7 +122,7 @@ namespace AssetDanshari
                 doneEvent = new ManualResetEvent(false);
             }
 
-            public JobFileTextSearchReplace(string path, Dictionary<string, int> guidDic, bool[] rsts)
+            public JobFileTextSearch(string path, Dictionary<string, int> guidDic, bool[] rsts)
             {
                 _filePath = path;
                 _guidDic = guidDic;
@@ -187,9 +173,9 @@ namespace AssetDanshari
             }
         }
 
-        protected void ThreadDoFilesTextSearchReplace(List<string> fileList, List<string> depList, bool[][] rstList)
+        protected void ThreadDoFilesTextSearch(List<string> fileList, List<string> depList, bool[][] rstList)
         {
-            List<JobFileTextSearchReplace> jobList = new List<JobFileTextSearchReplace>();
+            List<JobFileTextSearch> jobList = new List<JobFileTextSearch>();
             List<ManualResetEvent> eventList = new List<ManualResetEvent>();
 
             //生成guid字典，快速查询
@@ -206,22 +192,18 @@ namespace AssetDanshari
             for (int i = 0; i< numFiles; i++)
             {
                 string path = fileList[i];
-                JobFileTextSearchReplace job;
+                JobFileTextSearch job;
                 if (path == AssetDanshariUtility.Res_Obj || path == AssetDanshariUtility.Res_Pref ||
                     path == AssetDanshariUtility.Res_Sprite)
                 {
                     //如果是资源表，直接使用路径进行匹配
-                    job = new JobFileTextSearchReplace(path, depList, rstList[i]);
+                    job = new JobFileTextSearch(path, depList, rstList[i]);
                 }
                 else
                 {
-                    if (path.EndsWith(".txt") || path.EndsWith(".png") || path.EndsWith(".anim")
-                        || path.EndsWith(".mp3") || path.EndsWith(".wav") || path.EndsWith(".shader")
-                        || path.EndsWith(".tga") || path.EndsWith(".jpg"))
-                    {
+                    if (!AssetDanshariUtility.ValidFileHasRef(path))
                         continue;
-                    }
-                    job = new JobFileTextSearchReplace(path, guidDic, rstList[i]);
+                    job = new JobFileTextSearch(path, guidDic, rstList[i]);
                 }
                 jobList.Add(job);
                 eventList.Add(job.doneEvent);
@@ -236,6 +218,153 @@ namespace AssetDanshari
                 }
             }
             Debug.Log("处理次数："+dealNum+"，耗时："+sw.ElapsedMilliseconds/1000f);
+            foreach (var job in jobList)
+            {
+                if (!string.IsNullOrEmpty(job.exception))
+                {
+                    Debug.LogError(job.exception);
+                }
+            }
+        }
+
+        private class JobFileTextReplace
+        {
+            private string _filePath;
+            private string _useGUID;
+            private string _targetGUID;
+
+            public ManualResetEvent doneEvent;
+            public string exception;
+
+            public JobFileTextReplace(string path, string useGUID, string targetGUID)
+            {
+                _filePath = path;
+                _useGUID = useGUID;
+                _targetGUID = targetGUID;
+                doneEvent = new ManualResetEvent(false);
+            }
+
+            public void ThreadPoolCallback(System.Object threadContext)
+            {
+                try
+                {
+                    string text = File.ReadAllText(_filePath);
+                    StringBuilder sb = new StringBuilder(text, text.Length * 2);
+                    sb.Replace(_targetGUID, _useGUID);
+                    File.WriteAllText(_filePath, sb.ToString());
+                }
+                catch (Exception ex)
+                {
+                    exception = _filePath + "\n" + ex.Message;
+                }
+
+                doneEvent.Set();
+            }
+        }
+
+        protected void ThreadDoFilesTextReplace(Dictionary<string, List<string>> targetFileDic, string usePath)
+        {
+            List<JobFileTextReplace> jobList = new List<JobFileTextReplace>();
+            List<ManualResetEvent> eventList = new List<ManualResetEvent>();
+
+            string useGUID = AssetDatabase.AssetPathToGUID(usePath);
+
+            int numFiles = 0;
+            foreach (var pair in targetFileDic)
+            {
+                numFiles += pair.Value.Count;
+            }
+
+            int i = 0;
+            foreach (var pair in targetFileDic)
+            {
+                string targetGUID = AssetDatabase.AssetPathToGUID(pair.Key);
+                numFiles = pair.Value.Count;
+                for (int j = 0; j < pair.Value.Count; j++)
+                {
+                    if(!AssetDanshariUtility.ValidFileRepeat(pair.Value[j])) continue;
+                    JobFileTextReplace job = new JobFileTextReplace(pair.Value[j], useGUID, targetGUID);
+                    jobList.Add(job);
+                    eventList.Add(job.doneEvent);
+                    ThreadPool.QueueUserWorkItem(job.ThreadPoolCallback);
+
+                    if (eventList.Count >= Environment.ProcessorCount || (i == numFiles - 1 && eventList.Count > 0))
+                    {
+                        WaitHandle.WaitAll(eventList.ToArray());
+                        eventList.Clear();
+                        EditorUtility.DisplayProgressBar(AssetDanshariStyle.Get().progressTitle, "替换引用...", (i + 1) * 1f / numFiles);
+                    }
+                    i++;
+                }
+            }
+            foreach (var job in jobList)
+            {
+                if (!string.IsNullOrEmpty(job.exception))
+                {
+                    Debug.LogError(job.exception);
+                }
+            }
+        }
+
+        private class JobFileMD5
+        {
+            private string _filePath;
+            private string[] _fileDic;
+            private int _index;
+            public ManualResetEvent doneEvent;
+            public string exception;
+
+            public JobFileMD5(string path, int index, string[] fileDic)
+            {
+                _filePath = path;
+                _fileDic = fileDic;
+                _index = index;
+                doneEvent = new ManualResetEvent(false);
+            }
+
+            public void ThreadPoolCallback(System.Object threadContext)
+            {
+                try
+                {
+                    using (var md5 = MD5.Create())
+                    {
+                        FileInfo fileInfo = new FileInfo(_filePath);
+                        using (var stream = File.OpenRead(fileInfo.FullName))
+                        {
+                            _fileDic[_index] = BitConverter.ToString(md5.ComputeHash(stream)).ToLower();
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    exception = _filePath + "\n" + ex.Message;
+                }
+
+                doneEvent.Set();
+            }
+        }
+
+        protected void ThreadDoFileMD5(List<string> fileList, string[] fileDic)
+        {
+            List<JobFileMD5> jobList = new List<JobFileMD5>();
+            List<ManualResetEvent> eventList = new List<ManualResetEvent>();
+
+            int numFiles = fileList.Count;
+            for (int i = 0; i < numFiles; i++)
+            {
+                string path = fileList[i];
+                JobFileMD5 job = new JobFileMD5(path, i, fileDic);
+                jobList.Add(job);
+                eventList.Add(job.doneEvent);
+                ThreadPool.QueueUserWorkItem(job.ThreadPoolCallback);
+
+                if (eventList.Count >= Environment.ProcessorCount || (i == numFiles - 1 && eventList.Count > 0))
+                {
+                    WaitHandle.WaitAll(eventList.ToArray());
+                    eventList.Clear();
+                    AssetDanshariUtility.DisplayThreadProgressBar(numFiles, i);
+                }
+            }
             foreach (var job in jobList)
             {
                 if (!string.IsNullOrEmpty(job.exception))

@@ -1,0 +1,27 @@
+ManifestFileVersion: 0
+CRC: 50255394
+Hashes:
+  AssetFileHash:
+    serializedVersion: 2
+    Hash: 6e326435b016dc04e142fd1029f1c776
+  TypeTreeHash:
+    serializedVersion: 2
+    Hash: 5ad585dd02dfb5016c0dad519eab8f49
+HashAppended: 0
+ClassTypes:
+- Class: 49
+  Script: {instanceID: 0}
+Assets:
+- Assets/Localization/CN/Data/Excel/AI.txt
+- Assets/Localization/CN/Data/Excel/Fight_Launcher.txt
+- Assets/Localization/CN/Data/Excel/TeachStruct.txt
+- Assets/Localization/CN/Data/Excel/Fight_Buff.txt
+- Assets/Localization/CN/Data/Excel/Unit.txt
+- Assets/Localization/CN/Data/Excel/Char.txt
+- Assets/Localization/CN/Data/Excel/Skill.txt
+- Assets/Localization/CN/Data/Excel/TeachStep.txt
+- Assets/Localization/CN/Data/Excel/Fight_Effect.txt
+- Assets/Localization/CN/Data/Excel/Localization.txt
+- Assets/Localization/CN/Data/Excel/Fight_Bullet.txt
+- Assets/Localization/CN/Data/Excel/Audio.txt
+Dependencies: []

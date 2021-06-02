@@ -19,6 +19,14 @@ function Clone(object)
     return _copy(object)
 end
 
+-- 浅拷贝
+function table.copy( tab )
+    local newTable = {};
+    for i, v in pairs( tab ) do
+        newTable[i] = v;
+    end
+    return newTable;
+end
 -- 类
 function Class(classname, super)
     local superType = type(super)
@@ -56,22 +64,27 @@ function Class(classname, super)
         end
 
     else
-        -- inherited from Lua Object
+        cls = {}
         if super then
-            cls = {}
-            setmetatable(cls, {__index = super})
-            cls.super = super
+            super.__index = super;
         else
-            cls = {Ctor = function() end}
+            cls.Ctor = function() end
         end
-
         cls.__cname = classname
         cls.__ctype = 2 -- lua
-        cls.__index = cls
 
         function cls.New(...)
-            local instance = setmetatable({}, cls)
-            instance.class = cls
+            -- inherited from Lua Object
+            local instance = {}
+            if super then
+                instance.super = setmetatable({}, super)
+                instance.super.__index = instance.super;
+                local cloneC = Clone(cls);
+                cloneC.__index = setmetatable(cloneC, instance.super);
+                setmetatable(instance, cloneC);
+            else
+                setmetatable(instance, {__index = cls})
+            end
             instance:Ctor(...)
             return instance
         end
@@ -102,68 +115,33 @@ function IsNilOrNull( obj )
     return false;
 end
 
--- 播放GameObject上的动画
-function PlayTweenAnim(go)
-    local anims = go:GetComponents(typeof(DOTweenAnimation));
-
-	local longestAnim = anims[0];
-	local dura = 0;
-    --获取时间最长的animation
-	for i = 0, anims.Length-1 do
-	    local anim = anims[i];
-	    anim:DOPlay();
-
-	    if anim.duration > dura then
-	        dura = anim.duration;
-	        longestAnim = anim;
-	    end
-	end
-    return longestAnim;
+function PCallLogger( e )
+    LogErr( tostring( e ) .. "\n" .. debug.traceback() );
 end
 
----------------------------------------------
----- 延迟执行
----------------------------------------------
---local InvokeInfo = Class( "InvokeInfo" );
---function InvokeInfo:Ctor( func, delay, name, ... )
---    self.func = func;
---    self.param = { ... };
---    self.name = name;
---    self.timer = Timer.New( function() self:Func(); end, delay, 1, false );
---    self.timer:Start();
---end
---function InvokeInfo:Func()
---    self.func( unpack( self.param ) );
---    InvokeStop( self.name );
---end
---function InvokeInfo:Stop()
---    self.timer:Stop();
---end
+function PCall( func, ... )
+    -- 安全调用
+    if RUNPLATFORM == 0 or RUNPLATFORM == 1 or RUNPLATFORM == 8 then
+        --IOS和mac平台
+        pcall( func, ... );
+    else
+        xpcall( func, PCallLogger, ... );
+    end
+end
 
---local _invokeList = {};
----- 如果名字为空不管理
---function Invoke( func, delay, name, ... )
---    -- 如果名字为空不管理
---    if name == nil then
---        InvokeInfo.New( func, delay, name, ... );
---        return;
---    end
-
---    -- 名字不为空，管理好
---    if _invokeList[name] ~= nil then
---        return;
---    end
---    _invokeList[name] = InvokeInfo.New( func, delay, name, ... );
---end
----- 停止计时
---function InvokeStop( name )
---    if name == nil then
---        return;
---    end
-
---    -- 停止并置空
---    if _invokeList[name] ~= nil then
---        _invokeList[name]:Stop();
---    end
---    _invokeList[name] = nil;
---end
+-- 应用焦点
+function LuaOnFocus( hasFocus )
+    EventDispatcher.DispatchEvent( EVENT_APPLICATION_ONFOCUS, hasFocus );
+end
+function LuaOnQuit()
+    EventDispatcher.DispatchEvent( EVENT_APPLICATION_ONQUIT );
+end
+function LuaOnPause(pause)
+    EventDispatcher.DispatchEvent( EVENT_APPLICATION_ONPAUSE, pause );
+end
+function LuaOnBackClick() --返回按钮回调
+    local go = UIMgr.Inst:PopBackDlg();
+    if go == nil then return; end
+    local dlg = rawget(_G, go.name);
+    dlg.OnEvent( UIEVENT_UIBUTTON_CLICK, -1, 0, go );
+end

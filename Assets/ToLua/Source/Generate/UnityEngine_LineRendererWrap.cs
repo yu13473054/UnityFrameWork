@@ -126,19 +126,19 @@ public class UnityEngine_LineRendererWrap
 				obj.BakeMesh(arg0);
 				return 0;
 			}
-			else if (count == 3 && TypeChecker.CheckTypes<UnityEngine.Camera>(L, 3))
-			{
-				UnityEngine.LineRenderer obj = (UnityEngine.LineRenderer)ToLua.CheckObject(L, 1, typeof(UnityEngine.LineRenderer));
-				UnityEngine.Mesh arg0 = (UnityEngine.Mesh)ToLua.CheckObject(L, 2, typeof(UnityEngine.Mesh));
-				UnityEngine.Camera arg1 = (UnityEngine.Camera)ToLua.ToObject(L, 3);
-				obj.BakeMesh(arg0, arg1);
-				return 0;
-			}
 			else if (count == 3 && TypeChecker.CheckTypes<bool>(L, 3))
 			{
 				UnityEngine.LineRenderer obj = (UnityEngine.LineRenderer)ToLua.CheckObject(L, 1, typeof(UnityEngine.LineRenderer));
 				UnityEngine.Mesh arg0 = (UnityEngine.Mesh)ToLua.CheckObject(L, 2, typeof(UnityEngine.Mesh));
 				bool arg1 = LuaDLL.lua_toboolean(L, 3);
+				obj.BakeMesh(arg0, arg1);
+				return 0;
+			}
+			else if (count == 3 && TypeChecker.CheckTypes<UnityEngine.Camera>(L, 3))
+			{
+				UnityEngine.LineRenderer obj = (UnityEngine.LineRenderer)ToLua.CheckObject(L, 1, typeof(UnityEngine.LineRenderer));
+				UnityEngine.Mesh arg0 = (UnityEngine.Mesh)ToLua.CheckObject(L, 2, typeof(UnityEngine.Mesh));
+				UnityEngine.Camera arg1 = (UnityEngine.Camera)ToLua.ToObject(L, 3);
 				obj.BakeMesh(arg0, arg1);
 				return 0;
 			}
@@ -169,7 +169,7 @@ public class UnityEngine_LineRendererWrap
 		{
 			ToLua.CheckArgsCount(L, 2);
 			UnityEngine.LineRenderer obj = (UnityEngine.LineRenderer)ToLua.CheckObject(L, 1, typeof(UnityEngine.LineRenderer));
-			UnityEngine.Vector3[] arg0 = null;
+			UnityEngine.Vector3[] arg0 = ToLua.CheckStructArray<UnityEngine.Vector3>(L, 2);
 			int o = obj.GetPositions(arg0);
 			LuaDLL.lua_pushinteger(L, o);
 			return 1;

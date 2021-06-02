@@ -103,7 +103,6 @@ public static class WrapList
         _GT(typeof(CameraClearFlags)).SetNameSpace(null),
         _GT(typeof(AudioClip)).SetNameSpace(null),        
         _GT(typeof(AssetBundle)).SetNameSpace(null),
-        _GT(typeof(ParticleSystem)).SetNameSpace(null),
         _GT(typeof(ParticleSystemRenderer)).SetNameSpace(null),
         _GT(typeof(ParticleSystem.MainModule)).SetNameSpace(null),
         _GT(typeof(AsyncOperation)).SetBaseType(typeof(System.Object)).SetNameSpace(null),        
@@ -157,12 +156,13 @@ public static class WrapList
         _GT(typeof(TableHandler)),
         _GT(typeof(ConfigHandler)),
         _GT(typeof(GameMain)),
-        _GT(typeof(ResMgr)),
         _GT(typeof(UIMgr)),
+        _GT(typeof(ResModuleUtility)),
         _GT(typeof(NetworkMgr)),
         _GT(typeof(AudioMgr)),
         _GT(typeof(CommonUtils)),
         _GT(typeof(FullScreen)),
+        _GT(typeof(Debugger)),
 
         //UI
         _GT(typeof(UISystem)),

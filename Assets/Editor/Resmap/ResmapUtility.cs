@@ -1,15 +1,13 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Diagnostics;
+﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
 using UnityEditor;
+using UnityEngine;
 using Debug = UnityEngine.Debug;
 using Object = UnityEngine.Object;
 
-public class ResmapUtility
+public class ResmapUtility : AssetPostprocessor
 {
     class ResmapInfo
     {
@@ -65,6 +63,7 @@ public class ResmapUtility
     static Dictionary<string, List<string>> localResNameConfig;
     private static bool localIsModify;
 
+    public static bool canAutoToResmap = true;
     static void InitData()
     {
         if (_isInit) return;
@@ -73,7 +72,7 @@ public class ResmapUtility
         _dirDic = new Dictionary<string, DirConfig>();
         _dirDic.Add("Assets/Res/Icon", new DirConfig(true));
         _dirDic.Add("Assets/Res/Prefab", new DirConfig(true, new FileRule("", "prefab")));
-        _dirDic.Add("Assets/Res/UI", new DirConfig(false, new FileRule("_dynamic", ""), new FileRule("", "prefab")));
+        _dirDic.Add("Assets/Res/UI", new DirConfig(false, new FileRule("_dynamic", "")));
         _dirDic.Add("Assets/Res/Font", new DirConfig(true, new FileRule("", "fontsettings"), new FileRule("", "TTF"), new FileRule("", "TTc")));
         for (int i = 0; i < LocalTypeList.Length; i++)
         {
@@ -95,7 +94,7 @@ public class ResmapUtility
     {
         InitData();
         List<string> assets = GetSelectAssets();
-        assets = CategorizeInfo(assets);
+        CategorizeInfo(assets);
         StartDeal(true);
         Debug.Log("Add To Resmap Done!");
     }
@@ -105,7 +104,7 @@ public class ResmapUtility
     {
         InitData();
         List<string> assets = GetSelectAssets();
-        CategorizeInfo(assets);
+        CategorizeInfo(assets, false);
         StartDeal(false);
 
         Debug.Log("Delete From Resmap Done!");
@@ -133,7 +132,7 @@ public class ResmapUtility
         AssetDatabase.DeleteAsset(DataDir + "resmap_obj.txt");
         AssetDatabase.DeleteAsset(DataDir + "resmap_prefab.txt");
         AssetDatabase.DeleteAsset(DataDir + "resmap_sprite.txt");
-        AssetDatabase.DeleteAsset(DataDir + MultiLngFile);
+        AssetDatabase.DeleteAsset(DataDir + MultiLngFile+ ".txt");
         AssetDatabase.Refresh();
 
         CategorizeInfo(fileList);
@@ -179,6 +178,7 @@ public class ResmapUtility
 
     static void OnPostprocessAllAssets(string[] imports, string[] dels, string[] moves, string[] moveFroms)
     {
+        if (Application.isPlaying) return;
         if (!canAuto2Resmap) return;
         InitData();
         List<string> fileList = new List<string>();
@@ -235,8 +235,21 @@ public class ResmapUtility
             if (isAdd)
             {
                 if (nameList != null)
-                    //已经存在，就直接替换名称
-                    nameList[index] = fileName + subfix;
+                    if (index < nameList.Count)
+                    {
+                        //已经存在，就直接替换名称
+                        nameList[index] = fileName + subfix;
+                    }
+                    else
+                    {
+                        for (int j = nameList.Count; j <= index; j++)
+                        {
+                            if (j == index)
+                                nameList.Add(fileName + subfix);
+                            else
+                                nameList.Add(fileName);
+                        }
+                    }
                 else
                 {
                     //第一次添加
@@ -296,17 +309,22 @@ public class ResmapUtility
                 else
                 {
                     if (info.editorPath.Equals(filePath)) continue;
-
-                    if (File.Exists(info.editorPath))
+                    if (!info.editorPath.Equals(filePath))
                     {
-                        Debug.LogErrorFormat("添加的资源已经有重名的键名{0}，请检查！已存在路径{1}，添加的路径{2}", fileName, info.editorPath, filePath);
-                        continue;
-                    }
+                        if (File.Exists(info.editorPath))
+                        {
+                            Debug.LogErrorFormat("添加的资源已经有重名的键名{0}，请检查！已存在路径{1}，添加的路径{2}", fileName, info.editorPath, filePath);
+                            continue;
+                        }
+                        else
+                        {
                     string abName = ABNameUtility.GetResABName(filePath);
                     if (string.IsNullOrEmpty(abName)) continue;
                     info.abName = abName;
                     info.editorPath = filePath;
                     isModify = true;
+                        }
+                    }
                 }
                 DealLocalConfig(true, Path.GetFileNameWithoutExtension(filePath), index, subfix);
             }
@@ -361,7 +379,7 @@ public class ResmapUtility
     {
         Dictionary<string, ResmapInfo> dic = new Dictionary<string, ResmapInfo>();
         if (!File.Exists(DataDir + resmapName)) return dic;
-        TableHandlerEditor handler = TableHandlerEditor.Open(DataDir, resmapName);
+        TableHandler handler = TableHandler.OpenFromData(resmapName);
         for (int row = 0; row < handler.GetRecordsNum(); row++)
         {
             string key = handler.GetValue(row, 0);
@@ -398,7 +416,7 @@ public class ResmapUtility
     {
         Dictionary<string, List<string>> dic = new Dictionary<string, List<string>>();
         if (!File.Exists(DataDir + MultiLngFile)) return dic;
-        TableHandlerEditor handler = TableHandlerEditor.Open(DataDir, MultiLngFile);
+        TableHandler handler = TableHandler.OpenFromData(MultiLngFile);
         for (int row = 0; row < handler.GetRecordsNum(); row++)
         {
             string key = handler.GetValue(row, 0);
@@ -417,8 +435,14 @@ public class ResmapUtility
         return dic;
     }
 
+    //能导入到resmap中的文件
+    static bool CanResFile(string file)
+    {
+        return !file.EndsWith(".meta") && !file.EndsWith(".cginc") && !file.EndsWith(".cs")
+               && !file.EndsWith(".spriteatlas") && !file.Contains(".svn") && !file.Contains(".DS_Store");
+    }
     /// <param name="sourceAssets">如果是自动操作的，需要指定paths</param>
-    static List<string> CategorizeInfo(List<string> sourceAssets)
+    static List<string> CategorizeInfo(List<string> sourceAssets, bool checkValid = true)
     {
         imgList.Clear();
         prefList.Clear();
@@ -442,7 +466,7 @@ public class ResmapUtility
         for (int i = 0; i < fileList.Count; i++)
         {
             string file = fileList[i];
-            if (!ValidateAsset(file)) continue;
+            if (checkValid && !ValidateAsset(file)) continue;
             if (file.EndsWith(".png") || file.EndsWith(".jpg"))
             {
                 imgList.Add(file);
@@ -453,7 +477,7 @@ public class ResmapUtility
                 prefList.Add(file);
                 sourceAssets.Add(file);
             }
-            else if (!file.EndsWith(".meta"))
+            else
             {
                 objList.Add(file);
                 sourceAssets.Add(file);
@@ -525,16 +549,42 @@ public class ResmapUtility
         if (localIsModify)
         {
             localIsModify = false;
+             List<string> keyList = new List<string>(localResNameConfig.Keys);
+            for (int i = 0; i < keyList.Count; i++)
+            {
+                string key = keyList[i];
+                List<string> nameList = localResNameConfig[key];
+                bool remove = true;
+                for (int j = 0; j < nameList.Count; j++)
+                {
+                    if (nameList[j] != key)
+                    {
+                        remove = false;
+                        break;
+                    }
+                }
+
+                if (remove)
+                    localResNameConfig.Remove(key);
+
+            }
             localResNameConfig = localResNameConfig.OrderBy(pair => pair.Key).ToDictionary(k => k.Key, v => v.Value);
 
             foreach (KeyValuePair<string, List<string>> pair in localResNameConfig)
             {
                 sb.Append(pair.Key).Append("\t");
                 int count = pair.Value.Count;
-                for (int i = 0; i < count; i++)
+                for (int i = 0; i < LocalTypeList.Length; i++)
                 {
-                    sb.Append(pair.Value[i]);
-                    sb.Append(i == count - 1 ? "\n" : "\t");
+                    if (i < count)
+                    {
+                        sb.Append(pair.Value[i]);
+                    }
+                    else
+                    {
+                        sb.Append(pair.Key);
+                    }
+                    sb.Append(i == LocalTypeList.Length - 1 ? "\n" : "\t");
                 }
             }
             //去掉最后一个换行符
@@ -591,26 +641,16 @@ public class ResmapUtility
         foreach (string file in files)
         {
             //文件剔除
-            if (!CanResFile(file))
-                continue;
-            string newFile = NormalizePath(file);
-            resultList.Add(newFile);
-        }
-        string[] childDirPaths = Directory.GetDirectories(dirPath);
-        for (int i = 0; i < childDirPaths.Length; i++)
-        {
-            GetFilesRecursion(resultList, childDirPaths[i]);
+            if (CanResFile(file))
+            {
+                string newFile = NormalizePath(file);
+                resultList.Add(newFile);
+            }
         }
     }
 
     static string NormalizePath(string sourcePath)
     {
         return sourcePath.Replace("\\", "/");
-    }
-
-    static bool CanResFile(string file)
-    {
-        return !file.EndsWith(".meta") && !file.EndsWith(".cginc") && !file.EndsWith(".cs") && !file.EndsWith(".spriteatlas")
-            && !file.Contains(".svn") && !file.Contains(".DS_Store");
     }
 }

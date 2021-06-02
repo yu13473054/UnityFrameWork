@@ -17,6 +17,7 @@ public class ExcelParserTool
         public int rowCount;
         public string fileName;
         public string dir;
+        public string fullName;
     }
     const int StartRow = 4;
     private static string LuaDir = Application.dataPath + "/Lua/logic";
@@ -42,12 +43,32 @@ public class ExcelParserTool
         //获得所有的excel文件
         List<string> files = new List<string>();
         GetFilesRecursion(files, ExcelDirPath);
+
+        //检查文件是否打开
+        for (int i = 0; i < files.Count; i++)
+        {
+            string filePath = files[i];
+            if (!filePath.EndsWith(".xlsx")) continue;
+            try
+            {
+                EditorUtility.DisplayProgressBar("检查Excel表格状态", filePath, (i + 1) * 1f / files.Count);
+                File.Open(filePath, FileMode.Open, FileAccess.Read, FileShare.Read).Dispose();
+            }
+            catch (System.Exception)
+            {
+                EditorUtility.ClearProgressBar();
+                string err = string.Format("读取配置表[{0}]失败, 检查是否用Excel打开了这个配置表", Path.GetFileNameWithoutExtension(filePath));
+                EditorUtility.DisplayDialog("", err, "失败");
+                return;
+            }
+        }
+
         for (int i = 0; i < files.Count; i++)
         {
             string singleFile = files[i];
             if (!singleFile.EndsWith(".xlsx")) continue;
             //以CN中的表格结构为模板
-            if (!singleFile.Contains("/CN/")) continue;
+            if (!singleFile.Replace(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar).Contains("/CN/")) continue;
             EditorUtility.DisplayProgressBar("解析Excel文件", Path.GetFullPath(singleFile), (i + 1) * 1f / files.Count);
             //获取有效的路径
             string dir = Path.GetDirectoryName(singleFile).Replace(ExcelDirPath, "");
@@ -70,18 +91,7 @@ public class ExcelParserTool
 
     static void ParserSingleFile(string filePath, string dir)
     {
-        FileStream stream = null;
-        try
-        {
-            stream = File.Open(filePath, FileMode.Open, FileAccess.Read, FileShare.Read);
-        }
-        catch (System.Exception)
-        {
-            string err = string.Format("读取配置表[{0}]失败, 检查是否用Excel打开了这个配置表", Path.GetFileNameWithoutExtension(filePath));
-            EditorUtility.DisplayDialog("", err, "失败");
-            Debug.LogError(err);
-            return;
-        }
+        FileStream stream = File.Open(filePath, FileMode.Open, FileAccess.Read, FileShare.Read);
         using (stream)
         {
             IExcelDataReader excelReader = ExcelReaderFactory.CreateOpenXmlReader(stream);
@@ -115,6 +125,7 @@ public class ExcelParserTool
                     colCount = columnCount,
                     rowCount = rowCount,
                     fileName = tableName,
+                    fullName = sheetName,
                     dir = dir
                 };
                 if (!CheckRepeat(tableName, dir))
@@ -328,7 +339,10 @@ public class ExcelParserTool
 
     private static void CreateParser_Lua()
     {
+        Directory.CreateDirectory(LuaDir);
         string destFilePath = LuaDir + "/" + "Data.lua";
+        string cutLine = "----------CutLine----------";
+        string customLine = "-------Do Not Delete-------";
         string permanentLine = "-------Permanent-------";
 
         //固定文本内容，主要是解析方法
@@ -343,31 +357,55 @@ public class ExcelParserTool
         if (File.Exists(destFilePath))
         {
             string fileText = File.ReadAllText(destFilePath);
-            string[] split = fileText.Split(new[] { permanentLine }, StringSplitOptions.None);
-            if (split.Length > 1)
+            string[] split = fileText.Split(new[] { cutLine, permanentLine }, StringSplitOptions.None);
+            string oldCustomText = split[1].Trim();
+            if (split.Length > 2)
             {
-                permanentStr = split[1].Trim();
+                permanentStr = split[2].Trim();
+            }
+            if (!string.IsNullOrEmpty(oldCustomText))
+            {
+                string[] textArray = oldCustomText.Split(new[] { customLine }, StringSplitOptions.RemoveEmptyEntries);
+                //按照方法名生成字典，方便查询
+                for (int i = 0; i < textArray.Length; i++)
+                {
+                    string getFuncName = Regex.Match(textArray[i], "Data\\..+\\(.*\\)").Value;
+                    if (!oldCTDic.ContainsKey(getFuncName))
+                        oldCTDic.Add(getFuncName, textArray[i].TrimStart());
+                }
             }
         }
 
         //获取模板文件中的内容
         string templateText = File.ReadAllText(Application.dataPath + "/Editor/ExceTool/Template/DataTemplate.lua");
         string[] structTexts = templateText.Split(new[] { "***********" }, StringSplitOptions.None);
-        ////去掉模板内容中的首尾换行
+        //保存转换成table的方法
+        fixedSB.Append(structTexts[0]);
+        //去掉模板内容中的首尾换行
         structTexts[1] = structTexts[1].TrimStart();
-        for (int i = 2; i < 7; i++)
+        structTexts[2] = structTexts[2].TrimStart();
+        for (int i = 3; i < 7; i++)
         {
             structTexts[i] = structTexts[i].Trim();
         }
         structTexts[7] = structTexts[7].TrimStart();
-
-        //保存转换成table的方法
-        fixedSB.Append(structTexts[0]);
+        structTexts[8] = structTexts[8].TrimStart();
+        structTexts[9] = structTexts[9].TrimStart();
 
         //开始生成表格解析内容
         for (int i = 0; i < tableList.Count; i++)
         {
             TableInfo tableInfo = tableList[i];
+
+            //以CN中的表格结构为模板
+            if (!tableInfo.dir.StartsWith("CN")) continue;
+
+            //使用单独的解析体
+            string parseFuncText = structTexts[1].Replace("#1#", tableInfo.fileName)
+                .Replace("#2#", tableInfo.fileName);
+            string funcName = "Data." + tableInfo.fileName + "()";
+            string localFieldName = "Data.table" + tableInfo.fileName;
+            string dataFuncText = structTexts[2].Replace("#0#", localFieldName).Replace("#1#", tableInfo.fileName);
 
             DataTable table = tableInfo.dataTable;
             DataRow exprotRow = table.Rows[0];
@@ -382,29 +420,27 @@ public class ExcelParserTool
                     break;
                 }
             }
-            //主键
             string key;
             if (type.Contains("[]"))
             {
-                Debug.LogErrorFormat("{0}表中的主键不能为数组！请检查", tableInfo.fileName);
+                Debug.LogErrorFormat("【{0}】表中的主键不能为数组！请检查", tableInfo.fullName);
                 continue;
             }
             else if (type.Contains("bool"))
             {
-                Debug.LogErrorFormat("{0}表中的主键不能为布尔值！请检查", tableInfo.fileName);
+                Debug.LogErrorFormat("【{0}】表中的主键不能为布尔值！请检查", tableInfo.fullName);
                 continue;
             }
             else
             {
                 if (type.Contains("string"))
-                    //tableHandler:GetValue( records, #col# )
-                    key = structTexts[3].Replace("#col#", "0");
+                    //tableHandler:GetValue( records, 0 )
+                    key = structTexts[4].Replace("#0#", "0");
                 else
-                    //tonumber( tableHandler:GetValue( records, #col# ) )
-                    key = structTexts[2].Replace("#col#", "0");
+                    //tonumber( tableHandler:GetValue( records, 0 ) )
+                    key = structTexts[3].Replace("#0#", structTexts[4].Replace("#0#", "0"));
             }
-            string parseFuncText = structTexts[1].Replace("#Name#", tableInfo.fileName);
-            parseFuncText = parseFuncText.Replace("#desc#", key);
+            parseFuncText = parseFuncText.Replace("#4#", key);
 
             //字段赋值
             StringBuilder fieldValueSb = new StringBuilder();
@@ -427,35 +463,46 @@ public class ExcelParserTool
                         boolValue = "false";
                     else
                         boolValue = "true";
-                    //样式：#key# = ToArray(tableHandler:GetValue( records, #col# ),#isNum#),
-                    fieldValue = structTexts[5].Replace("#key#", fieldName).Replace("#col#", index.ToString()).Replace("#isNum#", boolValue);
+                    //样式：levels = ToArray(tableHandler:GetValue( records, 2 ), false),
+                    fieldValue = structTexts[6].Replace("#0#", fieldName).Replace("#1#", structTexts[4].Replace("#0#", index.ToString())).Replace("#2#", boolValue);
                 }
                 //解析常规
                 else
                 {
-                    //#key# = #desc#,
-                    fieldValue = structTexts[4].Replace("#key#", fieldName);
                     if (type.Contains("string"))
                         //样式：desc = tableHandler:GetValue( records, 1 ),
-                        fieldValue = fieldValue.Replace("#desc#", structTexts[3].Replace("#col#", index.ToString()));
+                        fieldValue = structTexts[5].Replace("#0#", fieldName).Replace("#1#", structTexts[4].Replace("#0#", index.ToString()));
                     else if (type.Contains("bool"))
                         //records == "1" and true or false,
-                        fieldValue = fieldValue.Replace("#desc#", structTexts[6].Replace("#col#", index.ToString()));
+                        fieldValue = structTexts[5].Replace("#0#", fieldName).Replace("#1#", structTexts[9].Replace("#0#", structTexts[4].Replace("#0#", index.ToString())));
                     else
                         //样式：descID = tonumber( tableHandler:GetValue( records, 1 ) ),
-                        fieldValue = fieldValue.Replace("#desc#", structTexts[2].Replace("#col#", index.ToString()));
+                        fieldValue = structTexts[5].Replace("#0#", fieldName).Replace("#1#", structTexts[3].Replace("#0#", structTexts[4].Replace("#0#", index.ToString())));
                 }
                 if (index != 0) fieldValueSb.Append("\t\t\t\t");
                 fieldValueSb.Append(fieldValue);
                 if (j != tableInfo.colCount - 1) fieldValueSb.Append("\n");
                 index++;
             }
-            parseFuncText = parseFuncText.Replace("#value#", fieldValueSb.ToString());
+            parseFuncText = parseFuncText.Replace("#5#", fieldValueSb.ToString());
+
             fixedSB.Append(parseFuncText);
+
+            //获取数据方法体
+            if (oldCTDic.ContainsKey(funcName))
+            {
+                //直接使用文件中已经存在的获取数据的方法
+                customSB.Append(customLine).Append("\n").Append(oldCTDic[funcName]);
+            }
+            else
+            {
+                //生成默认的获取数据的方法
+                customSB.Append(customLine).Append("\n").Append(dataFuncText);
+            }
         }
         EditorUtility.DisplayProgressBar("正在生成Lua文件", "Data.lua", 1);
         //存储内容
-        fixedSB.Append(permanentLine).Append("\n").Append(permanentStr);
+        fixedSB.Append(cutLine).Append("\n\n").Append(customSB).Append("\n\n").Append(permanentLine).Append("\n").Append(permanentStr);
         File.WriteAllText(destFilePath, fixedSB.ToString());
     }
 

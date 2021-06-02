@@ -1,0 +1,82 @@
+ManifestFileVersion: 0
+CRC: 750602500
+Hashes:
+  AssetFileHash:
+    serializedVersion: 2
+    Hash: 933733aaf92a3e3b461e41d5e24cd3cd
+  TypeTreeHash:
+    serializedVersion: 2
+    Hash: 5ad585dd02dfb5016c0dad519eab8f49
+HashAppended: 0
+ClassTypes:
+- Class: 49
+  Script: {instanceID: 0}
+Assets:
+- Assets/Lua/32/ToLua/cjson/util.lua.bytes
+- Assets/Lua/32/ToLua/jit/dis_mips64el.lua.bytes
+- Assets/Lua/32/ToLua/socket/url.lua.bytes
+- Assets/Lua/32/ToLua/UnityEngine/Vector3.lua.bytes
+- Assets/Lua/32/ToLua/UnityEngine/Profiler.lua.bytes
+- Assets/Lua/32/ToLua/jit/dis_arm64be.lua.bytes
+- Assets/Lua/32/ToLua/jit/zone.lua.bytes
+- Assets/Lua/32/ToLua/tolua.lua.bytes
+- Assets/Lua/32/ToLua/typeof.lua.bytes
+- Assets/Lua/32/ToLua/protobuf/text_format.lua.bytes
+- Assets/Lua/32/ToLua/jit/dump.lua.bytes
+- Assets/Lua/32/ToLua/jit/dis_mips.lua.bytes
+- Assets/Lua/32/ToLua/protobuf/wire_format.lua.bytes
+- Assets/Lua/32/ToLua/UnityEngine/LayerMask.lua.bytes
+- Assets/Lua/32/ToLua/UnityEngine/Bounds.lua.bytes
+- Assets/Lua/32/ToLua/jit/dis_x86.lua.bytes
+- Assets/Lua/32/ToLua/list.lua.bytes
+- Assets/Lua/32/ToLua/protobuf/decoder.lua.bytes
+- Assets/Lua/32/ToLua/jit/bcsave.lua.bytes
+- Assets/Lua/32/ToLua/UnityEngine/Color.lua.bytes
+- Assets/Lua/32/ToLua/ltn12.lua.bytes
+- Assets/Lua/32/ToLua/socket/http.lua.bytes
+- Assets/Lua/32/ToLua/socket/ftp.lua.bytes
+- Assets/Lua/32/ToLua/socket/headers.lua.bytes
+- Assets/Lua/32/ToLua/System/ValueType.lua.bytes
+- Assets/Lua/32/ToLua/UnityEngine/Quaternion.lua.bytes
+- Assets/Lua/32/ToLua/protobuf/type_checkers.lua.bytes
+- Assets/Lua/32/ToLua/misc/strict.lua.bytes
+- Assets/Lua/32/ToLua/UnityEngine/Plane.lua.bytes
+- Assets/Lua/32/ToLua/System/Injection/LuaInjectionStation.lua.bytes
+- Assets/Lua/32/ToLua/protobuf/protobuf.lua.bytes
+- Assets/Lua/32/ToLua/jit/dis_x64.lua.bytes
+- Assets/Lua/32/ToLua/System/Injection/LuaInjectionBus.lua.bytes
+- Assets/Lua/32/ToLua/jit/dis_arm.lua.bytes
+- Assets/Lua/32/ToLua/System/Reflection/BindingFlags.lua.bytes
+- Assets/Lua/32/ToLua/jit/bc.lua.bytes
+- Assets/Lua/32/ToLua/UnityEngine/RaycastHit.lua.bytes
+- Assets/Lua/32/ToLua/UnityEngine/Vector4.lua.bytes
+- Assets/Lua/32/ToLua/jit/v.lua.bytes
+- Assets/Lua/32/ToLua/socket.lua.bytes
+- Assets/Lua/32/ToLua/lpeg/re.lua.bytes
+- Assets/Lua/32/ToLua/UnityEngine/Touch.lua.bytes
+- Assets/Lua/32/ToLua/UnityEngine/Vector2.lua.bytes
+- Assets/Lua/32/ToLua/jit/dis_arm64.lua.bytes
+- Assets/Lua/32/ToLua/UnityEngine/Mathf.lua.bytes
+- Assets/Lua/32/ToLua/UnityEngine/Ray.lua.bytes
+- Assets/Lua/32/ToLua/socket/tp.lua.bytes
+- Assets/Lua/32/ToLua/System/Injection/InjectionBridgeInfo.lua.bytes
+- Assets/Lua/32/ToLua/protobuf/listener.lua.bytes
+- Assets/Lua/32/ToLua/misc/utf8.lua.bytes
+- Assets/Lua/32/ToLua/System/coroutine.lua.bytes
+- Assets/Lua/32/ToLua/event.lua.bytes
+- Assets/Lua/32/ToLua/events.lua.bytes
+- Assets/Lua/32/ToLua/socket/mbox.lua.bytes
+- Assets/Lua/32/ToLua/jit/p.lua.bytes
+- Assets/Lua/32/ToLua/jit/dis_ppc.lua.bytes
+- Assets/Lua/32/ToLua/UnityEngine/Time.lua.bytes
+- Assets/Lua/32/ToLua/protobuf/descriptor.lua.bytes
+- Assets/Lua/32/ToLua/misc/functions.lua.bytes
+- Assets/Lua/32/ToLua/slot.lua.bytes
+- Assets/Lua/32/ToLua/jit/dis_mips64.lua.bytes
+- Assets/Lua/32/ToLua/protobuf/encoder.lua.bytes
+- Assets/Lua/32/ToLua/mime.lua.bytes
+- Assets/Lua/32/ToLua/protobuf/containers.lua.bytes
+- Assets/Lua/32/ToLua/System/Timer.lua.bytes
+- Assets/Lua/32/ToLua/socket/smtp.lua.bytes
+- Assets/Lua/32/ToLua/jit/dis_mipsel.lua.bytes
+Dependencies: []

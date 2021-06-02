@@ -7,15 +7,61 @@ public class NetworkMgrWrap
 	public static void Register(LuaState L)
 	{
 		L.BeginClass(typeof(NetworkMgr), typeof(UnityEngine.MonoBehaviour));
+		L.RegFunction("SetIgnoreMsg", SetIgnoreMsg);
+		L.RegFunction("IgnoreMsg", IgnoreMsg);
 		L.RegFunction("AddEvent", AddEvent);
 		L.RegFunction("SendConnect", SendConnect);
+		L.RegFunction("ReConnect", ReConnect);
 		L.RegFunction("Send", Send);
+		L.RegFunction("SendCache", SendCache);
+		L.RegFunction("OnServerLoignOut", OnServerLoignOut);
+		L.RegFunction("AddHttpParam", AddHttpParam);
 		L.RegFunction("HttpGet", HttpGet);
-		L.RegFunction("HttpPost", HttpPost);
+		L.RegFunction("HttpPostForm", HttpPostForm);
+		L.RegFunction("HttpPostJson", HttpPostJson);
 		L.RegFunction("__eq", op_Equality);
 		L.RegFunction("__tostring", ToLua.op_ToString);
+		L.RegVar("netStatus", get_netStatus, set_netStatus);
+		L.RegVar("ignoreMsgs", get_ignoreMsgs, set_ignoreMsgs);
 		L.RegVar("Inst", get_Inst, null);
+		L.RegVar("cid", get_cid, set_cid);
+		L.RegVar("sid", get_sid, set_sid);
 		L.EndClass();
+	}
+
+	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
+	static int SetIgnoreMsg(IntPtr L)
+	{
+		try
+		{
+			ToLua.CheckArgsCount(L, 2);
+			NetworkMgr obj = (NetworkMgr)ToLua.CheckObject<NetworkMgr>(L, 1);
+			string arg0 = ToLua.CheckString(L, 2);
+			obj.SetIgnoreMsg(arg0);
+			return 0;
+		}
+		catch (Exception e)
+		{
+			return LuaDLL.toluaL_exception(L, e);
+		}
+	}
+
+	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
+	static int IgnoreMsg(IntPtr L)
+	{
+		try
+		{
+			ToLua.CheckArgsCount(L, 2);
+			NetworkMgr obj = (NetworkMgr)ToLua.CheckObject<NetworkMgr>(L, 1);
+			int arg0 = (int)LuaDLL.luaL_checknumber(L, 2);
+			bool o = obj.IgnoreMsg(arg0);
+			LuaDLL.lua_pushboolean(L, o);
+			return 1;
+		}
+		catch (Exception e)
+		{
+			return LuaDLL.toluaL_exception(L, e);
+		}
 	}
 
 	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
@@ -23,10 +69,11 @@ public class NetworkMgrWrap
 	{
 		try
 		{
-			ToLua.CheckArgsCount(L, 2);
-			int arg0 = (int)LuaDLL.luaL_checknumber(L, 1);
-			byte[] arg1 = ToLua.CheckByteBuffer(L, 2);
-			NetworkMgr.AddEvent(arg0, arg1);
+			ToLua.CheckArgsCount(L, 3);
+			NetworkMgr obj = (NetworkMgr)ToLua.CheckObject<NetworkMgr>(L, 1);
+			int arg0 = (int)LuaDLL.luaL_checknumber(L, 2);
+			byte[] arg1 = ToLua.CheckByteBuffer(L, 3);
+			obj.AddEvent(arg0, arg1);
 			return 0;
 		}
 		catch (Exception e)
@@ -43,8 +90,24 @@ public class NetworkMgrWrap
 			ToLua.CheckArgsCount(L, 3);
 			NetworkMgr obj = (NetworkMgr)ToLua.CheckObject<NetworkMgr>(L, 1);
 			string arg0 = ToLua.CheckString(L, 2);
-			int arg1 = (int)LuaDLL.luaL_checknumber(L, 3);
+			string arg1 = ToLua.CheckString(L, 3);
 			obj.SendConnect(arg0, arg1);
+			return 0;
+		}
+		catch (Exception e)
+		{
+			return LuaDLL.toluaL_exception(L, e);
+		}
+	}
+
+	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
+	static int ReConnect(IntPtr L)
+	{
+		try
+		{
+			ToLua.CheckArgsCount(L, 1);
+			NetworkMgr obj = (NetworkMgr)ToLua.CheckObject<NetworkMgr>(L, 1);
+			obj.ReConnect();
 			return 0;
 		}
 		catch (Exception e)
@@ -58,11 +121,80 @@ public class NetworkMgrWrap
 	{
 		try
 		{
+			ToLua.CheckArgsCount(L, 3);
+			NetworkMgr obj = (NetworkMgr)ToLua.CheckObject<NetworkMgr>(L, 1);
+			int arg0 = (int)LuaDLL.luaL_checknumber(L, 2);
+			LuaByteBuffer arg1 = new LuaByteBuffer(ToLua.CheckByteBuffer(L, 3));
+			obj.Send(arg0, arg1);
+			return 0;
+		}
+		catch (Exception e)
+		{
+			return LuaDLL.toluaL_exception(L, e);
+		}
+	}
+
+	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
+	static int SendCache(IntPtr L)
+	{
+		try
+		{
 			ToLua.CheckArgsCount(L, 2);
 			NetworkMgr obj = (NetworkMgr)ToLua.CheckObject<NetworkMgr>(L, 1);
-			LuaByteBuffer arg0 = new LuaByteBuffer(ToLua.CheckByteBuffer(L, 2));
-			obj.Send(arg0);
+			int arg0 = (int)LuaDLL.luaL_checknumber(L, 2);
+			obj.SendCache(arg0);
 			return 0;
+		}
+		catch (Exception e)
+		{
+			return LuaDLL.toluaL_exception(L, e);
+		}
+	}
+
+	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
+	static int OnServerLoignOut(IntPtr L)
+	{
+		try
+		{
+			ToLua.CheckArgsCount(L, 1);
+			NetworkMgr obj = (NetworkMgr)ToLua.CheckObject<NetworkMgr>(L, 1);
+			obj.OnServerLoignOut();
+			return 0;
+		}
+		catch (Exception e)
+		{
+			return LuaDLL.toluaL_exception(L, e);
+		}
+	}
+
+	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
+	static int AddHttpParam(IntPtr L)
+	{
+		try
+		{
+			int count = LuaDLL.lua_gettop(L);
+
+			if (count == 3)
+			{
+				NetworkMgr obj = (NetworkMgr)ToLua.CheckObject<NetworkMgr>(L, 1);
+				string arg0 = ToLua.CheckString(L, 2);
+				string arg1 = ToLua.CheckString(L, 3);
+				obj.AddHttpParam(arg0, arg1);
+				return 0;
+			}
+			else if (count == 4)
+			{
+				NetworkMgr obj = (NetworkMgr)ToLua.CheckObject<NetworkMgr>(L, 1);
+				string arg0 = ToLua.CheckString(L, 2);
+				string arg1 = ToLua.CheckString(L, 3);
+				bool arg2 = LuaDLL.luaL_checkboolean(L, 4);
+				obj.AddHttpParam(arg0, arg1, arg2);
+				return 0;
+			}
+			else
+			{
+				return LuaDLL.luaL_throw(L, "invalid arguments to method: NetworkMgr.AddHttpParam");
+			}
 		}
 		catch (Exception e)
 		{
@@ -75,10 +207,13 @@ public class NetworkMgrWrap
 	{
 		try
 		{
-			ToLua.CheckArgsCount(L, 2);
+			int count = LuaDLL.lua_gettop(L);
 			NetworkMgr obj = (NetworkMgr)ToLua.CheckObject<NetworkMgr>(L, 1);
-			string arg0 = ToLua.CheckString(L, 2);
-			obj.HttpGet(arg0);
+			int arg0 = (int)LuaDLL.luaL_checknumber(L, 2);
+			string arg1 = ToLua.CheckString(L, 3);
+			bool arg2 = LuaDLL.luaL_checkboolean(L, 4);
+			object[] arg3 = ToLua.ToParamsObject(L, 5, count - 4);
+			obj.HttpGet(arg0, arg1, arg2, arg3);
 			return 0;
 		}
 		catch (Exception e)
@@ -88,15 +223,36 @@ public class NetworkMgrWrap
 	}
 
 	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
-	static int HttpPost(IntPtr L)
+	static int HttpPostForm(IntPtr L)
 	{
 		try
 		{
-			ToLua.CheckArgsCount(L, 3);
+			int count = LuaDLL.lua_gettop(L);
 			NetworkMgr obj = (NetworkMgr)ToLua.CheckObject<NetworkMgr>(L, 1);
-			string arg0 = ToLua.CheckString(L, 2);
-			System.Collections.Generic.Dictionary<string,string> arg1 = (System.Collections.Generic.Dictionary<string,string>)ToLua.CheckObject(L, 3, typeof(System.Collections.Generic.Dictionary<string,string>));
-			obj.HttpPost(arg0, arg1);
+			int arg0 = (int)LuaDLL.luaL_checknumber(L, 2);
+			string arg1 = ToLua.CheckString(L, 3);
+			object[] arg2 = ToLua.ToParamsObject(L, 4, count - 3);
+			obj.HttpPostForm(arg0, arg1, arg2);
+			return 0;
+		}
+		catch (Exception e)
+		{
+			return LuaDLL.toluaL_exception(L, e);
+		}
+	}
+
+	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
+	static int HttpPostJson(IntPtr L)
+	{
+		try
+		{
+			int count = LuaDLL.lua_gettop(L);
+			NetworkMgr obj = (NetworkMgr)ToLua.CheckObject<NetworkMgr>(L, 1);
+			int arg0 = (int)LuaDLL.luaL_checknumber(L, 2);
+			string arg1 = ToLua.CheckString(L, 3);
+			string arg2 = ToLua.CheckString(L, 4);
+			object[] arg3 = ToLua.ToParamsObject(L, 5, count - 4);
+			obj.HttpPostJson(arg0, arg1, arg2, arg3);
 			return 0;
 		}
 		catch (Exception e)
@@ -124,6 +280,44 @@ public class NetworkMgrWrap
 	}
 
 	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
+	static int get_netStatus(IntPtr L)
+	{
+		object o = null;
+
+		try
+		{
+			o = ToLua.ToObject(L, 1);
+			NetworkMgr obj = (NetworkMgr)o;
+			int ret = obj.netStatus;
+			LuaDLL.lua_pushinteger(L, ret);
+			return 1;
+		}
+		catch(Exception e)
+		{
+			return LuaDLL.toluaL_exception(L, e, o, "attempt to index netStatus on a nil value");
+		}
+	}
+
+	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
+	static int get_ignoreMsgs(IntPtr L)
+	{
+		object o = null;
+
+		try
+		{
+			o = ToLua.ToObject(L, 1);
+			NetworkMgr obj = (NetworkMgr)o;
+			System.Collections.Generic.Dictionary<int,bool> ret = obj.ignoreMsgs;
+			ToLua.PushSealed(L, ret);
+			return 1;
+		}
+		catch(Exception e)
+		{
+			return LuaDLL.toluaL_exception(L, e, o, "attempt to index ignoreMsgs on a nil value");
+		}
+	}
+
+	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
 	static int get_Inst(IntPtr L)
 	{
 		try
@@ -134,6 +328,120 @@ public class NetworkMgrWrap
 		catch (Exception e)
 		{
 			return LuaDLL.toluaL_exception(L, e);
+		}
+	}
+
+	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
+	static int get_cid(IntPtr L)
+	{
+		object o = null;
+
+		try
+		{
+			o = ToLua.ToObject(L, 1);
+			NetworkMgr obj = (NetworkMgr)o;
+			int ret = obj.cid;
+			LuaDLL.lua_pushinteger(L, ret);
+			return 1;
+		}
+		catch(Exception e)
+		{
+			return LuaDLL.toluaL_exception(L, e, o, "attempt to index cid on a nil value");
+		}
+	}
+
+	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
+	static int get_sid(IntPtr L)
+	{
+		object o = null;
+
+		try
+		{
+			o = ToLua.ToObject(L, 1);
+			NetworkMgr obj = (NetworkMgr)o;
+			int ret = obj.sid;
+			LuaDLL.lua_pushinteger(L, ret);
+			return 1;
+		}
+		catch(Exception e)
+		{
+			return LuaDLL.toluaL_exception(L, e, o, "attempt to index sid on a nil value");
+		}
+	}
+
+	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
+	static int set_netStatus(IntPtr L)
+	{
+		object o = null;
+
+		try
+		{
+			o = ToLua.ToObject(L, 1);
+			NetworkMgr obj = (NetworkMgr)o;
+			int arg0 = (int)LuaDLL.luaL_checknumber(L, 2);
+			obj.netStatus = arg0;
+			return 0;
+		}
+		catch(Exception e)
+		{
+			return LuaDLL.toluaL_exception(L, e, o, "attempt to index netStatus on a nil value");
+		}
+	}
+
+	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
+	static int set_ignoreMsgs(IntPtr L)
+	{
+		object o = null;
+
+		try
+		{
+			o = ToLua.ToObject(L, 1);
+			NetworkMgr obj = (NetworkMgr)o;
+			System.Collections.Generic.Dictionary<int,bool> arg0 = (System.Collections.Generic.Dictionary<int,bool>)ToLua.CheckObject(L, 2, typeof(System.Collections.Generic.Dictionary<int,bool>));
+			obj.ignoreMsgs = arg0;
+			return 0;
+		}
+		catch(Exception e)
+		{
+			return LuaDLL.toluaL_exception(L, e, o, "attempt to index ignoreMsgs on a nil value");
+		}
+	}
+
+	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
+	static int set_cid(IntPtr L)
+	{
+		object o = null;
+
+		try
+		{
+			o = ToLua.ToObject(L, 1);
+			NetworkMgr obj = (NetworkMgr)o;
+			int arg0 = (int)LuaDLL.luaL_checknumber(L, 2);
+			obj.cid = arg0;
+			return 0;
+		}
+		catch(Exception e)
+		{
+			return LuaDLL.toluaL_exception(L, e, o, "attempt to index cid on a nil value");
+		}
+	}
+
+	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
+	static int set_sid(IntPtr L)
+	{
+		object o = null;
+
+		try
+		{
+			o = ToLua.ToObject(L, 1);
+			NetworkMgr obj = (NetworkMgr)o;
+			int arg0 = (int)LuaDLL.luaL_checknumber(L, 2);
+			obj.sid = arg0;
+			return 0;
+		}
+		catch(Exception e)
+		{
+			return LuaDLL.toluaL_exception(L, e, o, "attempt to index sid on a nil value");
 		}
 	}
 }

@@ -34,7 +34,7 @@ namespace AssetDanshari
             {
                 foreach (var info in m_Model.data)
                 {
-                    BuildDataDir(info, root);
+                    BuildDataDir(0, info, root);
                 }
             }
 
@@ -43,16 +43,16 @@ namespace AssetDanshari
             return root;
         }
 
-        protected virtual void BuildDataDir(AssetModel.AssetInfo dirInfo, TreeViewItem parent)
+        protected virtual void BuildDataDir(int depth, AssetModel.AssetInfo dirInfo, TreeViewItem parent)
         {
-            var dirItem = new AssetTreeViewItem<AssetModel.AssetInfo>(dirInfo.id, -1, dirInfo.displayName, dirInfo);
+            var dirItem = new AssetTreeViewItem<AssetModel.AssetInfo>(dirInfo.id, depth, dirInfo.displayName, dirInfo);
             parent.AddChild(dirItem);
 
             if (dirInfo.hasChildren)
             {
                 foreach (var childInfo in dirInfo.children)
                 {
-                    BuildDataDir(childInfo, dirItem);
+                    BuildDataDir(depth + 1, childInfo, dirItem);
                 }
             }
         }
@@ -89,7 +89,7 @@ namespace AssetDanshari
         }
 
         protected void DrawItemWithIcon(Rect cellRect, TreeViewItem item, ref RowGUIArgs args,
-            string displayName, string fileRelativePath, bool contentIndent = true, bool foldoutIndent = false)
+            string displayName, string fileRelativePath, bool contentIndent = true, bool foldoutIndent = false, bool deleted = false)
         {
             if (contentIndent)
             {
@@ -124,6 +124,15 @@ namespace AssetDanshari
 
             cellRect.xMin += 18f;
             DefaultGUI.Label(cellRect, displayName, args.selected, args.focused);
+
+            if (deleted)
+            {
+                position.x = cellRect.xMax - 40f;
+                position.y += 3f;
+                position.height = 9f;
+                position.width = 40f;
+                GUI.DrawTexture(position, AssetDanshariStyle.Get().iconDelete.image, ScaleMode.ScaleToFit);
+            }
         }
 
         protected override void DoubleClickedItem(int id)

@@ -8,15 +8,17 @@ public class UIModWrap
 	{
 		L.BeginClass(typeof(UIMod), typeof(UnityEngine.MonoBehaviour));
 		L.RegFunction("OnEvent", OnEvent);
+		L.RegFunction("Open", Open);
+		L.RegFunction("Close", Close);
+		L.RegFunction("GetTexture", GetTexture);
+		L.RegFunction("GetObject", GetObject);
 		L.RegFunction("GetSprite", GetSprite);
 		L.RegFunction("GetPrefab", GetPrefab);
 		L.RegFunction("GetMaterial", GetMaterial);
 		L.RegFunction("__eq", op_Equality);
 		L.RegFunction("__tostring", ToLua.op_ToString);
-		L.RegVar("relatedGameObject", get_relatedGameObject, set_relatedGameObject);
 		L.RegVar("uiName", get_uiName, set_uiName);
-		L.RegVar("resModule", get_resModule, set_resModule);
-		L.RegVar("isFirst", get_isFirst, null);
+		L.RegVar("resUtility", get_resUtility, set_resUtility);
 		L.EndClass();
 	}
 
@@ -40,16 +42,135 @@ public class UIModWrap
 	}
 
 	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
+	static int Open(IntPtr L)
+	{
+		try
+		{
+			ToLua.CheckArgsCount(L, 1);
+			UIMod obj = (UIMod)ToLua.CheckObject<UIMod>(L, 1);
+			obj.Open();
+			return 0;
+		}
+		catch (Exception e)
+		{
+			return LuaDLL.toluaL_exception(L, e);
+		}
+	}
+
+	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
+	static int Close(IntPtr L)
+	{
+		try
+		{
+			ToLua.CheckArgsCount(L, 1);
+			UIMod obj = (UIMod)ToLua.CheckObject<UIMod>(L, 1);
+			obj.Close();
+			return 0;
+		}
+		catch (Exception e)
+		{
+			return LuaDLL.toluaL_exception(L, e);
+		}
+	}
+
+	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
+	static int GetTexture(IntPtr L)
+	{
+		try
+		{
+			int count = LuaDLL.lua_gettop(L);
+
+			if (count == 2)
+			{
+				UIMod obj = (UIMod)ToLua.CheckObject<UIMod>(L, 1);
+				string arg0 = ToLua.CheckString(L, 2);
+				UnityEngine.Texture o = obj.GetTexture(arg0);
+				ToLua.Push(L, o);
+				return 1;
+			}
+			else if (count == 3)
+			{
+				UIMod obj = (UIMod)ToLua.CheckObject<UIMod>(L, 1);
+				string arg0 = ToLua.CheckString(L, 2);
+				bool arg1 = LuaDLL.luaL_checkboolean(L, 3);
+				UnityEngine.Texture o = obj.GetTexture(arg0, arg1);
+				ToLua.Push(L, o);
+				return 1;
+			}
+			else
+			{
+				return LuaDLL.luaL_throw(L, "invalid arguments to method: UIMod.GetTexture");
+			}
+		}
+		catch (Exception e)
+		{
+			return LuaDLL.toluaL_exception(L, e);
+		}
+	}
+
+	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
+	static int GetObject(IntPtr L)
+	{
+		try
+		{
+			int count = LuaDLL.lua_gettop(L);
+
+			if (count == 2)
+			{
+				UIMod obj = (UIMod)ToLua.CheckObject<UIMod>(L, 1);
+				string arg0 = ToLua.CheckString(L, 2);
+				UnityEngine.Object o = obj.GetObject(arg0);
+				ToLua.Push(L, o);
+				return 1;
+			}
+			else if (count == 3)
+			{
+				UIMod obj = (UIMod)ToLua.CheckObject<UIMod>(L, 1);
+				string arg0 = ToLua.CheckString(L, 2);
+				bool arg1 = LuaDLL.luaL_checkboolean(L, 3);
+				UnityEngine.Object o = obj.GetObject(arg0, arg1);
+				ToLua.Push(L, o);
+				return 1;
+			}
+			else
+			{
+				return LuaDLL.luaL_throw(L, "invalid arguments to method: UIMod.GetObject");
+			}
+		}
+		catch (Exception e)
+		{
+			return LuaDLL.toluaL_exception(L, e);
+		}
+	}
+
+	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
 	static int GetSprite(IntPtr L)
 	{
 		try
 		{
-			ToLua.CheckArgsCount(L, 2);
-			UIMod obj = (UIMod)ToLua.CheckObject<UIMod>(L, 1);
-			string arg0 = ToLua.CheckString(L, 2);
-			UnityEngine.Sprite o = obj.GetSprite(arg0);
-			ToLua.PushSealed(L, o);
-			return 1;
+			int count = LuaDLL.lua_gettop(L);
+
+			if (count == 2)
+			{
+				UIMod obj = (UIMod)ToLua.CheckObject<UIMod>(L, 1);
+				string arg0 = ToLua.CheckString(L, 2);
+				UnityEngine.Sprite o = obj.GetSprite(arg0);
+				ToLua.PushSealed(L, o);
+				return 1;
+			}
+			else if (count == 3)
+			{
+				UIMod obj = (UIMod)ToLua.CheckObject<UIMod>(L, 1);
+				string arg0 = ToLua.CheckString(L, 2);
+				bool arg1 = LuaDLL.luaL_checkboolean(L, 3);
+				UnityEngine.Sprite o = obj.GetSprite(arg0, arg1);
+				ToLua.PushSealed(L, o);
+				return 1;
+			}
+			else
+			{
+				return LuaDLL.luaL_throw(L, "invalid arguments to method: UIMod.GetSprite");
+			}
 		}
 		catch (Exception e)
 		{
@@ -81,6 +202,16 @@ public class UIModWrap
 				ToLua.PushSealed(L, o);
 				return 1;
 			}
+			else if (count == 4)
+			{
+				UIMod obj = (UIMod)ToLua.CheckObject<UIMod>(L, 1);
+				string arg0 = ToLua.CheckString(L, 2);
+				bool arg1 = LuaDLL.luaL_checkboolean(L, 3);
+				bool arg2 = LuaDLL.luaL_checkboolean(L, 4);
+				UnityEngine.GameObject o = obj.GetPrefab(arg0, arg1, arg2);
+				ToLua.PushSealed(L, o);
+				return 1;
+			}
 			else
 			{
 				return LuaDLL.luaL_throw(L, "invalid arguments to method: UIMod.GetPrefab");
@@ -97,12 +228,29 @@ public class UIModWrap
 	{
 		try
 		{
-			ToLua.CheckArgsCount(L, 2);
-			UIMod obj = (UIMod)ToLua.CheckObject<UIMod>(L, 1);
-			string arg0 = ToLua.CheckString(L, 2);
-			UnityEngine.Material o = obj.GetMaterial(arg0);
-			ToLua.Push(L, o);
-			return 1;
+			int count = LuaDLL.lua_gettop(L);
+
+			if (count == 2)
+			{
+				UIMod obj = (UIMod)ToLua.CheckObject<UIMod>(L, 1);
+				string arg0 = ToLua.CheckString(L, 2);
+				UnityEngine.Material o = obj.GetMaterial(arg0);
+				ToLua.Push(L, o);
+				return 1;
+			}
+			else if (count == 3)
+			{
+				UIMod obj = (UIMod)ToLua.CheckObject<UIMod>(L, 1);
+				string arg0 = ToLua.CheckString(L, 2);
+				bool arg1 = LuaDLL.luaL_checkboolean(L, 3);
+				UnityEngine.Material o = obj.GetMaterial(arg0, arg1);
+				ToLua.Push(L, o);
+				return 1;
+			}
+			else
+			{
+				return LuaDLL.luaL_throw(L, "invalid arguments to method: UIMod.GetMaterial");
+			}
 		}
 		catch (Exception e)
 		{
@@ -129,25 +277,6 @@ public class UIModWrap
 	}
 
 	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
-	static int get_relatedGameObject(IntPtr L)
-	{
-		object o = null;
-
-		try
-		{
-			o = ToLua.ToObject(L, 1);
-			UIMod obj = (UIMod)o;
-			UnityEngine.GameObject[] ret = obj.relatedGameObject;
-			ToLua.Push(L, ret);
-			return 1;
-		}
-		catch(Exception e)
-		{
-			return LuaDLL.toluaL_exception(L, e, o, "attempt to index relatedGameObject on a nil value");
-		}
-	}
-
-	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
 	static int get_uiName(IntPtr L)
 	{
 		object o = null;
@@ -167,7 +296,7 @@ public class UIModWrap
 	}
 
 	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
-	static int get_resModule(IntPtr L)
+	static int get_resUtility(IntPtr L)
 	{
 		object o = null;
 
@@ -175,51 +304,13 @@ public class UIModWrap
 		{
 			o = ToLua.ToObject(L, 1);
 			UIMod obj = (UIMod)o;
-			string ret = obj.resModule;
-			LuaDLL.lua_pushstring(L, ret);
+			ResModuleUtility ret = obj.resUtility;
+			ToLua.Push(L, ret);
 			return 1;
 		}
 		catch(Exception e)
 		{
-			return LuaDLL.toluaL_exception(L, e, o, "attempt to index resModule on a nil value");
-		}
-	}
-
-	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
-	static int get_isFirst(IntPtr L)
-	{
-		object o = null;
-
-		try
-		{
-			o = ToLua.ToObject(L, 1);
-			UIMod obj = (UIMod)o;
-			bool ret = obj.isFirst;
-			LuaDLL.lua_pushboolean(L, ret);
-			return 1;
-		}
-		catch(Exception e)
-		{
-			return LuaDLL.toluaL_exception(L, e, o, "attempt to index isFirst on a nil value");
-		}
-	}
-
-	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
-	static int set_relatedGameObject(IntPtr L)
-	{
-		object o = null;
-
-		try
-		{
-			o = ToLua.ToObject(L, 1);
-			UIMod obj = (UIMod)o;
-			UnityEngine.GameObject[] arg0 = ToLua.CheckObjectArray<UnityEngine.GameObject>(L, 2);
-			obj.relatedGameObject = arg0;
-			return 0;
-		}
-		catch(Exception e)
-		{
-			return LuaDLL.toluaL_exception(L, e, o, "attempt to index relatedGameObject on a nil value");
+			return LuaDLL.toluaL_exception(L, e, o, "attempt to index resUtility on a nil value");
 		}
 	}
 
@@ -243,7 +334,7 @@ public class UIModWrap
 	}
 
 	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
-	static int set_resModule(IntPtr L)
+	static int set_resUtility(IntPtr L)
 	{
 		object o = null;
 
@@ -251,13 +342,13 @@ public class UIModWrap
 		{
 			o = ToLua.ToObject(L, 1);
 			UIMod obj = (UIMod)o;
-			string arg0 = ToLua.CheckString(L, 2);
-			obj.resModule = arg0;
+			ResModuleUtility arg0 = (ResModuleUtility)ToLua.CheckObject<ResModuleUtility>(L, 2);
+			obj.resUtility = arg0;
 			return 0;
 		}
 		catch(Exception e)
 		{
-			return LuaDLL.toluaL_exception(L, e, o, "attempt to index resModule on a nil value");
+			return LuaDLL.toluaL_exception(L, e, o, "attempt to index resUtility on a nil value");
 		}
 	}
 }

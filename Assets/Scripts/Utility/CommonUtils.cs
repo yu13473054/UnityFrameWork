@@ -233,4 +233,20 @@ public static class CommonUtils
     {
         return Regex.IsMatch(str, @"[^a-zA-Z0-9\u4E00-\u9Fbb]");
     }
+
+    private static char[] pw = "Npc1536742893452".ToCharArray();
+    public static string EncryptTxt(string content)
+    {
+        char[] bytes = content.ToCharArray();
+        for (int i = 0; i < bytes.Length; i++)
+        {
+            bytes[i] ^= pw[i % pw.Length];
+        }
+        return new string(bytes);
+    }
+
+    public static string DecryptTxt(string content)
+    {
+        return EncryptTxt(content);
+    }
 }

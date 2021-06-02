@@ -7,10 +7,28 @@ public class UIImageWrap
 	public static void Register(LuaState L)
 	{
 		L.BeginClass(typeof(UIImage), typeof(UnityEngine.UI.Image));
+		L.RegFunction("SetType", SetType);
 		L.RegFunction("__eq", op_Equality);
 		L.RegFunction("__tostring", ToLua.op_ToString);
 		L.RegVar("isGray", null, set_isGray);
 		L.EndClass();
+	}
+
+	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
+	static int SetType(IntPtr L)
+	{
+		try
+		{
+			ToLua.CheckArgsCount(L, 2);
+			UIImage obj = (UIImage)ToLua.CheckObject<UIImage>(L, 1);
+			int arg0 = (int)LuaDLL.luaL_checknumber(L, 2);
+			obj.SetType(arg0);
+			return 0;
+		}
+		catch (Exception e)
+		{
+			return LuaDLL.toluaL_exception(L, e);
+		}
 	}
 
 	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]

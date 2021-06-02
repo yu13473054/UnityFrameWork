@@ -54,18 +54,20 @@ public class ABNameUtility
             for (int j = 0; j < subFolders.Length; j++)
             {
                 string folderPath = subFolders[j];
-                if(folderPath.Contains("/Data"))
-                    ruleList.Add(new AssetBundlePath(BundleType.Folder, folderPath));
-                else
+                if (folderPath.Contains("/Sprites"))
                     ruleList.Add(new AssetBundlePath(BundleType.Default, folderPath));
+                else
+                    ruleList.Add(new AssetBundlePath(BundleType.Folder, folderPath));
             }
         }
 
         //越靠后，规则会覆盖前一个的
         ruleList.Add(new AssetBundlePath(BundleType.Folder, "Assets/Data"));
-        ruleList.Add(new AssetBundlePath(BundleType.Folder, "Assets/Lua"));
-        ruleList.Add( new AssetBundlePath(BundleType.Folder, "Assets/Res/Shader") );
+        ruleList.Add(new AssetBundlePath(BundleType.Folder, "Assets/Lua/32"));
+        ruleList.Add(new AssetBundlePath(BundleType.Folder, "Assets/Lua/64"));
+        ruleList.Add( new AssetBundlePath(BundleType.FolderAll, "Assets/Res/Shader") );
         ruleList.Add(new AssetBundlePath(BundleType.Default, "Assets/Res/UI/Common"));
+        ruleList.Add(new AssetBundlePath(BundleType.Default, "Assets/Res/Prefab/UI"));
     }
 
     [MenuItem("打包/设置所有AssetBundleName", false, 201)]
@@ -129,7 +131,7 @@ public class ABNameUtility
 
     static void DealLocalization()
     {
-        ConfigHandlerEditor handler = ConfigHandlerEditor.Open(Application.streamingAssetsPath + "/config.txt");
+        ConfigHandler handler = ConfigHandler.Open(Application.streamingAssetsPath + "/config.txt");
         string buildLng = handler.ReadValue("BuildLng", "0");
         if (buildLng != "0")//指定语言
         {

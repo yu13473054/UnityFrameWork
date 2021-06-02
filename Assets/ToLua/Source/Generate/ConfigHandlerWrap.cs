@@ -13,6 +13,7 @@ public class ConfigHandlerWrap
 		L.RegFunction("Clear", Clear);
 		L.RegFunction("WriteValue", WriteValue);
 		L.RegFunction("ReadValue", ReadValue);
+		L.RegFunction("Flush", Flush);
 		L.RegFunction("New", _CreateConfigHandler);
 		L.RegFunction("__tostring", ToLua.op_ToString);
 		L.EndClass();
@@ -122,12 +123,29 @@ public class ConfigHandlerWrap
 	{
 		try
 		{
-			ToLua.CheckArgsCount(L, 3);
-			ConfigHandler obj = (ConfigHandler)ToLua.CheckObject<ConfigHandler>(L, 1);
-			string arg0 = ToLua.CheckString(L, 2);
-			object arg1 = ToLua.ToVarObject(L, 3);
-			obj.WriteValue(arg0, arg1);
-			return 0;
+			int count = LuaDLL.lua_gettop(L);
+
+			if (count == 3)
+			{
+				ConfigHandler obj = (ConfigHandler)ToLua.CheckObject<ConfigHandler>(L, 1);
+				string arg0 = ToLua.CheckString(L, 2);
+				object arg1 = ToLua.ToVarObject(L, 3);
+				obj.WriteValue(arg0, arg1);
+				return 0;
+			}
+			else if (count == 4)
+			{
+				ConfigHandler obj = (ConfigHandler)ToLua.CheckObject<ConfigHandler>(L, 1);
+				string arg0 = ToLua.CheckString(L, 2);
+				object arg1 = ToLua.ToVarObject(L, 3);
+				bool arg2 = LuaDLL.luaL_checkboolean(L, 4);
+				obj.WriteValue(arg0, arg1, arg2);
+				return 0;
+			}
+			else
+			{
+				return LuaDLL.luaL_throw(L, "invalid arguments to method: ConfigHandler.WriteValue");
+			}
 		}
 		catch (Exception e)
 		{
@@ -163,6 +181,22 @@ public class ConfigHandlerWrap
 			{
 				return LuaDLL.luaL_throw(L, "invalid arguments to method: ConfigHandler.ReadValue");
 			}
+		}
+		catch (Exception e)
+		{
+			return LuaDLL.toluaL_exception(L, e);
+		}
+	}
+
+	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
+	static int Flush(IntPtr L)
+	{
+		try
+		{
+			ToLua.CheckArgsCount(L, 1);
+			ConfigHandler obj = (ConfigHandler)ToLua.CheckObject<ConfigHandler>(L, 1);
+			obj.Flush();
+			return 0;
 		}
 		catch (Exception e)
 		{

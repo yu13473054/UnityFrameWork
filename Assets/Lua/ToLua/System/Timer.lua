@@ -14,6 +14,7 @@ local UpdateBeat = UpdateBeat
 local CoUpdateBeat = CoUpdateBeat
 local Time = Time
 
+---@class Timer
 Timer = {}
 
 local Timer = Timer
@@ -67,18 +68,18 @@ function Timer:Update()
 	self.time = self.time - delta
 	
 	if self.time <= 0 then
-		self.func()
-		
 		if self.loop > 0 then
 			self.loop = self.loop - 1
 			self.time = self.time + self.duration
 		end
-		
+
 		if self.loop == 0 then
 			self:Stop()
 		elseif self.loop < 0 then
 			self.time = self.time + self.duration
 		end
+		--后执行，防止在回调中，从池子中把自己拿出来，重置了loop = 1，导致执行了self:Stop()
+		self.func()
 	end
 end
 
@@ -124,17 +125,18 @@ function FrameTimer:Update()
 	end
 
 	if Time.frameCount >= self.count then
-		self.func()	
-		
 		if self.loop > 0 then
 			self.loop = self.loop - 1
 		end
-		
+
 		if self.loop == 0 then
 			self:Stop()
 		else
 			self.count = Time.frameCount + self.duration
 		end
+
+		--后执行，防止在回调中，从池子中把自己拿出来，重置了loop = 1，导致执行了self:Stop()
+		self.func()
 	end
 end
 
@@ -178,19 +180,85 @@ function CoTimer:Update()
 	end
 
 	if self.time <= 0 then
-		self.func()		
-		
 		if self.loop > 0 then
 			self.loop = self.loop - 1
 			self.time = self.time + self.duration
 		end
-		
+
 		if self.loop == 0 then
 			self:Stop()
 		elseif self.loop < 0 then
 			self.time = self.time + self.duration
 		end
+		--后执行，防止在回调中，从池子中把自己拿出来，重置了loop = 1，导致执行了self:Stop()
+		self.func()
 	end
 	
 	self.time = self.time - Time.deltaTime
+end
+
+---@class StampTimer
+StampTimer = {}
+
+local StampTimer = StampTimer
+local mt = {__index = StampTimer}
+
+function StampTimer.New(func, duration, loop)
+	loop = loop or 1
+	return setmetatable({func = func, duration = duration, time = duration, loop = loop, running = false}, mt)
+end
+
+function StampTimer:Ctor(func, duration, loop)
+	self:Reset(func, duration, loop);
+end
+
+function StampTimer:Start()
+	self.running = true
+	self.currTime = TimerManager.GetServerTimeStamp();
+
+	if not self.handle then
+		self.handle = UpdateBeat:CreateListener(self.Update, self)
+	end
+
+	UpdateBeat:AddListener(self.handle)
+end
+
+function StampTimer:Reset(func, duration, loop)
+	self.duration 	= duration
+	self.loop		= loop or 1
+	self.func		= func
+	self.time		= duration
+	self.currTime = TimerManager.GetServerTimeStamp();
+end
+
+function StampTimer:Stop()
+	self.running = false
+
+	if self.handle then
+		UpdateBeat:RemoveListener(self.handle)
+	end
+end
+
+function StampTimer:Update()
+	if not self.running then
+		return
+	end
+	local currTime = TimerManager.GetServerTimeStamp()
+	self.time = self.time - (currTime - self.currTime)
+	self.currTime = currTime
+
+	if self.time <= 0 then
+		if self.loop > 0 then
+			self.loop = self.loop - 1
+			self.time = self.time + self.duration
+		end
+
+		if self.loop == 0 then
+			self:Stop()
+		elseif self.loop < 0 then
+			self.time = self.time + self.duration
+		end
+		--后执行，防止在回调中，从池子中把自己拿出来，重置了loop = 1，导致执行了self:Stop()
+		self.func()
+	end
 end

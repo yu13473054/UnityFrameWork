@@ -1,61 +1,105 @@
 -- 事件发布器
-EventDispatcher = Class( "EventDispatcher" );
+local EventClass = Class("EventClass");
 
-function EventDispatcher:Ctor()    
-    self._listeners = {};
+function EventClass:Ctor()
+    self.lock = false
+    self.opList = {};
+    self.list = {};
 end
 
--- 添加事件监听
-function EventDispatcher:AddListener( eventName, listener )
-    eventName = tostring( eventName );
-
-    if self._listeners[eventName] == nil then
-        self._listeners[eventName] = {};
+local function EventClass_Add(self, func)
+    table.insert(self.list, 1, func);
+end
+function EventClass:Add(func)
+    if self.lock then
+        table.insert(self.opList, function() EventClass_Add(self, func) end);
+    else
+        EventClass_Add(self, func);
     end
-    for i, existListener in pairs( self._listeners[eventName] ) do
-        if listener == existListener then
-            return;
+end
+
+local function EventClass_Remove(self, func)
+    for i, value in ipairs(self.list) do
+        if value == func then
+            table.remove(self.list, i);
+            break;
         end
     end
-    table.insert( self._listeners[eventName], listener );
+end
+function EventClass:Remove(func, nextFrame)
+    if self.lock and nextFrame then --下一帧移除
+        table.insert(self.opList, function() EventClass_Remove(self, func) end);
+    else
+        EventClass_Remove(self, func)
+    end
+end
+
+function EventClass:Dispatch(...)
+    self.lock = true
+    for i = #self.list, 1, -1 do
+        local func = self.list[i];
+        if func then
+            PCall(func, ...);
+        end
+    end
+
+    self.lock = false
+
+    for i, op in ipairs(self.opList) do
+        op()
+        self.opList[i] = nil
+    end
+end
+
+EventDispatcher = {};
+
+local listeners = {};
+
+-- 添加事件监听
+function EventDispatcher.AddListener(eventName, func)
+    if not eventName then
+        print("<EventDispatcher> 传入的Key值为nil，请检查！", debug.traceback())
+    end
+    eventName = tostring( eventName );
+
+    if listeners[eventName] == nil then
+        listeners[eventName] = EventClass.New();
+    end
+    listeners[eventName]:Add(func);
 end
 
 -- 分发事件
-function EventDispatcher:DispatchEvent( eventName, ... )
-	eventName = tostring( eventName );
+function EventDispatcher.DispatchEvent( eventName, ... )
+    if not eventName then
+        print("<EventDispatcher> 传入的Key值为nil，请检查！", debug.traceback())
+    end
+    eventName = tostring( eventName );
 
-    if self._listeners[eventName] == nil then 
-    	return;
+    if listeners[eventName] == nil then
+        return;
     end
 
-    for i, listener in pairs( self._listeners[eventName] ) do
-        -- 安全调用
-        if RUNPLATFORM == 0 or RUNPLATFORM == 1 or RUNPLATFORM == 8 then
-            --IOS和mac平台
-            pcall( listener, ... );
-        else
-            xpcall( listener, PCallLogger, ... );
-        end
-    end
+    listeners[eventName]:Dispatch(...);
 end
 
 -- 移除监听
-function EventDispatcher:RemoveListenerAll( eventName )
-	eventName = tostring( eventName );
-    self._listeners[tostring( eventName )] = {};
+function EventDispatcher.RemoveListenerAll( eventName )
+    if not eventName then
+        print("<EventDispatcher> 传入的Key值为nil，请检查！", debug.traceback())
+    end
+    eventName = tostring( eventName );
+    listeners[eventName] = nil;
 end
 
--- 移除监听 *调用时要注意：*
--- 如果事件有多个监听者，不要在DispatchEvent，中调用Remove
-function EventDispatcher:RemoveListener( eventName, target )
-	eventName = tostring( eventName );
-    if self._listeners[eventName] == nil then 
-    	return ;
+function EventDispatcher.RemoveListener( eventName, func, nextFrame )
+    if not eventName then
+        print("<EventDispatcher> 传入的Key值为nil，请检查！", debug.traceback())
     end
-
-    for i, listener in pairs( self._listeners[eventName] ) do
-        if listener == target then
-            table.remove( self._listeners[eventName], i );
-        end
+    eventName = tostring( eventName );
+    if listeners[eventName] == nil then
+        return;
     end
+    listeners[eventName]:Remove(func, nextFrame)
 end
+
+

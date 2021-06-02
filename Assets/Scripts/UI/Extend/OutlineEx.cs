@@ -20,18 +20,18 @@ public class OutlineEx : BaseMeshEffect
         string uiResMoudle = "";
         UIMod uiSystem = GetComponentInParent<UIMod>();
         if (uiSystem)
-            uiResMoudle = uiSystem.resModule;
+            uiResMoudle = uiSystem.resUtility.moduleName;
 #if UNITY_EDITOR
         if (Application.isPlaying)
         {
-            base.graphic.material = ResMgr.Inst.LoadMaterial("UI_OutlineEx", uiResMoudle);
+            base.graphic.material = ResMgr.Inst.LoadAsset<Material>("UI_OutlineEx", 3, uiResMoudle);
         }
         else
         {
             base.graphic.material = new Material(Shader.Find("UI/OutlineEx"));
         }
 #else
-        base.graphic.material = ResMgr.Inst.LoadMaterial("UI_Mat_SpriteGray", uiResMoudle);
+        base.graphic.material = ResMgr.Inst.LoadAsset<Material>("UI_OutlineEx", 3, uiResMoudle);
 #endif
     }
 

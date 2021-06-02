@@ -84,9 +84,4 @@ public class GameObjectPool<T> where T : Component
         _cacheStack.Push(t);
         t.transform.SetParent(_poolRoot, false);
     }
-
-    private GameObject NewObjectInstance()
-    {
-        return Object.Instantiate(_prefab);
-    }
 }

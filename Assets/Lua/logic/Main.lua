@@ -1,19 +1,12 @@
-require "logic/Include";
+require "logic/GlobalDefine"
 
+RUNPLATFORM = GameMain.Inst.RunPlatform;
 -- Lua启动入口
-function LuaStart() 
-
---aa={};
---aa[1]=1;
---aa["4"]=4;
---aa["key"] = 2;
---aa[3]=3;
---aa.ll = 4;
---table.insert(aa,7,7);
---table.insert(aa,10,10);
-
---print(aa[4],aa["ll"])
-
+function LuaStart()
+    -- 设随机种子
+    math.randomseed( os.time() );
 	--启动登陆UI
 	DlgLogin.Open();
 end
+
+require "logic/Include"

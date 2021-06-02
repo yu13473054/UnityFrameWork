@@ -1,0 +1,19 @@
+ManifestFileVersion: 0
+CRC: 3818954231
+Hashes:
+  AssetFileHash:
+    serializedVersion: 2
+    Hash: 4d938d8e562d0476999588af6d5a824e
+  TypeTreeHash:
+    serializedVersion: 2
+    Hash: 5ad585dd02dfb5016c0dad519eab8f49
+HashAppended: 0
+ClassTypes:
+- Class: 49
+  Script: {instanceID: 0}
+Assets:
+- Assets/Lua/32/utils/ObjectPool.lua.bytes
+- Assets/Lua/32/utils/UIHelper.lua.bytes
+- Assets/Lua/32/utils/Utils.lua.bytes
+- Assets/Lua/32/utils/TimerManager.lua.bytes
+Dependencies: []

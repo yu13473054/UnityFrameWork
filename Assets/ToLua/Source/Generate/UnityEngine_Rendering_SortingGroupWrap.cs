@@ -7,6 +7,7 @@ public class UnityEngine_Rendering_SortingGroupWrap
 	public static void Register(LuaState L)
 	{
 		L.BeginClass(typeof(UnityEngine.Rendering.SortingGroup), typeof(UnityEngine.Behaviour));
+		L.RegFunction("UpdateAllSortingGroups", UpdateAllSortingGroups);
 		L.RegFunction("New", _CreateUnityEngine_Rendering_SortingGroup);
 		L.RegFunction("__eq", op_Equality);
 		L.RegFunction("__tostring", ToLua.op_ToString);
@@ -33,6 +34,21 @@ public class UnityEngine_Rendering_SortingGroupWrap
 			{
 				return LuaDLL.luaL_throw(L, "invalid arguments to ctor method: UnityEngine.Rendering.SortingGroup.New");
 			}
+		}
+		catch (Exception e)
+		{
+			return LuaDLL.toluaL_exception(L, e);
+		}
+	}
+
+	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
+	static int UpdateAllSortingGroups(IntPtr L)
+	{
+		try
+		{
+			ToLua.CheckArgsCount(L, 0);
+			UnityEngine.Rendering.SortingGroup.UpdateAllSortingGroups();
+			return 0;
 		}
 		catch (Exception e)
 		{

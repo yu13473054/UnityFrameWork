@@ -50,7 +50,7 @@ public class ConfigHandler
         ConfigHandler handler = new ConfigHandler(fileName);
 
         string allText = null;
-        if (GameMain.Inst.ResourceMode == 2) // 配置文件也放在外部文件夹中，需要从外部文件夹中取得
+        if (GameMain.Inst.ResourceMode == ResMode.ExtraData) // 配置文件也放在外部文件夹中，需要从外部文件夹中取得
         {
             string filePath = System.Environment.CurrentDirectory + "/" + abName.Replace("_", "/") + "/" + fileName;
             allText = CommonUtils.ReadFileText(filePath);
@@ -110,7 +110,7 @@ public class ConfigHandler
 	}        
 
 	// 写入一个值
-	public void WriteValue(string key, object value)
+	public void WriteValue(string key, object value, bool onlyRecord = false)
 	{
         if(string.IsNullOrEmpty(_filePath))
             UnityEngine.Debug.LogError("<ConfigHandler> 写入的文件的路径为空！");
@@ -120,12 +120,11 @@ public class ConfigHandler
 		else
 			_dict.Add(key, value.ToString());
 
-		string content="";
-		foreach ( var item in _dict )
-		{
-			content = content + item.Key + "=" + item.Value + "\r\n";
-		}
-	    File.WriteAllText(_filePath, content);
+	    if (!onlyRecord)
+	    {
+            Flush();
+	    }
+        
 	}
 
 	// 读取一个值
@@ -136,5 +135,17 @@ public class ConfigHandler
 		else
 			return defaultv;
 	}
+    public void Flush()
+    {
+        StringBuilder sb = new StringBuilder();
+        foreach (var item in _dict)
+        {
+            sb.Append(item.Key);
+            sb.Append("=");
+            sb.Append(item.Value);
+            sb.Append("\r\n");
+        }
+        File.WriteAllText(_filePath, sb.ToString());
+    }
 }
 

@@ -16,6 +16,11 @@ namespace AssetDanshari
             List<string> queryFileList = AssetDanshariUtility.GetSelectAssets();
             CheckPaths<AssetDepWindow>(queryFileList);
         }
+        public static void FindDependence(List<string> queryFileList)
+        {
+            CheckPaths<AssetDepWindow>(queryFileList);
+        }
+
 
         private void Awake()
         {

@@ -27,21 +27,23 @@ namespace AssetDanshari
             public GUIContent duplicateHeaderContent2 = new GUIContent("路径");
             public GUIContent duplicateHeaderContent3 = new GUIContent("大小");
             public GUIContent duplicateHeaderContent4 = new GUIContent("创建时间");
-            public GUIContent duplicateContextOnlyUseThis = new GUIContent("仅使用此资源，其余删除");
-            public string duplicateContextMoveComm = "移入公共目录/";
+            public GUIContent duplicateContextOnlyUseThis = new GUIContent("使用此资源，其余删除");
+            public string duplicateContextMoveComm = "使用此资源，其余删除, 并/移入公共目录";
             public string duplicateGroup = "文件数：{0}";
 
             public GUIContent dependenciesTitle = new GUIContent("资源被引用查找");
             public GUIContent dependenciesWaiting = new GUIContent("等待进行资源被引用查找");
             public GUIContent dependenciesHeaderContent2 = new GUIContent("被引用的路径");
             public GUIContent dependenciesDelete = new GUIContent("删除选中资源");
-            public GUIContent dependenciesFilter = new GUIContent("过滤为空");
+            public GUIContent dependenciesFilter = new GUIContent("无效资源");
 
             public GUIContent referenceTitle = new GUIContent("引用查找");
             public GUIContent referenceWaiting = new GUIContent("等待进行引用查找");
             public GUIContent referenceNothing = new GUIContent("文件夹没有任何数据");
             public GUIContent referenceHeaderContent2 = new GUIContent("引用的资源");
             public GUIContent referenceHeaderContent3 = new GUIContent("隶属");
+
+            public GUIContent iconDelete = EditorGUIUtility.IconContent("AS Badge Delete");
 
             public string progressTitle = "正在处理";
             public string errorTitle = "错误信息";

@@ -13,9 +13,9 @@ namespace AssetDanshari
             base.SetDataPaths(queryPaths);
             data = FileListToAssetInfos(queryPaths);
 
-            List<string> resFileList = GetAllFile();
+            List<string> resFileList = AssetDanshariUtility.GetAllFile(AssetDanshariUtility.ValidFile);
             var searchRetList = AssetDanshariUtility.ResultList(queryPaths.Count, resFileList.Count);
-            ThreadDoFilesTextSearchReplace(queryPaths, resFileList, searchRetList);
+            ThreadDoFilesTextSearch(queryPaths, resFileList, searchRetList);
             
              //隶属信息
             var spritePackingDict = new Dictionary<string, string>();
@@ -45,6 +45,14 @@ namespace AssetDanshari
                         info.bindObj = val;
                     }
                 }
+            }
+
+            for (int i = data.Count - 1 ; i >= 0; i--)
+            {
+                AssetInfo info = data[i];
+                if(info.hasChildren)
+                    continue;
+                data.RemoveAt(i);
             }
             EditorUtility.ClearProgressBar();
         }

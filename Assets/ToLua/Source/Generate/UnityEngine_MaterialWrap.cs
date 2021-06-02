@@ -103,18 +103,18 @@ public class UnityEngine_MaterialWrap
 		{
 			int count = LuaDLL.lua_gettop(L);
 
-			if (count == 2 && TypeChecker.CheckTypes<string>(L, 2))
+			if (count == 2 && TypeChecker.CheckTypes<int>(L, 2))
 			{
 				UnityEngine.Material obj = (UnityEngine.Material)ToLua.CheckObject<UnityEngine.Material>(L, 1);
-				string arg0 = ToLua.ToString(L, 2);
+				int arg0 = (int)LuaDLL.lua_tonumber(L, 2);
 				bool o = obj.HasProperty(arg0);
 				LuaDLL.lua_pushboolean(L, o);
 				return 1;
 			}
-			else if (count == 2 && TypeChecker.CheckTypes<int>(L, 2))
+			else if (count == 2 && TypeChecker.CheckTypes<string>(L, 2))
 			{
 				UnityEngine.Material obj = (UnityEngine.Material)ToLua.CheckObject<UnityEngine.Material>(L, 1);
-				int arg0 = (int)LuaDLL.lua_tonumber(L, 2);
+				string arg0 = ToLua.ToString(L, 2);
 				bool o = obj.HasProperty(arg0);
 				LuaDLL.lua_pushboolean(L, o);
 				return 1;
@@ -672,19 +672,19 @@ public class UnityEngine_MaterialWrap
 		{
 			int count = LuaDLL.lua_gettop(L);
 
-			if (count == 3 && TypeChecker.CheckTypes<string, float[]>(L, 2))
-			{
-				UnityEngine.Material obj = (UnityEngine.Material)ToLua.CheckObject<UnityEngine.Material>(L, 1);
-				string arg0 = ToLua.ToString(L, 2);
-				float[] arg1 = ToLua.ToNumberArray<float>(L, 3);
-				obj.SetFloatArray(arg0, arg1);
-				return 0;
-			}
-			else if (count == 3 && TypeChecker.CheckTypes<int, float[]>(L, 2))
+			if (count == 3 && TypeChecker.CheckTypes<int, float[]>(L, 2))
 			{
 				UnityEngine.Material obj = (UnityEngine.Material)ToLua.CheckObject<UnityEngine.Material>(L, 1);
 				int arg0 = (int)LuaDLL.lua_tonumber(L, 2);
 				float[] arg1 = ToLua.ToNumberArray<float>(L, 3);
+				obj.SetFloatArray(arg0, arg1);
+				return 0;
+			}
+			else if (count == 3 && TypeChecker.CheckTypes<int, System.Collections.Generic.List<float>>(L, 2))
+			{
+				UnityEngine.Material obj = (UnityEngine.Material)ToLua.CheckObject<UnityEngine.Material>(L, 1);
+				int arg0 = (int)LuaDLL.lua_tonumber(L, 2);
+				System.Collections.Generic.List<float> arg1 = (System.Collections.Generic.List<float>)ToLua.ToObject(L, 3);
 				obj.SetFloatArray(arg0, arg1);
 				return 0;
 			}
@@ -696,11 +696,11 @@ public class UnityEngine_MaterialWrap
 				obj.SetFloatArray(arg0, arg1);
 				return 0;
 			}
-			else if (count == 3 && TypeChecker.CheckTypes<int, System.Collections.Generic.List<float>>(L, 2))
+			else if (count == 3 && TypeChecker.CheckTypes<string, float[]>(L, 2))
 			{
 				UnityEngine.Material obj = (UnityEngine.Material)ToLua.CheckObject<UnityEngine.Material>(L, 1);
-				int arg0 = (int)LuaDLL.lua_tonumber(L, 2);
-				System.Collections.Generic.List<float> arg1 = (System.Collections.Generic.List<float>)ToLua.ToObject(L, 3);
+				string arg0 = ToLua.ToString(L, 2);
+				float[] arg1 = ToLua.ToNumberArray<float>(L, 3);
 				obj.SetFloatArray(arg0, arg1);
 				return 0;
 			}
@@ -722,19 +722,19 @@ public class UnityEngine_MaterialWrap
 		{
 			int count = LuaDLL.lua_gettop(L);
 
-			if (count == 3 && TypeChecker.CheckTypes<string, UnityEngine.Color[]>(L, 2))
-			{
-				UnityEngine.Material obj = (UnityEngine.Material)ToLua.CheckObject<UnityEngine.Material>(L, 1);
-				string arg0 = ToLua.ToString(L, 2);
-				UnityEngine.Color[] arg1 = ToLua.ToStructArray<UnityEngine.Color>(L, 3);
-				obj.SetColorArray(arg0, arg1);
-				return 0;
-			}
-			else if (count == 3 && TypeChecker.CheckTypes<int, UnityEngine.Color[]>(L, 2))
+			if (count == 3 && TypeChecker.CheckTypes<int, UnityEngine.Color[]>(L, 2))
 			{
 				UnityEngine.Material obj = (UnityEngine.Material)ToLua.CheckObject<UnityEngine.Material>(L, 1);
 				int arg0 = (int)LuaDLL.lua_tonumber(L, 2);
 				UnityEngine.Color[] arg1 = ToLua.ToStructArray<UnityEngine.Color>(L, 3);
+				obj.SetColorArray(arg0, arg1);
+				return 0;
+			}
+			else if (count == 3 && TypeChecker.CheckTypes<int, System.Collections.Generic.List<UnityEngine.Color>>(L, 2))
+			{
+				UnityEngine.Material obj = (UnityEngine.Material)ToLua.CheckObject<UnityEngine.Material>(L, 1);
+				int arg0 = (int)LuaDLL.lua_tonumber(L, 2);
+				System.Collections.Generic.List<UnityEngine.Color> arg1 = (System.Collections.Generic.List<UnityEngine.Color>)ToLua.ToObject(L, 3);
 				obj.SetColorArray(arg0, arg1);
 				return 0;
 			}
@@ -746,11 +746,11 @@ public class UnityEngine_MaterialWrap
 				obj.SetColorArray(arg0, arg1);
 				return 0;
 			}
-			else if (count == 3 && TypeChecker.CheckTypes<int, System.Collections.Generic.List<UnityEngine.Color>>(L, 2))
+			else if (count == 3 && TypeChecker.CheckTypes<string, UnityEngine.Color[]>(L, 2))
 			{
 				UnityEngine.Material obj = (UnityEngine.Material)ToLua.CheckObject<UnityEngine.Material>(L, 1);
-				int arg0 = (int)LuaDLL.lua_tonumber(L, 2);
-				System.Collections.Generic.List<UnityEngine.Color> arg1 = (System.Collections.Generic.List<UnityEngine.Color>)ToLua.ToObject(L, 3);
+				string arg0 = ToLua.ToString(L, 2);
+				UnityEngine.Color[] arg1 = ToLua.ToStructArray<UnityEngine.Color>(L, 3);
 				obj.SetColorArray(arg0, arg1);
 				return 0;
 			}
@@ -772,19 +772,19 @@ public class UnityEngine_MaterialWrap
 		{
 			int count = LuaDLL.lua_gettop(L);
 
-			if (count == 3 && TypeChecker.CheckTypes<string, UnityEngine.Vector4[]>(L, 2))
-			{
-				UnityEngine.Material obj = (UnityEngine.Material)ToLua.CheckObject<UnityEngine.Material>(L, 1);
-				string arg0 = ToLua.ToString(L, 2);
-				UnityEngine.Vector4[] arg1 = ToLua.ToStructArray<UnityEngine.Vector4>(L, 3);
-				obj.SetVectorArray(arg0, arg1);
-				return 0;
-			}
-			else if (count == 3 && TypeChecker.CheckTypes<int, UnityEngine.Vector4[]>(L, 2))
+			if (count == 3 && TypeChecker.CheckTypes<int, UnityEngine.Vector4[]>(L, 2))
 			{
 				UnityEngine.Material obj = (UnityEngine.Material)ToLua.CheckObject<UnityEngine.Material>(L, 1);
 				int arg0 = (int)LuaDLL.lua_tonumber(L, 2);
 				UnityEngine.Vector4[] arg1 = ToLua.ToStructArray<UnityEngine.Vector4>(L, 3);
+				obj.SetVectorArray(arg0, arg1);
+				return 0;
+			}
+			else if (count == 3 && TypeChecker.CheckTypes<int, System.Collections.Generic.List<UnityEngine.Vector4>>(L, 2))
+			{
+				UnityEngine.Material obj = (UnityEngine.Material)ToLua.CheckObject<UnityEngine.Material>(L, 1);
+				int arg0 = (int)LuaDLL.lua_tonumber(L, 2);
+				System.Collections.Generic.List<UnityEngine.Vector4> arg1 = (System.Collections.Generic.List<UnityEngine.Vector4>)ToLua.ToObject(L, 3);
 				obj.SetVectorArray(arg0, arg1);
 				return 0;
 			}
@@ -796,11 +796,11 @@ public class UnityEngine_MaterialWrap
 				obj.SetVectorArray(arg0, arg1);
 				return 0;
 			}
-			else if (count == 3 && TypeChecker.CheckTypes<int, System.Collections.Generic.List<UnityEngine.Vector4>>(L, 2))
+			else if (count == 3 && TypeChecker.CheckTypes<string, UnityEngine.Vector4[]>(L, 2))
 			{
 				UnityEngine.Material obj = (UnityEngine.Material)ToLua.CheckObject<UnityEngine.Material>(L, 1);
-				int arg0 = (int)LuaDLL.lua_tonumber(L, 2);
-				System.Collections.Generic.List<UnityEngine.Vector4> arg1 = (System.Collections.Generic.List<UnityEngine.Vector4>)ToLua.ToObject(L, 3);
+				string arg0 = ToLua.ToString(L, 2);
+				UnityEngine.Vector4[] arg1 = ToLua.ToStructArray<UnityEngine.Vector4>(L, 3);
 				obj.SetVectorArray(arg0, arg1);
 				return 0;
 			}
@@ -822,19 +822,19 @@ public class UnityEngine_MaterialWrap
 		{
 			int count = LuaDLL.lua_gettop(L);
 
-			if (count == 3 && TypeChecker.CheckTypes<string, UnityEngine.Matrix4x4[]>(L, 2))
-			{
-				UnityEngine.Material obj = (UnityEngine.Material)ToLua.CheckObject<UnityEngine.Material>(L, 1);
-				string arg0 = ToLua.ToString(L, 2);
-				UnityEngine.Matrix4x4[] arg1 = ToLua.ToStructArray<UnityEngine.Matrix4x4>(L, 3);
-				obj.SetMatrixArray(arg0, arg1);
-				return 0;
-			}
-			else if (count == 3 && TypeChecker.CheckTypes<int, UnityEngine.Matrix4x4[]>(L, 2))
+			if (count == 3 && TypeChecker.CheckTypes<int, UnityEngine.Matrix4x4[]>(L, 2))
 			{
 				UnityEngine.Material obj = (UnityEngine.Material)ToLua.CheckObject<UnityEngine.Material>(L, 1);
 				int arg0 = (int)LuaDLL.lua_tonumber(L, 2);
 				UnityEngine.Matrix4x4[] arg1 = ToLua.ToStructArray<UnityEngine.Matrix4x4>(L, 3);
+				obj.SetMatrixArray(arg0, arg1);
+				return 0;
+			}
+			else if (count == 3 && TypeChecker.CheckTypes<int, System.Collections.Generic.List<UnityEngine.Matrix4x4>>(L, 2))
+			{
+				UnityEngine.Material obj = (UnityEngine.Material)ToLua.CheckObject<UnityEngine.Material>(L, 1);
+				int arg0 = (int)LuaDLL.lua_tonumber(L, 2);
+				System.Collections.Generic.List<UnityEngine.Matrix4x4> arg1 = (System.Collections.Generic.List<UnityEngine.Matrix4x4>)ToLua.ToObject(L, 3);
 				obj.SetMatrixArray(arg0, arg1);
 				return 0;
 			}
@@ -846,11 +846,11 @@ public class UnityEngine_MaterialWrap
 				obj.SetMatrixArray(arg0, arg1);
 				return 0;
 			}
-			else if (count == 3 && TypeChecker.CheckTypes<int, System.Collections.Generic.List<UnityEngine.Matrix4x4>>(L, 2))
+			else if (count == 3 && TypeChecker.CheckTypes<string, UnityEngine.Matrix4x4[]>(L, 2))
 			{
 				UnityEngine.Material obj = (UnityEngine.Material)ToLua.CheckObject<UnityEngine.Material>(L, 1);
-				int arg0 = (int)LuaDLL.lua_tonumber(L, 2);
-				System.Collections.Generic.List<UnityEngine.Matrix4x4> arg1 = (System.Collections.Generic.List<UnityEngine.Matrix4x4>)ToLua.ToObject(L, 3);
+				string arg0 = ToLua.ToString(L, 2);
+				UnityEngine.Matrix4x4[] arg1 = ToLua.ToStructArray<UnityEngine.Matrix4x4>(L, 3);
 				obj.SetMatrixArray(arg0, arg1);
 				return 0;
 			}

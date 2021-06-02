@@ -1,0 +1,21 @@
+ManifestFileVersion: 0
+CRC: 2835626223
+Hashes:
+  AssetFileHash:
+    serializedVersion: 2
+    Hash: 320c8c9e900561c22f019a38d9a1a8ff
+  TypeTreeHash:
+    serializedVersion: 2
+    Hash: 5ad585dd02dfb5016c0dad519eab8f49
+HashAppended: 0
+ClassTypes:
+- Class: 49
+  Script: {instanceID: 0}
+Assets:
+- Assets/Lua/32/logic/Network.lua.bytes
+- Assets/Lua/32/logic/Define.lua.bytes
+- Assets/Lua/32/logic/Include.lua.bytes
+- Assets/Lua/32/logic/Data.lua.bytes
+- Assets/Lua/32/logic/Main.lua.bytes
+- Assets/Lua/32/logic/GlobalDefine.lua.bytes
+Dependencies: []

@@ -162,19 +162,19 @@ public class UnityEngine_ParticleSystemRendererWrap
 				obj.BakeMesh(arg0);
 				return 0;
 			}
-			else if (count == 3 && TypeChecker.CheckTypes<UnityEngine.Camera>(L, 3))
-			{
-				UnityEngine.ParticleSystemRenderer obj = (UnityEngine.ParticleSystemRenderer)ToLua.CheckObject(L, 1, typeof(UnityEngine.ParticleSystemRenderer));
-				UnityEngine.Mesh arg0 = (UnityEngine.Mesh)ToLua.CheckObject(L, 2, typeof(UnityEngine.Mesh));
-				UnityEngine.Camera arg1 = (UnityEngine.Camera)ToLua.ToObject(L, 3);
-				obj.BakeMesh(arg0, arg1);
-				return 0;
-			}
 			else if (count == 3 && TypeChecker.CheckTypes<bool>(L, 3))
 			{
 				UnityEngine.ParticleSystemRenderer obj = (UnityEngine.ParticleSystemRenderer)ToLua.CheckObject(L, 1, typeof(UnityEngine.ParticleSystemRenderer));
 				UnityEngine.Mesh arg0 = (UnityEngine.Mesh)ToLua.CheckObject(L, 2, typeof(UnityEngine.Mesh));
 				bool arg1 = LuaDLL.lua_toboolean(L, 3);
+				obj.BakeMesh(arg0, arg1);
+				return 0;
+			}
+			else if (count == 3 && TypeChecker.CheckTypes<UnityEngine.Camera>(L, 3))
+			{
+				UnityEngine.ParticleSystemRenderer obj = (UnityEngine.ParticleSystemRenderer)ToLua.CheckObject(L, 1, typeof(UnityEngine.ParticleSystemRenderer));
+				UnityEngine.Mesh arg0 = (UnityEngine.Mesh)ToLua.CheckObject(L, 2, typeof(UnityEngine.Mesh));
+				UnityEngine.Camera arg1 = (UnityEngine.Camera)ToLua.ToObject(L, 3);
 				obj.BakeMesh(arg0, arg1);
 				return 0;
 			}
@@ -212,19 +212,19 @@ public class UnityEngine_ParticleSystemRendererWrap
 				obj.BakeTrailsMesh(arg0);
 				return 0;
 			}
-			else if (count == 3 && TypeChecker.CheckTypes<UnityEngine.Camera>(L, 3))
-			{
-				UnityEngine.ParticleSystemRenderer obj = (UnityEngine.ParticleSystemRenderer)ToLua.CheckObject(L, 1, typeof(UnityEngine.ParticleSystemRenderer));
-				UnityEngine.Mesh arg0 = (UnityEngine.Mesh)ToLua.CheckObject(L, 2, typeof(UnityEngine.Mesh));
-				UnityEngine.Camera arg1 = (UnityEngine.Camera)ToLua.ToObject(L, 3);
-				obj.BakeTrailsMesh(arg0, arg1);
-				return 0;
-			}
 			else if (count == 3 && TypeChecker.CheckTypes<bool>(L, 3))
 			{
 				UnityEngine.ParticleSystemRenderer obj = (UnityEngine.ParticleSystemRenderer)ToLua.CheckObject(L, 1, typeof(UnityEngine.ParticleSystemRenderer));
 				UnityEngine.Mesh arg0 = (UnityEngine.Mesh)ToLua.CheckObject(L, 2, typeof(UnityEngine.Mesh));
 				bool arg1 = LuaDLL.lua_toboolean(L, 3);
+				obj.BakeTrailsMesh(arg0, arg1);
+				return 0;
+			}
+			else if (count == 3 && TypeChecker.CheckTypes<UnityEngine.Camera>(L, 3))
+			{
+				UnityEngine.ParticleSystemRenderer obj = (UnityEngine.ParticleSystemRenderer)ToLua.CheckObject(L, 1, typeof(UnityEngine.ParticleSystemRenderer));
+				UnityEngine.Mesh arg0 = (UnityEngine.Mesh)ToLua.CheckObject(L, 2, typeof(UnityEngine.Mesh));
+				UnityEngine.Camera arg1 = (UnityEngine.Camera)ToLua.ToObject(L, 3);
 				obj.BakeTrailsMesh(arg0, arg1);
 				return 0;
 			}

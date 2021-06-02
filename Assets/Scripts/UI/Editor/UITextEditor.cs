@@ -8,7 +8,8 @@ using System.Collections;
 public class UITextEditor : UnityEditor.UI.TextEditor
 {
     private SerializedProperty _localizationIDProperty;
-    private SerializedProperty _fontNameProperty;
+    private SerializedProperty _multiResProperty;
+    private SerializedProperty _colorByGrayFactorProperty;
     private float _lastFontSize;
     private string _lastTextID = "";
 
@@ -16,7 +17,8 @@ public class UITextEditor : UnityEditor.UI.TextEditor
     {
         base.OnEnable();
         _localizationIDProperty = serializedObject.FindProperty("textID");
-        _fontNameProperty = serializedObject.FindProperty("fontName");
+        _multiResProperty = serializedObject.FindProperty("_multiRes");
+        _colorByGrayFactorProperty = serializedObject.FindProperty("_colorByGrayFactor");
     }
 
     public override void OnInspectorGUI()
@@ -24,14 +26,14 @@ public class UITextEditor : UnityEditor.UI.TextEditor
         UIText txt = target as UIText;
         string localizeID = _localizationIDProperty.stringValue;
         EditorGUILayout.PropertyField(_localizationIDProperty);
-        if (_lastTextID != localizeID)
+        if ( _lastTextID != localizeID )
         {
             if (txt != null)
             {
                 _lastTextID = localizeID;
 
                 Localization.Init();
-                string dataText = Localization.Get(localizeID);
+                string dataText = Localization.Get( localizeID );
                 if (!string.IsNullOrEmpty(dataText))
                 {
                     txt.text = dataText;
@@ -49,7 +51,8 @@ public class UITextEditor : UnityEditor.UI.TextEditor
         }
         this.serializedObject.ApplyModifiedProperties();
         base.OnInspectorGUI();
-        EditorGUILayout.PropertyField(_fontNameProperty);
+        EditorGUILayout.PropertyField(_multiResProperty);
+        EditorGUILayout.Slider(_colorByGrayFactorProperty, 0, 1);
         this.serializedObject.ApplyModifiedProperties();
     }
 }

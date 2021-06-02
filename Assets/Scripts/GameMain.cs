@@ -14,17 +14,16 @@ public enum LngType
     EN,
     JP
 }
+public enum ResMode
+{
+    Develop = 0,
+    AssetBundle,
+    ExtraData //使用pc端出包后，数据单独获取
+}
 
 [ExecuteInEditMode]
 public class GameMain : MonoBehaviour
 {
-    enum ResMode
-    {
-        Develop = 0,
-        AssetBundle,
-        ExtraData //使用pc端出包后，数据单独获取
-    }
-
     public static GameMain Inst { get; private set; }
 
     [SerializeField] [Label("帧率")]
@@ -49,28 +48,23 @@ public class GameMain : MonoBehaviour
     public string localABPath;
 
     // 平台名称
-    #if UNITY_STANDALONE_WIN
     public string platformName = "win";
-    #elif UNITY_STANDALONE_OSX
-    public string platformName = "osx";
-#elif UNITY_ANDROID
-    public string platformName = "android";
-#elif UNITY_IPHONE
-    public string platformName = "ios";
-#endif
 
     public string updateHost;
     public string loginHost;
     public string port;
     public int platID;
 
+    // 适配的偏移距离
+    public int viewOffstPixel = 0;
+
     public int TargetFrameRate
     {
         get { return _targetFrameRate; }
     }
-    public int ResourceMode
+    public ResMode ResourceMode
     {
-        get { return (int)_resourceMode; }
+        get { return _resourceMode; }
     }
     public LngType lngType
     {
@@ -82,16 +76,42 @@ public class GameMain : MonoBehaviour
         get { return _audioLimit; }
     }
 
+    private int _runPlatform;
+    public int RunPlatform
+    {
+        get { return _runPlatform; }
+    }
+
     void Awake()
     {
         Inst = this;
+
+#if UNITY_STANDALONE_WIN
+        platformName = "win";
+#elif UNITY_STANDALONE_OSX
+        platformName = "osx";
+#elif UNITY_ANDROID
+        platformName = "android";
+#elif UNITY_IPHONE
+        platformName = "ios";
+#endif
 
         localABPath = Application.persistentDataPath + "/";
         appABPath = Application.streamingAssetsPath + "/assetbundle/";
 
         if (!Application.isPlaying) return;
 
+        _runPlatform = (int)Application.platform;
+
 #if !UNITY_EDITOR   //读取配置文件
+        InitWithConfig();
+#endif
+
+        gameObject.AddComponent<Boot>();
+    }
+
+    public void InitWithConfig()
+    {
         ConfigHandler config = ConfigHandler.Open(CommonUtils.GetABPath("config.txt"));
         //是否配置多语言
         string str = config.ReadValue("lngType", "");
@@ -130,9 +150,6 @@ public class GameMain : MonoBehaviour
         {
             platID = int.Parse(str);
         }
-#endif
-
-        gameObject.AddComponent<Boot>();
     }
 
 }

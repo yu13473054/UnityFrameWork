@@ -7,6 +7,7 @@ public class GameMainWrap
 	public static void Register(LuaState L)
 	{
 		L.BeginClass(typeof(GameMain), typeof(UnityEngine.MonoBehaviour));
+		L.RegFunction("InitWithConfig", InitWithConfig);
 		L.RegFunction("__eq", op_Equality);
 		L.RegFunction("__tostring", ToLua.op_ToString);
 		L.RegVar("showLog", get_showLog, set_showLog);
@@ -15,13 +16,32 @@ public class GameMainWrap
 		L.RegVar("platformName", get_platformName, set_platformName);
 		L.RegVar("updateHost", get_updateHost, set_updateHost);
 		L.RegVar("loginHost", get_loginHost, set_loginHost);
+		L.RegVar("port", get_port, set_port);
 		L.RegVar("platID", get_platID, set_platID);
+		L.RegVar("viewOffstPixel", get_viewOffstPixel, set_viewOffstPixel);
 		L.RegVar("Inst", get_Inst, null);
 		L.RegVar("TargetFrameRate", get_TargetFrameRate, null);
 		L.RegVar("ResourceMode", get_ResourceMode, null);
 		L.RegVar("lngType", get_lngType, set_lngType);
 		L.RegVar("AudioLimit", get_AudioLimit, null);
+		L.RegVar("RunPlatform", get_RunPlatform, null);
 		L.EndClass();
+	}
+
+	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
+	static int InitWithConfig(IntPtr L)
+	{
+		try
+		{
+			ToLua.CheckArgsCount(L, 1);
+			GameMain obj = (GameMain)ToLua.CheckObject<GameMain>(L, 1);
+			obj.InitWithConfig();
+			return 0;
+		}
+		catch (Exception e)
+		{
+			return LuaDLL.toluaL_exception(L, e);
+		}
 	}
 
 	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
@@ -157,6 +177,25 @@ public class GameMainWrap
 	}
 
 	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
+	static int get_port(IntPtr L)
+	{
+		object o = null;
+
+		try
+		{
+			o = ToLua.ToObject(L, 1);
+			GameMain obj = (GameMain)o;
+			string ret = obj.port;
+			LuaDLL.lua_pushstring(L, ret);
+			return 1;
+		}
+		catch(Exception e)
+		{
+			return LuaDLL.toluaL_exception(L, e, o, "attempt to index port on a nil value");
+		}
+	}
+
+	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
 	static int get_platID(IntPtr L)
 	{
 		object o = null;
@@ -172,6 +211,25 @@ public class GameMainWrap
 		catch(Exception e)
 		{
 			return LuaDLL.toluaL_exception(L, e, o, "attempt to index platID on a nil value");
+		}
+	}
+
+	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
+	static int get_viewOffstPixel(IntPtr L)
+	{
+		object o = null;
+
+		try
+		{
+			o = ToLua.ToObject(L, 1);
+			GameMain obj = (GameMain)o;
+			int ret = obj.viewOffstPixel;
+			LuaDLL.lua_pushinteger(L, ret);
+			return 1;
+		}
+		catch(Exception e)
+		{
+			return LuaDLL.toluaL_exception(L, e, o, "attempt to index viewOffstPixel on a nil value");
 		}
 	}
 
@@ -217,8 +275,8 @@ public class GameMainWrap
 		{
 			o = ToLua.ToObject(L, 1);
 			GameMain obj = (GameMain)o;
-			int ret = obj.ResourceMode;
-			LuaDLL.lua_pushinteger(L, ret);
+			ResMode ret = obj.ResourceMode;
+			ToLua.Push(L, ret);
 			return 1;
 		}
 		catch(Exception e)
@@ -262,6 +320,25 @@ public class GameMainWrap
 		catch(Exception e)
 		{
 			return LuaDLL.toluaL_exception(L, e, o, "attempt to index AudioLimit on a nil value");
+		}
+	}
+
+	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
+	static int get_RunPlatform(IntPtr L)
+	{
+		object o = null;
+
+		try
+		{
+			o = ToLua.ToObject(L, 1);
+			GameMain obj = (GameMain)o;
+			int ret = obj.RunPlatform;
+			LuaDLL.lua_pushinteger(L, ret);
+			return 1;
+		}
+		catch(Exception e)
+		{
+			return LuaDLL.toluaL_exception(L, e, o, "attempt to index RunPlatform on a nil value");
 		}
 	}
 
@@ -380,6 +457,25 @@ public class GameMainWrap
 	}
 
 	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
+	static int set_port(IntPtr L)
+	{
+		object o = null;
+
+		try
+		{
+			o = ToLua.ToObject(L, 1);
+			GameMain obj = (GameMain)o;
+			string arg0 = ToLua.CheckString(L, 2);
+			obj.port = arg0;
+			return 0;
+		}
+		catch(Exception e)
+		{
+			return LuaDLL.toluaL_exception(L, e, o, "attempt to index port on a nil value");
+		}
+	}
+
+	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
 	static int set_platID(IntPtr L)
 	{
 		object o = null;
@@ -395,6 +491,25 @@ public class GameMainWrap
 		catch(Exception e)
 		{
 			return LuaDLL.toluaL_exception(L, e, o, "attempt to index platID on a nil value");
+		}
+	}
+
+	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
+	static int set_viewOffstPixel(IntPtr L)
+	{
+		object o = null;
+
+		try
+		{
+			o = ToLua.ToObject(L, 1);
+			GameMain obj = (GameMain)o;
+			int arg0 = (int)LuaDLL.luaL_checknumber(L, 2);
+			obj.viewOffstPixel = arg0;
+			return 0;
+		}
+		catch(Exception e)
+		{
+			return LuaDLL.toluaL_exception(L, e, o, "attempt to index viewOffstPixel on a nil value");
 		}
 	}
 

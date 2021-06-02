@@ -120,12 +120,29 @@ public class TableHandlerWrap
 	{
 		try
 		{
-			ToLua.CheckArgsCount(L, 2);
-			TableHandler obj = (TableHandler)ToLua.CheckObject<TableHandler>(L, 1);
-			int arg0 = (int)LuaDLL.luaL_checknumber(L, 2);
-			string o = obj.GetColumn(arg0);
-			LuaDLL.lua_pushstring(L, o);
-			return 1;
+			int count = LuaDLL.lua_gettop(L);
+
+			if (count == 2)
+			{
+				TableHandler obj = (TableHandler)ToLua.CheckObject<TableHandler>(L, 1);
+				int arg0 = (int)LuaDLL.luaL_checknumber(L, 2);
+				string o = obj.GetColumn(arg0);
+				LuaDLL.lua_pushstring(L, o);
+				return 1;
+			}
+			else if (count == 3)
+			{
+				TableHandler obj = (TableHandler)ToLua.CheckObject<TableHandler>(L, 1);
+				int arg0 = (int)LuaDLL.luaL_checknumber(L, 2);
+				string arg1 = ToLua.CheckString(L, 3);
+				string o = obj.GetColumn(arg0, arg1);
+				LuaDLL.lua_pushstring(L, o);
+				return 1;
+			}
+			else
+			{
+				return LuaDLL.luaL_throw(L, "invalid arguments to method: TableHandler.GetColumn");
+			}
 		}
 		catch (Exception e)
 		{

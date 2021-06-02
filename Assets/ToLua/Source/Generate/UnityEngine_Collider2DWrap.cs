@@ -256,16 +256,6 @@ public class UnityEngine_Collider2DWrap
 				LuaDLL.lua_pushinteger(L, o);
 				return 1;
 			}
-			else if (count == 4 && TypeChecker.CheckTypes<UnityEngine.ContactFilter2D, UnityEngine.RaycastHit2D[]>(L, 3))
-			{
-				UnityEngine.Collider2D obj = (UnityEngine.Collider2D)ToLua.CheckObject<UnityEngine.Collider2D>(L, 1);
-				UnityEngine.Vector2 arg0 = ToLua.ToVector2(L, 2);
-				UnityEngine.ContactFilter2D arg1 = StackTraits<UnityEngine.ContactFilter2D>.To(L, 3);
-				UnityEngine.RaycastHit2D[] arg2 = ToLua.ToStructArray<UnityEngine.RaycastHit2D>(L, 4);
-				int o = obj.Cast(arg0, arg1, arg2);
-				LuaDLL.lua_pushinteger(L, o);
-				return 1;
-			}
 			else if (count == 4 && TypeChecker.CheckTypes<UnityEngine.RaycastHit2D[], float>(L, 3))
 			{
 				UnityEngine.Collider2D obj = (UnityEngine.Collider2D)ToLua.CheckObject<UnityEngine.Collider2D>(L, 1);
@@ -276,14 +266,13 @@ public class UnityEngine_Collider2DWrap
 				LuaDLL.lua_pushinteger(L, o);
 				return 1;
 			}
-			else if (count == 5 && TypeChecker.CheckTypes<UnityEngine.ContactFilter2D, UnityEngine.RaycastHit2D[], float>(L, 3))
+			else if (count == 4 && TypeChecker.CheckTypes<UnityEngine.ContactFilter2D, UnityEngine.RaycastHit2D[]>(L, 3))
 			{
 				UnityEngine.Collider2D obj = (UnityEngine.Collider2D)ToLua.CheckObject<UnityEngine.Collider2D>(L, 1);
 				UnityEngine.Vector2 arg0 = ToLua.ToVector2(L, 2);
 				UnityEngine.ContactFilter2D arg1 = StackTraits<UnityEngine.ContactFilter2D>.To(L, 3);
 				UnityEngine.RaycastHit2D[] arg2 = ToLua.ToStructArray<UnityEngine.RaycastHit2D>(L, 4);
-				float arg3 = (float)LuaDLL.lua_tonumber(L, 5);
-				int o = obj.Cast(arg0, arg1, arg2, arg3);
+				int o = obj.Cast(arg0, arg1, arg2);
 				LuaDLL.lua_pushinteger(L, o);
 				return 1;
 			}
@@ -294,6 +283,17 @@ public class UnityEngine_Collider2DWrap
 				UnityEngine.RaycastHit2D[] arg1 = ToLua.ToStructArray<UnityEngine.RaycastHit2D>(L, 3);
 				float arg2 = (float)LuaDLL.lua_tonumber(L, 4);
 				bool arg3 = LuaDLL.lua_toboolean(L, 5);
+				int o = obj.Cast(arg0, arg1, arg2, arg3);
+				LuaDLL.lua_pushinteger(L, o);
+				return 1;
+			}
+			else if (count == 5 && TypeChecker.CheckTypes<UnityEngine.ContactFilter2D, UnityEngine.RaycastHit2D[], float>(L, 3))
+			{
+				UnityEngine.Collider2D obj = (UnityEngine.Collider2D)ToLua.CheckObject<UnityEngine.Collider2D>(L, 1);
+				UnityEngine.Vector2 arg0 = ToLua.ToVector2(L, 2);
+				UnityEngine.ContactFilter2D arg1 = StackTraits<UnityEngine.ContactFilter2D>.To(L, 3);
+				UnityEngine.RaycastHit2D[] arg2 = ToLua.ToStructArray<UnityEngine.RaycastHit2D>(L, 4);
+				float arg3 = (float)LuaDLL.lua_tonumber(L, 5);
 				int o = obj.Cast(arg0, arg1, arg2, arg3);
 				LuaDLL.lua_pushinteger(L, o);
 				return 1;
@@ -337,16 +337,6 @@ public class UnityEngine_Collider2DWrap
 				LuaDLL.lua_pushinteger(L, o);
 				return 1;
 			}
-			else if (count == 4 && TypeChecker.CheckTypes<UnityEngine.ContactFilter2D, UnityEngine.RaycastHit2D[]>(L, 3))
-			{
-				UnityEngine.Collider2D obj = (UnityEngine.Collider2D)ToLua.CheckObject<UnityEngine.Collider2D>(L, 1);
-				UnityEngine.Vector2 arg0 = ToLua.ToVector2(L, 2);
-				UnityEngine.ContactFilter2D arg1 = StackTraits<UnityEngine.ContactFilter2D>.To(L, 3);
-				UnityEngine.RaycastHit2D[] arg2 = ToLua.ToStructArray<UnityEngine.RaycastHit2D>(L, 4);
-				int o = obj.Raycast(arg0, arg1, arg2);
-				LuaDLL.lua_pushinteger(L, o);
-				return 1;
-			}
 			else if (count == 4 && TypeChecker.CheckTypes<UnityEngine.RaycastHit2D[], float>(L, 3))
 			{
 				UnityEngine.Collider2D obj = (UnityEngine.Collider2D)ToLua.CheckObject<UnityEngine.Collider2D>(L, 1);
@@ -357,14 +347,13 @@ public class UnityEngine_Collider2DWrap
 				LuaDLL.lua_pushinteger(L, o);
 				return 1;
 			}
-			else if (count == 5 && TypeChecker.CheckTypes<UnityEngine.ContactFilter2D, UnityEngine.RaycastHit2D[], float>(L, 3))
+			else if (count == 4 && TypeChecker.CheckTypes<UnityEngine.ContactFilter2D, UnityEngine.RaycastHit2D[]>(L, 3))
 			{
 				UnityEngine.Collider2D obj = (UnityEngine.Collider2D)ToLua.CheckObject<UnityEngine.Collider2D>(L, 1);
 				UnityEngine.Vector2 arg0 = ToLua.ToVector2(L, 2);
 				UnityEngine.ContactFilter2D arg1 = StackTraits<UnityEngine.ContactFilter2D>.To(L, 3);
 				UnityEngine.RaycastHit2D[] arg2 = ToLua.ToStructArray<UnityEngine.RaycastHit2D>(L, 4);
-				float arg3 = (float)LuaDLL.lua_tonumber(L, 5);
-				int o = obj.Raycast(arg0, arg1, arg2, arg3);
+				int o = obj.Raycast(arg0, arg1, arg2);
 				LuaDLL.lua_pushinteger(L, o);
 				return 1;
 			}
@@ -375,6 +364,17 @@ public class UnityEngine_Collider2DWrap
 				UnityEngine.RaycastHit2D[] arg1 = ToLua.ToStructArray<UnityEngine.RaycastHit2D>(L, 3);
 				float arg2 = (float)LuaDLL.lua_tonumber(L, 4);
 				int arg3 = (int)LuaDLL.lua_tonumber(L, 5);
+				int o = obj.Raycast(arg0, arg1, arg2, arg3);
+				LuaDLL.lua_pushinteger(L, o);
+				return 1;
+			}
+			else if (count == 5 && TypeChecker.CheckTypes<UnityEngine.ContactFilter2D, UnityEngine.RaycastHit2D[], float>(L, 3))
+			{
+				UnityEngine.Collider2D obj = (UnityEngine.Collider2D)ToLua.CheckObject<UnityEngine.Collider2D>(L, 1);
+				UnityEngine.Vector2 arg0 = ToLua.ToVector2(L, 2);
+				UnityEngine.ContactFilter2D arg1 = StackTraits<UnityEngine.ContactFilter2D>.To(L, 3);
+				UnityEngine.RaycastHit2D[] arg2 = ToLua.ToStructArray<UnityEngine.RaycastHit2D>(L, 4);
+				float arg3 = (float)LuaDLL.lua_tonumber(L, 5);
 				int o = obj.Raycast(arg0, arg1, arg2, arg3);
 				LuaDLL.lua_pushinteger(L, o);
 				return 1;

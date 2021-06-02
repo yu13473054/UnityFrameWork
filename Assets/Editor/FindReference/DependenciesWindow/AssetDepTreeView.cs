@@ -8,6 +8,7 @@ namespace AssetDanshari
 {
     public class AssetDepTreeView : AssetTreeView
     {
+        public bool _filterEmpty;
         private AssetDepModel model { get; set; }
 
         public AssetDepTreeView(TreeViewState state, MultiColumnHeader multiColumnHeader, AssetModel model) : base(state, multiColumnHeader, model)
@@ -110,15 +111,13 @@ namespace AssetDanshari
                     m_Model.data.Remove(assetInfo);
                 }
             }
-            Reload();
-            SetExpanded(rootItem.id, false);
-            SetExpanded(rootItem.id, true);
-            Repaint();
+            SetFilterEmpty(_filterEmpty);
         }
 
         public void SetFilterEmpty(bool filterEmpty)
         {
             Reload();
+            _filterEmpty = filterEmpty;
             if (filterEmpty)
             {
                 // 剔除有被引用的
@@ -128,8 +127,17 @@ namespace AssetDanshari
                     {
                         var child = rootItem.children[i];
                         var assetInfo = GetItemAssetInfo(child);
-                        if (assetInfo.hasChildren || assetInfo.displayName.EndsWith(".spriteatlas"))
+                        if (assetInfo.displayName.EndsWith(".spriteatlas"))
                         {
+                            rootItem.children.RemoveAt(i);
+                            continue;
+                        }
+
+                        if (assetInfo.hasChildren)
+                        {
+                            //只被图集引用的话，也视为无效资源
+                            if(assetInfo.children.Count == 1 && assetInfo.children[0].displayName.EndsWith(".spriteatlas"))
+                                continue;
                             rootItem.children.RemoveAt(i);
                         }
                     }

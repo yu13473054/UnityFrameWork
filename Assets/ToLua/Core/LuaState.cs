@@ -221,6 +221,17 @@ namespace LuaInterface
         {
 #if UNITY_EDITOR
             beStart = true;
+            //开启了Lua调试
+            if (PlayerPrefs.GetInt("LuaDebuggerStatus", 0) == 1) 
+            {
+                string dllPath = Application.dataPath + "/Editor/EmmyLua/emmy_core";
+                string str = @"
+                    package.cpath = package.cpath .. ';{0}.dll'
+                    local dbg = require('emmy_core')
+                    dbg.tcpConnect('localhost', 9967)
+                ";
+                DoString(string.Format(str, dllPath));
+            }
 #endif
             OpenBaseLuaLibs();
 #if ENABLE_LUA_INJECTION
@@ -1744,6 +1755,10 @@ namespace LuaInterface
             return 0;
         }
 
+        public void StepCollect()
+        {
+            translator.StepCollect();
+        }
         public void RefreshDelegateMap()
         {
             List<long> list = new List<long>();
@@ -2024,6 +2039,7 @@ namespace LuaInterface
             if (injectionState == this)
             {
                 injectionState = null;
+                LuaInjectionStation.Clear();
             }
 
 #if UNITY_EDITOR

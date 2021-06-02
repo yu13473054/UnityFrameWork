@@ -1,0 +1,18 @@
+ManifestFileVersion: 0
+CRC: 567976874
+Hashes:
+  AssetFileHash:
+    serializedVersion: 2
+    Hash: 5a5afac5b4ab883d76383a83dab6027b
+  TypeTreeHash:
+    serializedVersion: 2
+    Hash: 7e9ee104d6bb707fb2602b751e6f78b1
+HashAppended: 0
+ClassTypes:
+- Class: 48
+  Script: {instanceID: 0}
+Assets:
+- Assets/Res/Shader/UI/ImageSoftMask.shader
+- Assets/Res/Shader/UI/OutlineEx.shader
+- Assets/Res/Shader/UI/GrayShader.shader
+Dependencies: []

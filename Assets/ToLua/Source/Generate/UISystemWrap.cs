@@ -7,11 +7,49 @@ public class UISystemWrap
 	public static void Register(LuaState L)
 	{
 		L.BeginClass(typeof(UISystem), typeof(UIMod));
+		L.RegFunction("StackRecordUI", StackRecordUI);
+		L.RegFunction("StackRevertUI", StackRevertUI);
 		L.RegFunction("__eq", op_Equality);
 		L.RegFunction("__tostring", ToLua.op_ToString);
 		L.RegVar("layer", get_layer, set_layer);
 		L.RegVar("uiState", get_uiState, set_uiState);
+		L.RegVar("stackLevel", get_stackLevel, set_stackLevel);
+		L.RegVar("backOpt", get_backOpt, set_backOpt);
+		L.RegVar("stackIndex", get_stackIndex, set_stackIndex);
 		L.EndClass();
+	}
+
+	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
+	static int StackRecordUI(IntPtr L)
+	{
+		try
+		{
+			ToLua.CheckArgsCount(L, 1);
+			UISystem obj = (UISystem)ToLua.CheckObject<UISystem>(L, 1);
+			obj.StackRecordUI();
+			return 0;
+		}
+		catch (Exception e)
+		{
+			return LuaDLL.toluaL_exception(L, e);
+		}
+	}
+
+	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
+	static int StackRevertUI(IntPtr L)
+	{
+		try
+		{
+			ToLua.CheckArgsCount(L, 2);
+			UISystem obj = (UISystem)ToLua.CheckObject<UISystem>(L, 1);
+			bool arg0 = LuaDLL.luaL_checkboolean(L, 2);
+			obj.StackRevertUI(arg0);
+			return 0;
+		}
+		catch (Exception e)
+		{
+			return LuaDLL.toluaL_exception(L, e);
+		}
 	}
 
 	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
@@ -71,6 +109,63 @@ public class UISystemWrap
 	}
 
 	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
+	static int get_stackLevel(IntPtr L)
+	{
+		object o = null;
+
+		try
+		{
+			o = ToLua.ToObject(L, 1);
+			UISystem obj = (UISystem)o;
+			StackLevel ret = obj.stackLevel;
+			ToLua.Push(L, ret);
+			return 1;
+		}
+		catch(Exception e)
+		{
+			return LuaDLL.toluaL_exception(L, e, o, "attempt to index stackLevel on a nil value");
+		}
+	}
+
+	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
+	static int get_backOpt(IntPtr L)
+	{
+		object o = null;
+
+		try
+		{
+			o = ToLua.ToObject(L, 1);
+			UISystem obj = (UISystem)o;
+			BackOpt ret = obj.backOpt;
+			ToLua.Push(L, ret);
+			return 1;
+		}
+		catch(Exception e)
+		{
+			return LuaDLL.toluaL_exception(L, e, o, "attempt to index backOpt on a nil value");
+		}
+	}
+
+	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
+	static int get_stackIndex(IntPtr L)
+	{
+		object o = null;
+
+		try
+		{
+			o = ToLua.ToObject(L, 1);
+			UISystem obj = (UISystem)o;
+			int ret = obj.stackIndex;
+			LuaDLL.lua_pushinteger(L, ret);
+			return 1;
+		}
+		catch(Exception e)
+		{
+			return LuaDLL.toluaL_exception(L, e, o, "attempt to index stackIndex on a nil value");
+		}
+	}
+
+	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
 	static int set_layer(IntPtr L)
 	{
 		object o = null;
@@ -105,6 +200,63 @@ public class UISystemWrap
 		catch(Exception e)
 		{
 			return LuaDLL.toluaL_exception(L, e, o, "attempt to index uiState on a nil value");
+		}
+	}
+
+	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
+	static int set_stackLevel(IntPtr L)
+	{
+		object o = null;
+
+		try
+		{
+			o = ToLua.ToObject(L, 1);
+			UISystem obj = (UISystem)o;
+			StackLevel arg0 = (StackLevel)ToLua.CheckObject(L, 2, typeof(StackLevel));
+			obj.stackLevel = arg0;
+			return 0;
+		}
+		catch(Exception e)
+		{
+			return LuaDLL.toluaL_exception(L, e, o, "attempt to index stackLevel on a nil value");
+		}
+	}
+
+	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
+	static int set_backOpt(IntPtr L)
+	{
+		object o = null;
+
+		try
+		{
+			o = ToLua.ToObject(L, 1);
+			UISystem obj = (UISystem)o;
+			BackOpt arg0 = (BackOpt)ToLua.CheckObject(L, 2, typeof(BackOpt));
+			obj.backOpt = arg0;
+			return 0;
+		}
+		catch(Exception e)
+		{
+			return LuaDLL.toluaL_exception(L, e, o, "attempt to index backOpt on a nil value");
+		}
+	}
+
+	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
+	static int set_stackIndex(IntPtr L)
+	{
+		object o = null;
+
+		try
+		{
+			o = ToLua.ToObject(L, 1);
+			UISystem obj = (UISystem)o;
+			int arg0 = (int)LuaDLL.luaL_checknumber(L, 2);
+			obj.stackIndex = arg0;
+			return 0;
+		}
+		catch(Exception e)
+		{
+			return LuaDLL.toluaL_exception(L, e, o, "attempt to index stackIndex on a nil value");
 		}
 	}
 }

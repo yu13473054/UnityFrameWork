@@ -15,11 +15,11 @@ public class TableHandler
     List<string> _dataBuf;
     /// 表格的列
     string[] _columns;
-    private string _fileName = "";
+    private string _fileName;
     /// 构造
     public TableHandler(string fileName)
     {
-        _fileName = fileName+".txt";
+        _fileName = fileName;
         _recordsNum = 0;
         _fieldsNum = 0;
         _dataBuf = new List<string>();
@@ -34,9 +34,7 @@ public class TableHandler
 
     public static TableHandler OpenFromResmap(string reskeyName)
     {
-        TableHandler handle = new TableHandler(reskeyName);
-        handle.Open(reskeyName, ResMgr.Inst.GetResinfoInObj(reskeyName).abName);
-        return handle;
+        return OpenInAB(reskeyName, ResMgr.Inst.GetMapInfo(reskeyName, 3).abName); ;
     }
 
     public static TableHandler OpenInAB(string fileName, string abName)
@@ -49,31 +47,31 @@ public class TableHandler
     void Open(string fileName, string abName)
     {
         string allText = null;
-        if (!Application.isPlaying || GameMain.Inst.ResourceMode == 0)
+        if (GameMain.Inst && GameMain.Inst.ResourceMode == ResMode.ExtraData) //数据从外部读，其他的资源从AB获取
         {
-#if UNITY_EDITOR
+            abName = abName.ToLower();
+            string filePath = System.Environment.CurrentDirectory + "/Assets/" + abName.Replace("_", "/") + "/" + fileName + ".txt";
+            allText = CommonUtils.ReadFileText(filePath);
+        }
+        else if(GameMain.Inst && GameMain.Inst.ResourceMode == ResMode.AssetBundle) //ab包模式
+        {
+            //数据文件的使用者为自己，不受UI界面控制
+            TextAsset asset = ResMgr.Inst.LoadAsset<TextAsset>(abName, fileName, "data");
+            allText = CommonUtils.DecryptTxt(asset.text);
+            Resources.UnloadAsset(asset);
+        }
+        else
+        {
             //拼装出EditorPath
-            string editorPath = "Assets/" + abName.Replace("_", "/") + "/" + fileName + ".txt";
+            string editorPath = "Assets/" + abName.Replace("_", "/") + "/" + fileName;
+            if (!fileName.EndsWith(".txt"))
+                editorPath += ".txt";
+#if UNITY_EDITOR
             TextAsset asset = UnityEditor.AssetDatabase.LoadAssetAtPath<TextAsset>(editorPath);
             allText = asset.text;
 #endif
         }
-        else
-        {
-            if (GameMain.Inst.ResourceMode == 2) // 配置文件也放在外部文件夹中，需要从外部文件夹中取得
-            {
-                abName = abName.ToLower();
-                string filePath = System.Environment.CurrentDirectory + "/Assets/" + abName.Replace("_", "/") + "/" + fileName + ".txt";
-                allText = CommonUtils.ReadFileText(filePath);
-            }
-            else if (GameMain.Inst.ResourceMode == 1)
-            {
-                //数据文件的使用者为自己，不受UI界面控制
-                TextAsset asset = ResMgr.Inst.LoadAsset<TextAsset>("data", fileName, abName);
-                allText = asset.text;
-                Resources.UnloadAsset(asset);
-            }
-        }
+
         //解析数据
         if (!string.IsNullOrEmpty(allText))
         {
@@ -123,6 +121,11 @@ public class TableHandler
             // 填充数据区
             for (int n = 0; n < fieldsNum; ++n)
             {
+                if (n >= strArray.Length)
+                {
+                    Debug.LogErrorFormat("<TableHandle> 数据数量不正确，文件：{1}.txt, key = {0}", strArray[0], _fileName);
+                    break;
+                }
                 _dataBuf.Add(strArray[n]);
             }
 
@@ -143,7 +146,7 @@ public class TableHandler
 
         if (position < 0 || position > _dataBuf.Count)
         {
-            string error = string.Format("文件:{0} 读取出现异常! recordLine:{1} columNum:{2}", _fileName, recordLine, columNum);
+            string error = string.Format("文件:{0}.txt 读取出现异常! recordLine:{1} columNum:{2}", _fileName, recordLine, columNum);
             Debug.LogError("<TableHandle> " + error);
             return "";
         }
@@ -165,4 +168,17 @@ public class TableHandler
         return _fieldsNum;
     }
 
+    public string GetColumn( int recordLine, string name )
+    {
+        for ( int i = 0; i < _columns.Length; ++i )
+        {
+            // 找对应列数
+            if ( _columns[i] == name )
+            {
+                return GetValue( recordLine, i );
+            }
+        }
+
+        return "";
+    }
 }

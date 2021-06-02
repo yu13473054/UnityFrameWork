@@ -1,0 +1,19 @@
+ManifestFileVersion: 0
+CRC: 2939727984
+AssetBundleManifest:
+  AssetBundleInfos:
+    Info_0:
+      Name: lua_32_logic
+      Dependencies: {}
+    Info_1:
+      Name: lua_32_module
+      Dependencies: {}
+    Info_2:
+      Name: lua_32_tolua
+      Dependencies: {}
+    Info_3:
+      Name: lua_32_ui
+      Dependencies: {}
+    Info_4:
+      Name: lua_32_utils
+      Dependencies: {}

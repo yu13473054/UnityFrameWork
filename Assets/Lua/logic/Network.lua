@@ -1,105 +1,183 @@
--- 网络交互部分，收到的消息分发出去不处理逻辑
-Network = {};
-Network.Connected = false;
+Network = DefineConst("Network", {});
 
--- 每次发消息都会+1
-local _msgCount = 0;
-local _sessionId = "";
+Network.RECONNECT = {};
+Network.RECONNECT.NORMAL                = 1;            --正常流程
+Network.RECONNECT.TOLGOIN               = 2;            --直接登录
+
+Network.NETSTATUS_NONE                  = 0;            
+Network.NETSTATUS_LOGIN                 = 1;            --登录成功
+Network.NETSTATUS_ONRECONNECT           = 2;            --重连中   
+Network.NETSTATUS_NEEDSTOPRECONNECT     = 3;            --重连成功，通知关闭协程
+Network.NETSTATUS_WAITRECONNECT         = 4;            --等待重连
+Network.NETSTATUS_WAITTODLGLOGIN        = 5;            --等待跳转到登录界面
+Network.NETSTATUS_NEEDSTOPCONNECT       = 6;            --登录连接成功。通知关闭协程
+
+Network.reconnectNum = 0;
+Network.reconnectStatus = Network.RECONNECT.NORMAL;
+
+local _errorCode = -1;
+
+local json = require "cjson";
 
 -- 连接游戏服务器
 function Network.Connect( host, port )
-    -- 只允许连接1次，断开后重置
-    if Network.Connected then
-        return;
-    end
-
-    _msgCount = 0;
-
-    NetworkMgr.Inst:SendConnect( host, port );
+    Log( "<Network> 开始连接服务器...");
+    NetworkManager.instance:SendConnect( host, port );
 end
 
 -- Socket消息
-function Network.Response( id, data )
+function Network.Response( msgID, msg )
     -- 特殊消息处理
-    if id == EVENT_SOCKET_ONCONNECT then
+    if msgID == EVENT_NET_ONCONNECT then
         -- 连接成功
-        Log( "<Socket> 连接服务器成功!" );
-        Event.Net:DispatchEvent( EVENT_SOCKET_ONCONNECT );
-        --Network.Connected = true;
+        Log( "<Network> 连接服务器成功!" );
+        EventDispatcher.DispatchEvent(EVENT_NET_ONCONNECT);
         return;
-    elseif id == EVENT_SOCKET_DISCONNECT then
-        -- 连接异常断开
-        Log( "<Socket> 与服务器连接异常!" );
-        Network.Connected = false;
-        -- 尝试重新连接
-        return;
-    elseif id == EVENT_SOCKET_EXCEPTION then
+    elseif msgID == EVENT_NET_EXCEPTION then
         -- 连接正常断开
-        Log( "<Socket> 与服务器连接断开!" );
-        Network.Connected = false;
+        Log( "<Network> 与服务器连接断开!" );
+        EventDispatcher.DispatchEvent(EVENT_NET_ERROR, msgID);
         return;
     end
 
-    -- 处理正常消息
-    -- 先解母包
-    local msg = G2CResponse():Unpack( data );
-
-    -- 然后把本体分发出去
-    Log( "<Socket> 接收协议: " .. msg.msgType );
-    Event.Net:DispatchEvent( msg.msgType, msg.msgBody, msg.msgType );
+    -- 分发消息分发出去
+    if msgID ~= 1801 then  --服务器时间包不输出日志
+        Log( "<Network> 接收协议: " .. msgID );
+    end
+    EventDispatcher.DispatchEvent( msgID, msg );
 end
 
--- 序列化消息，传过来的是本体，需要包装一层
-function Network.Send( msgBody )
-    local msgType = msgBody.msgType;
-    if msgType == nil then
+-- 序列化消息，并发送
+function Network.Send( msgID, msg, notCheck )
+    if _errorCode == Network.ErrorCode.SERVERDISCONNECT then
+        DlgWait.Close();
+        Network.OnReconnectOver();
         return;
     end
-
-    -- 计数
-    _msgCount = _msgCount + 1;
-    
-    -- 先封母包
-    local msg = C2GRequest();
-    msg.msgType = msgType;
-    msg.msgCount = _msgCount;
-    msg.sessionId = _sessionId;
-    msg.msgBody = msgBody:SerializeToString();
-
-    -- 发包
-    Log( "<Socket> 发送协议: " .. msgType );
-    NetworkMgr.Inst:Send( msg:SerializeToString() );
+    NetworkManager.instance:Send( msgID, msg:SerializeToString() );-- 发包
 end
-
--- 接受登陆成功包，保存网络scessionID
-function Network.OnLogin( data )
-    local msg = Res_LoginMsg():Unpack(data);
-    _sessionId = msg.sessionId;
-end
-Event.Net:AddListener( Res_Login, Network.OnLogin );
 
 -- Http发消息, 如果needResponse将会接受返回事件
-function Network.HttpGet( url )
-    NetworkMgr.Inst:HttpGet( url );
+function Network.HttpGet(msgID, url, dontDecode)
+    NetworkManager.instance:HttpGet( msgID, url, dontDecode );
+end
+
+-- HttpPost
+function Network.HttpPostForm(msgID, url, ...)
+    NetworkManager.instance:HttpPostForm( msgID, url, ...);
+end
+
+-- HttpPost
+function Network.HttpPostJson(msgID, url, json, ...)
+    NetworkManager.instance:HttpPostJson( msgID, url, json, ...);
 end
 
 -- Http回消息
-function Network.HttpResponse( err, data )
+function Network.HttpResponse( err, msgID, data, dontDecode, ... )
     -- 判错
     if err > 0 then
-        LogErr( "<Http> " .. data );
+        LogErr( "<Network> 接收HTTP出错！ " .. data );
         return;
     end
-    Log( "<Http> " .. data );
+    Log( "<Network> 接收HTTP协议: " .. msgID );
+
+    -- 不解码，直接发
+    if dontDecode then
+        EventDispatcher.DispatchEvent( msgID, data, ... );
+        return;
+    end
 
     -- json拆包
-    local json = require "cjson";
-	local msg = json.decode( data );
-	if msg == nil or msg["protocolId"] == nil then
-        LogErr( "<Http> 无效的返回值！" );
-		return;
-	end
-    
+    local ret, msg = pcall(json.decode, data);
+    -- 无法解析把返回值抛出
+    if not ret then
+        LogErr( "<Network> 无效的返回值！msgID = " ..  msgID .. "：" .. data );
+        return;
+    end
+
     -- 然后把解析好的表分发出去
-    Event.Net:DispatchEvent( msg["protocolId"], msg );
+    EventDispatcher.DispatchEvent( msgID, msg, ... );
 end
+
+--重连
+local function Network_OnCSReconnect()
+    local msg = account_pb.CSReconnect();
+    SDKHelper.DSDK(msg.sdk);
+    msg.humanId  = PlayerCache.GetHumanId();
+    msg.sessionKey  = SDKHelper.GetUniqueKey();
+    Network.Send( MsgId.CSReconnect, msg);
+end
+local function Network_OnSCReconnect(msg)
+    EventDispatcher.RemoveListener( MsgId.SCReconnect, Network_OnSCReconnect );
+    msg = account_pb.SCReconnect():Unpack(msg);
+    NetworkManager.instance.netStatus = Network.NETSTATUS_LOGIN; --转换成登录了
+    if NetworkManager.instance.cid == msg.cMsgReq then
+        DlgWait.Close();
+    else
+        NetworkManager.instance:SendCache(msg.cMsgReq); --发送上次失败的包
+    end
+end
+
+-- 服务器连接成功
+local function Network_OnConnect()
+    -- 取消消息注册
+    EventDispatcher.RemoveListener(EVENT_NET_ONCONNECT, Network_OnConnect );
+    Network.reconnectNum = 0;
+    EventDispatcher.AddListener( MsgId.SCReconnect, Network_OnSCReconnect );
+    Network_OnCSReconnect();
+end
+---开始重连
+function Network.OnReConnect()
+    Log( "<Network> 开始重新连接服务器..." );
+    DlgWait.Open();
+    Network.reconnectNum = Network.reconnectNum + 1;
+    --注册连接回调
+    EventDispatcher.AddListener(EVENT_NET_ONCONNECT, Network_OnConnect );
+end
+
+function Network.StartReConnect()
+    NetworkManager.instance:ReConnect();
+end
+
+--单次重连结束
+function Network.OnTimeOver()
+    NetworkManager.instance.netStatus = Network.NETSTATUS_NEEDSTOPRECONNECT;
+end
+
+--多次重连结束
+function Network.OnReconnectOver(textSn)
+    textSn = textSn or "ui_150102";
+    DlgConfirmBox.Show(ReBoot, nil, Localization.Get(textSn));
+    --停止重连
+    Network.reconnectNum = 0;
+    NetworkManager.instance.netStatus = Network.NETSTATUS_WAITTODLGLOGIN;  --显示需要重新登录的弹窗
+end
+-------------------------------
+---------网络异常处理-----------
+-------------------------------
+----服务器错误码
+--function Network.OnSCErrCode(msg)
+--    msg = account_pb.SCErrCode():Unpack(msg);
+--    Log( "<Network> 服务器错误码：" .. msg.errCode);
+--    _errorCode = msg.errCode;
+--    if msg.errCode == Network.ErrorCode.OTHERLOGIN then --被踢掉了
+--        if NetworkManager.instance.netStatus == Network.NETSTATUS_LOGIN then --已经登录了
+--            DlgWait.Close();
+--            Network.OnReconnectOver("ui_150103")
+--        end
+--    elseif msg.errCode == Network.ErrorCode.SERVERLOGINOUT then
+--        --发送重连包121后，服务器会根据情况，返回121或者错误码，二者回其一。
+--        EventDispatcher.RemoveListener( MsgId.SCReconnect, Network_OnSCReconnect );
+--        if Network.reconnectStatus ~= Network.RECONNECT.NORMAL then --服务器登出了，且在特殊玩法中，就需要直接跳转到登录界面
+--            DlgWait.Close();
+--            Network.OnReconnectOver();
+--        else
+--            Log( "<Network> 开始重新登录！" );
+--            NetworkManager.instance:OnServerLoignOut(); --清除服务器缓存
+--            EventDispatcher.AddListener( MsgId.SCInitData, Network_OnReInitData );
+--            Network_OnCSFreeLogin();
+--        end
+--    end
+--end
+--EventDispatcher.AddListener(MsgId.SCErrCode, Network.OnSCErrCode);
+

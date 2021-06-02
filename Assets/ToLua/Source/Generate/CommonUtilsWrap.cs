@@ -21,10 +21,11 @@ public class CommonUtilsWrap
 		L.RegFunction("SetLocalScale", SetLocalScale);
 		L.RegFunction("SetLocalRotation", SetLocalRotation);
 		L.RegFunction("SetParent", SetParent);
-		L.RegFunction("ClearMemory", ClearMemory);
 		L.RegFunction("IsChinese", IsChinese);
 		L.RegFunction("StrLenWidth", StrLenWidth);
 		L.RegFunction("NameCheck", NameCheck);
+		L.RegFunction("EncryptTxt", EncryptTxt);
+		L.RegFunction("DecryptTxt", DecryptTxt);
 		L.RegVar("NetAvailable", get_NetAvailable, null);
 		L.RegVar("IsWifi", get_IsWifi, null);
 		L.EndStaticLibs();
@@ -432,21 +433,6 @@ public class CommonUtilsWrap
 	}
 
 	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
-	static int ClearMemory(IntPtr L)
-	{
-		try
-		{
-			ToLua.CheckArgsCount(L, 0);
-			//CommonUtils.ClearMemory();
-			return 0;
-		}
-		catch (Exception e)
-		{
-			return LuaDLL.toluaL_exception(L, e);
-		}
-	}
-
-	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
 	static int IsChinese(IntPtr L)
 	{
 		try
@@ -489,6 +475,40 @@ public class CommonUtilsWrap
 			string arg0 = ToLua.CheckString(L, 1);
 			bool o = CommonUtils.NameCheck(arg0);
 			LuaDLL.lua_pushboolean(L, o);
+			return 1;
+		}
+		catch (Exception e)
+		{
+			return LuaDLL.toluaL_exception(L, e);
+		}
+	}
+
+	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
+	static int EncryptTxt(IntPtr L)
+	{
+		try
+		{
+			ToLua.CheckArgsCount(L, 1);
+			string arg0 = ToLua.CheckString(L, 1);
+			string o = CommonUtils.EncryptTxt(arg0);
+			LuaDLL.lua_pushstring(L, o);
+			return 1;
+		}
+		catch (Exception e)
+		{
+			return LuaDLL.toluaL_exception(L, e);
+		}
+	}
+
+	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
+	static int DecryptTxt(IntPtr L)
+	{
+		try
+		{
+			ToLua.CheckArgsCount(L, 1);
+			string arg0 = ToLua.CheckString(L, 1);
+			string o = CommonUtils.DecryptTxt(arg0);
+			LuaDLL.lua_pushstring(L, o);
 			return 1;
 		}
 		catch (Exception e)

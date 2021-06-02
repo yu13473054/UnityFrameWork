@@ -4,9 +4,12 @@
 --      Use, modification and distribution are subject to the "MIT License"
 --------------------------------------------------------------------------------
 if jit then		
-	if jit.opt then		
-		jit.opt.start(3)				
-	end		
+    jit.off(); --关闭jit模式，只是用interrupt模式
+    jit.flush();
+
+--	if jit.opt then		
+--		jit.opt.start(3)				
+--	end		
 	
 --	print("ver"..jit.version_num.." jit: ", jit.status())
 --	print(string.format("os: %s, arch: %s", jit.os, jit.arch))

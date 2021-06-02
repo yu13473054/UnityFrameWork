@@ -1,5 +1,4 @@
 资源名	CN	EN	JP
-Ability	Ability	Ability	Ability
 AI	AI_cn	AI	AI
 Audio	Audio_cn	Audio	Audio
 Char	Char_cn	Char	Char
@@ -10,5 +9,6 @@ Fight_Launcher	Fight_Launcher_cn	Fight_Launcher	Fight_Launcher
 localization	localization_cn	localization_en	localization_jp
 Localization	Localization_cn	Localization	Localization
 Skill	Skill_cn	Skill	Skill
-SkillDesc	SkillDesc	SkillDesc	SkillDesc
+TeachStep	TeachStep_cn	TeachStep	TeachStep
+TeachStruct	TeachStruct_cn	TeachStruct	TeachStruct
 Unit	Unit_cn	Unit	Unit
