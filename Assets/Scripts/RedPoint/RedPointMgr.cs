@@ -8,64 +8,6 @@ using UnityEngine;
 /// </summary>
 public class RedPointMgr
 {
-    /// <summary>
-    /// 节点对象
-    /// </summary>
-    public class Node
-    {
-        public string name; //节点的名称，也是Tigger的名称
-        public int pointNum; //具体的红点数量
-        public Node parent;
-        private List<Node> _childs = new List<Node>();
-
-        public void AddChild(Node child)
-        {
-            if (_childs.Contains(child)) return; //不能重复添加
-            _childs.Add(child);
-        }
-
-        /// <summary>
-        /// 触发事件，通知修改了数量
-        /// </summary>
-        /// <param name="recursion">是否递归触发父级的Trigger。默认为true</param>
-        public void TriggerEvent(bool recursion = true)
-        {
-            EventMgr.Inst.RedPointkEvt.TriggerEvent<int>(name, pointNum); 
-            if (parent != null && recursion)
-                parent.TriggerEvent(recursion);
-        }
-
-        /// <summary>
-        /// 强行设置节点的红点数
-        /// </summary>
-        /// <param name="isTrigger">是否Trigger事件</param>
-        public void SetPointNum(int num, bool isTrigger = true)
-        {
-            if (pointNum == num) return;
-            if(parent != null)//为null说明是root节点
-            {
-                int changeNum = num - pointNum;
-                parent.SetPointNum(parent.pointNum + changeNum, isTrigger);
-            }
-            pointNum = num;
-            if (isTrigger)
-                TriggerEvent(false);
-        }
-
-        //是否为叶子节点
-        public bool IsEndNode()
-        {
-            return _childs.Count == 0;
-        }
-    }
-
-    //只需要配置每个叶子节点的tag，生成结点时，会自动生成父节点信息
-    private readonly string[] PointTags = {
-        "Mian.Mail.System",
-        "Mian.Mail.Team",
-        "Mian.Mail.Notice",
-    };
-
     private static RedPointMgr _inst;
     public static RedPointMgr Inst
     {
@@ -76,82 +18,163 @@ public class RedPointMgr
         }
     }
 
-    private Dictionary<string, Node> _nodeDic;
+    public Dictionary<int, RedPointNode> nodeDic { get; private set; }
+
+    private int _index; //当前节点的最大索引
 
     public void Init()
     {
-        _nodeDic = new Dictionary<string, Node>();
+        nodeDic = new Dictionary<int, RedPointNode>();
         //初始化红点结构
-        for(int i = 0; i<PointTags.Length; i++)
+        RedPointAsset pointAsset = ResMgr.Inst.LoadAsset<RedPointAsset>("RedPointCfg", 3, "RedPoint");
+        //转换下数据
+        AddNode(pointAsset.cfg);
+        for (int i = 0; i < pointAsset.cfgList.Count; i++)
         {
-            string tag = PointTags[i];
-            ParseTag(tag);
+            AddNode(pointAsset.cfgList[i]);
         }
+        //构建下每个节点的查询表
+        foreach(var pair in nodeDic)
+        {
+            pair.Value.BuildChildDic();
+            if (pair.Key > _index)
+                _index = pair.Key;
+        }
+
+        //释放空间
+        ResMgr.Inst.OnModuleDestroy("RedPoint", true);
     }
 
-    //解析一个标签
-    private void ParseTag(string tag)
+    private void AddNode(RedPointAssetCfg cfg)
     {
-        string[] splits = tag.Split('.');
-        for (int j = splits.Length - 1; j >= 0; j--)
+        RedPointNode node = new RedPointNode(cfg);
+        nodeDic.Add(cfg.id, node);
+    }
+    private RedPointNode AddNode(int id, string key, int parentId)
+    {
+        RedPointNode node = new RedPointNode(id, key, parentId);
+        nodeDic.Add(id, node);
+        return node;
+    }
+
+    public RedPointNode rootNode
+    {
+        get
         {
-            string name = splits[j];
-            Node node;
-            if (!_nodeDic.TryGetValue(name, out node))
-            {
-                node = new Node()
-                {
-                    name = name
-                };
-                _nodeDic.Add(name, node);
-            }
-            if (node.parent != null) break;//父节点的信息已经设置过，后续的节点直接跳过
-            if (j != splits.Length - 1)
-            {
-                Node childNode = _nodeDic[splits[j + 1]];
-                childNode.parent = node;//设置parent
-                node.AddChild(childNode);//将自己设置为child节点，方法本身会剔重
-            }
-            else //叶子节点
-            {
-                Node parentNode;
-                if (_nodeDic.TryGetValue(splits[j - 1], out parentNode))
-                {
-                    node.parent = parentNode;
-                    parentNode.AddChild(node);
-                }
-            }
+            return nodeDic[1];
         }
     }
 
     /// <summary>
-    /// 动态添加一个有红点功能标签：例如道具背包中的每个item上的New功能。
-    /// 此时，每个Item都应该为一个叶子节点，此时只需为每个Item设置一个独有的Name即可
+    /// 通过Key获取到对应到节点，必须从根节点开始
     /// </summary>
-    /// <param name="tag">Tag应该具有完整的父子级关系</param>
-    public void AddDynamicTag(string tag)
+    /// <param name="fullKey">例如：Root.Main.Mail</param>
+    public int GetIdByKey(string fullKey)
     {
-        ParseTag(tag);
+        string[] splits = fullKey.Split('.');
+        RedPointNode node = rootNode;
+        if (!splits[0].Equals(node.key))
+        {
+            Debug.LogErrorFormat("<RedPointMgr> {0}需要从根节点{1}开始！", fullKey, node.key);
+            return -1;
+        }
+        int id = node.id;
+        for (int j = 1; j < splits.Length; j++)
+        {
+            string key = splits[j];
+            if (!node.childDicByKey.TryGetValue(key, out id))
+            {
+                Debug.LogErrorFormat("<RedPointMgr> 节点{0}不存在！", key);
+                return -1;
+            }
+            //节点存在，继续查找
+            node = nodeDic[id];
+        }
+        return id;
+    }
+
+    /// 为parentId所在的节点，添加子节点
+    /// <param name="key">叶子节点key</param>
+    /// <param name="parentId">父节点id</param>
+    public int AddDynamicKey(string key, int parentId)
+    {
+        RedPointNode parentNode = nodeDic[parentId];
+        int id;
+        if(parentNode.childDicByKey.TryGetValue(key, out id))
+        {
+            if (!nodeDic[id].IsLeafNode())
+            {
+                Debug.LogErrorFormat("<RedPointMgr> {0}不是叶子节点！", key);
+                return -1;
+            }
+            return id;
+        }
+        id = ++_index;
+        RedPointNode childNode = AddNode(id, key, parentNode.id);
+        parentNode.AddChild(childNode);
+        return id;
+    }
+
+    /// <summary>
+    /// 动态添加一个有红点功能标签：例如道具背包中的每个item上的New功能。
+    /// 此时，每个Item都应该为一个叶子节点，此时只需为每个Item设置一个独有的Key
+    /// </summary>
+    /// <param name="fullKey">Tag应该具有完整的父子级关系, 需要从根节点开始</param>
+    public int AddDynamicFullKey(string fullKey)
+    {
+        string[] splits = fullKey.Split('.');
+        RedPointNode node = rootNode;
+        if (!splits[0].Equals(node.key))
+        {
+            Debug.LogErrorFormat("<RedPointMgr> {0}需要从根节点{1}开始", fullKey, node.key);
+            return -1;
+        }
+        int leafNodeId = 0;
+        for (int j = 1; j < splits.Length; j++)
+        {
+            string key = splits[j];
+            //节点存在，继续查找
+            if(node.childDicByKey.TryGetValue(key, out leafNodeId))
+            {
+                node = nodeDic[leafNodeId];
+                continue;
+            }
+            //节点不存在，需要创建一个节点
+            leafNodeId = ++_index;
+            RedPointNode childNode = AddNode(leafNodeId, key, node.id);
+            node.AddChild(childNode);
+            node = childNode;
+        }
+        if (!node.IsLeafNode())
+        {
+            Debug.LogErrorFormat("<RedPointMgr> {0}不是叶子节点！", fullKey);
+            return -1;
+        }
+        return leafNodeId;
     }
 
     /// <summary>
     /// 修改指定节点的红点数，默认只能修改叶子节点的数量
     /// </summary>
     /// <param name="checkEndNode">检查节点是否为叶子节点，默认为true.</param>
-    public void SetPointNum(string name, int num, bool checkEndNode = true)
+    public void SetPointNum(int id, int num, bool checkEndNode = true)
     {
-        Node node = _nodeDic[name];
-        if(checkEndNode && !node.IsEndNode())
+        RedPointNode node = nodeDic[id];
+        if(checkEndNode && !node.IsLeafNode())
         {
-            Debug.LogErrorFormat("<RedPointMgr> {0}节点不是叶子节点，请检查是否要进行此操作！", name);
+            Debug.LogErrorFormat("<RedPointMgr> {0}节点不是叶子节点，请检查是否要进行此操作！", node.key);
             return;
         }
         node.SetPointNum(num);
     }
-
-    public int GetPointNum(string name)
+    public void SetPointNum(string fullKey, int num, bool checkEndNode = true)
     {
-        Node node = _nodeDic[name];
+        SetPointNum(GetIdByKey(fullKey), num, checkEndNode);
+    }
+
+    public int GetPointNum(int id)
+    {
+        RedPointNode node = nodeDic[id];
         return node.pointNum;
     }
 }

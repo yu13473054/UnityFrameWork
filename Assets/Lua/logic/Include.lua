@@ -8,6 +8,4 @@ require "utils/UIHelper"
 -- UI
 require "ui/DlgLogin"
 require "ui/DlgWait"
-require "ui/DlgTest"
 require "ui/DlgMain"
-require "ui/ModTest"

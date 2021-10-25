@@ -87,6 +87,9 @@ public class Boot : MonoBehaviour
 
     void GameStart()
     {
+        //红点模块
+        RedPointMgr.Inst.Init();
+
         LuaMgr.Inst.Call("LuaStart");
     }
 

@@ -20,22 +20,22 @@ public class EventMgr
     }
 
     //按照模块分发
-    private EventDispatcher _commonEvt = new EventDispatcher();
-    public EventDispatcher CommonEvt
+    private EventDispatcher<string> _commonEvt = new EventDispatcher<string>();
+    public EventDispatcher<string> CommonEvt
     {
         get { return _commonEvt; }
     }
     //网络模块
-    private EventDispatcher _networkEvt = new EventDispatcher();
-    public EventDispatcher NetworkEvt
+    private EventDispatcher<int> _networkEvt = new EventDispatcher<int>();
+    public EventDispatcher<int> NetworkEvt
     {
         get { return _networkEvt; }
     }
     //红点
-    private EventDispatcher _redPointkEvt = new EventDispatcher();
-    public EventDispatcher RedPointkEvt
+    private EventDispatcher<int> _redPointEvt = new EventDispatcher<int>();
+    public EventDispatcher<int> RedPointEvt
     {
-        get { return _redPointkEvt; }
+        get { return _redPointEvt; }
     }
 }
 

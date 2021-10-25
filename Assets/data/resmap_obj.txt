@@ -8,6 +8,7 @@ Fight_Effect_cn	Assets/Localization/CN/Data/Excel/Fight_Effect.txt	localization_
 Fight_Launcher_cn	Assets/Localization/CN/Data/Excel/Fight_Launcher.txt	localization_cn_data_excel
 localization_cn	Assets/Localization/CN/Data/Txt/localization.txt	localization_cn_data_txt
 Localization_cn	Assets/Localization/CN/Data/Excel/Localization.txt	localization_cn_data_excel
+RedPointCfg	Assets/Data/RedPointCfg.asset	data
 Skill_cn	Assets/Localization/CN/Data/Excel/Skill.txt	localization_cn_data_excel
 TeachStep_cn	Assets/Localization/CN/Data/Excel/TeachStep.txt	localization_cn_data_excel
 TeachStruct_cn	Assets/Localization/CN/Data/Excel/TeachStruct.txt	localization_cn_data_excel

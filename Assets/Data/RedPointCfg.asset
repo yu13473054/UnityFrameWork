@@ -1,0 +1,41 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ae4417219c18748f6b7218a92b900240, type: 3}
+  m_Name: RedPointCfg
+  m_EditorClassIdentifier: 
+  cfg:
+    key: Root
+    isShowChild: 1
+    childs: 0200000004000000
+    id: 1
+    parentId: -1
+  cfgList:
+  - key: Main
+    isShowChild: 1
+    childs: 03000000
+    id: 2
+    parentId: 1
+  - key: Btn
+    isShowChild: 0
+    childs: 
+    id: 3
+    parentId: 2
+  - key: Login
+    isShowChild: 1
+    childs: 05000000
+    id: 4
+    parentId: 1
+  - key: Notice
+    isShowChild: 0
+    childs: 
+    id: 5
+    parentId: 4

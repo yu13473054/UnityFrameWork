@@ -2,11 +2,11 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class EventDispatcher
+public class EventDispatcher<K>
 {
-    private Dictionary<object, Delegate> _dicEvents = new Dictionary<object, Delegate>();
+    private Dictionary<K, Delegate> _dicEvents = new Dictionary<K, Delegate>();
 
-    void Add(object eventId, Delegate listener)
+    void Add(K eventId, Delegate listener)
     {
         if (!_dicEvents.ContainsKey(eventId))
         {
@@ -23,7 +23,7 @@ public class EventDispatcher
             _dicEvents[eventId] = Delegate.Combine(tmpDel, listener);
         }
     }
-    void Remove(object eventId, Delegate listener)
+    void Remove(K eventId, Delegate listener)
     {
         if (!_dicEvents.ContainsKey(eventId))
             return;
@@ -47,17 +47,17 @@ public class EventDispatcher
     }
 
     #region Void
-    public void AddEventListener(object eventId, Action listener)
+    public void AddEventListener(K eventId, Action listener)
     {
         Add(eventId,listener);
     }
 
-    public void RemoveEventListener(object eventId, Action listener)
+    public void RemoveEventListener(K eventId, Action listener)
     {
         Remove(eventId, listener);
     }
 
-    public void TriggerEvent(object eventId)
+    public void TriggerEvent(K eventId)
     {
         Delegate del = null;
         if (_dicEvents.TryGetValue(eventId, out del))
@@ -69,17 +69,17 @@ public class EventDispatcher
     #endregion
 
     #region One param
-    public void AddEventListener<T>(object eventId, Action<T> listener)
+    public void AddEventListener<T>(K eventId, Action<T> listener)
     {
         Add(eventId, listener);
     }
 
-    public void RemoveEventListener<T>(object eventId, Action<T> listener)
+    public void RemoveEventListener<T>(K eventId, Action<T> listener)
     {
         Remove(eventId, listener);
     }
 
-    public void TriggerEvent<T>(object eventId, T p)
+    public void TriggerEvent<T>(K eventId, T p)
     {
         Delegate del = null;
         if (_dicEvents.TryGetValue(eventId, out del))
@@ -90,17 +90,17 @@ public class EventDispatcher
     #endregion
 
     #region Two params
-    public void AddEventListener<T0, T1>(object eventId, Action<T0, T1> listener)
+    public void AddEventListener<T0, T1>(K eventId, Action<T0, T1> listener)
     {
         Add(eventId, listener);
     }
 
-    public void RemoveEventListener<T0, T1>(object eventId, Action<T0, T1> listener)
+    public void RemoveEventListener<T0, T1>(K eventId, Action<T0, T1> listener)
     {
         Remove(eventId, listener);
     }
 
-    public void TriggerEvent<T0, T1>(object eventId, T0 p0, T1 p1)
+    public void TriggerEvent<T0, T1>(K eventId, T0 p0, T1 p1)
     {
         Delegate del = null;
         if (_dicEvents.TryGetValue(eventId, out del))
@@ -111,17 +111,17 @@ public class EventDispatcher
     #endregion
 
     #region Thress params
-    public void AddEventListener<T0, T1, T2>(object eventId, Action<T0, T1, T2> listener)
+    public void AddEventListener<T0, T1, T2>(K eventId, Action<T0, T1, T2> listener)
     {
         Add(eventId, listener);
     }
 
-    public void RemoveEventListener<T0, T1, T2>(object eventId, Action<T0, T1, T2> listener)
+    public void RemoveEventListener<T0, T1, T2>(K eventId, Action<T0, T1, T2> listener)
     {
         Remove(eventId, listener);
     }
 
-    public void TriggerEvent<T0, T1, T2>(object eventId, T0 p0, T1 p1, T2 p2)
+    public void TriggerEvent<T0, T1, T2>(K eventId, T0 p0, T1 p1, T2 p2)
     {
         Delegate del = null;
         if (_dicEvents.TryGetValue(eventId, out del))
@@ -132,17 +132,17 @@ public class EventDispatcher
     #endregion
 
     #region four params
-    public void AddEventListener<T0, T1, T2, T3>(object eventId, Action<T0, T1, T2, T3> listener)
+    public void AddEventListener<T0, T1, T2, T3>(K eventId, Action<T0, T1, T2, T3> listener)
     {
         Add(eventId, listener);
     }
 
-    public void RemoveEventListener<T0, T1, T2, T3>(object eventId, Action<T0, T1, T2, T3> listener)
+    public void RemoveEventListener<T0, T1, T2, T3>(K eventId, Action<T0, T1, T2, T3> listener)
     {
         Remove(eventId, listener);
     }
 
-    public void TriggerEvent<T0, T1, T2, T3>(object eventId, T0 p0, T1 p1, T2 p2, T3 p3)
+    public void TriggerEvent<T0, T1, T2, T3>(K eventId, T0 p0, T1 p1, T2 p2, T3 p3)
     {
         Delegate del = null;
         if (_dicEvents.TryGetValue(eventId, out del))

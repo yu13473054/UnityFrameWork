@@ -1,6 +1,4 @@
 资源键名	资源路径	所在assetBundle名称
 DlgLogin	Assets/Res/Prefab/UI/DlgLogin.prefab	res_prefab_ui_dlglogin
 DlgMain	Assets/Res/Prefab/UI/DlgMain.prefab	res_prefab_ui_dlgmain
-DlgTest	Assets/Res/Prefab/UI/DlgTest.prefab	res_prefab_ui_dlgtest
 DlgWait	Assets/Res/Prefab/UI/DlgWait.prefab	res_prefab_ui_dlgwait
-ModTest	Assets/Res/Prefab/UI/ModTest.prefab	res_prefab_ui_modtest
