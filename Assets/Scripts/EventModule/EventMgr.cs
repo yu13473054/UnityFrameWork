@@ -2,23 +2,8 @@
 using System.Collections.Generic;
 
 /// 每个模块需要单独设置一个EventDispatcher用来管理相应模块的事件
-public class EventMgr
+public class EventMgr : Singleton<EventMgr>
 {
-    private static EventMgr _inst;
-    public static EventMgr Inst
-    {
-        get
-        {
-            if(_inst == null) _inst = new EventMgr();
-            return _inst;
-        }
-    }
-
-    public void OnDestory()
-    {
-        _inst = null;
-    }
-
     //按照模块分发
     private EventDispatcher<string> _commonEvt = new EventDispatcher<string>();
     public EventDispatcher<string> CommonEvt

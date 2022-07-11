@@ -387,18 +387,18 @@ public class CommonUtilsWrap
 		{
 			int count = LuaDLL.lua_gettop(L);
 
-			if (count == 3 && TypeChecker.CheckTypes<UnityEngine.Transform, bool>(L, 2))
+			if (count == 3 && TypeChecker.CheckTypes<UnityEngine.GameObject, bool>(L, 2))
 			{
 				UnityEngine.GameObject arg0 = (UnityEngine.GameObject)ToLua.CheckObject(L, 1, typeof(UnityEngine.GameObject));
-				UnityEngine.Transform arg1 = (UnityEngine.Transform)ToLua.ToObject(L, 2);
+				UnityEngine.GameObject arg1 = (UnityEngine.GameObject)ToLua.ToObject(L, 2);
 				bool arg2 = LuaDLL.lua_toboolean(L, 3);
 				CommonUtils.SetParent(arg0, arg1, arg2);
 				return 0;
 			}
-			else if (count == 3 && TypeChecker.CheckTypes<UnityEngine.GameObject, bool>(L, 2))
+			else if (count == 3 && TypeChecker.CheckTypes<UnityEngine.Transform, bool>(L, 2))
 			{
 				UnityEngine.GameObject arg0 = (UnityEngine.GameObject)ToLua.CheckObject(L, 1, typeof(UnityEngine.GameObject));
-				UnityEngine.GameObject arg1 = (UnityEngine.GameObject)ToLua.ToObject(L, 2);
+				UnityEngine.Transform arg1 = (UnityEngine.Transform)ToLua.ToObject(L, 2);
 				bool arg2 = LuaDLL.lua_toboolean(L, 3);
 				CommonUtils.SetParent(arg0, arg1, arg2);
 				return 0;

@@ -21,16 +21,8 @@ public class AudioInfo
 /// <summary>
 /// 声音管理器，初始会加载多个AudioSource，默认是用第一个AudioSource播放BGM
 /// </summary>
-public class AudioMgr : MonoBehaviour
+public class AudioMgr : SingletonMono<AudioMgr>
 {
-    #region 初始化
-    public static AudioMgr _inst;
-    public static AudioMgr Inst
-    {
-        get { return _inst; }
-    }
-    #endregion
-
     Dictionary<int, AudioInfo> _resmapSound;    
 
     private AudioSource[] _audioSources;
@@ -54,9 +46,9 @@ public class AudioMgr : MonoBehaviour
     public int currBgId;
     public string currModule;
 
-    void Awake()
+    protected override void Awake()
     {
-        _inst = this;
+        base.Awake();
         DontDestroyOnLoad(gameObject);
 
         _audioSources = new AudioSource[GameMain.Inst.AudioLimit];
@@ -76,11 +68,10 @@ public class AudioMgr : MonoBehaviour
         OnInit();
     }
 
-    void OnDestroy()
+    protected override void OnDestroy()
     {
-        _inst = null;
+        base.OnDestroy();
         _resmapSound.Clear();
-        Debug.Log("<AudioMgr> OnDestroy!");
     }
 
     //读取音效数据

@@ -7,6 +7,7 @@ public class UnityEngine_UI_ScrollbarWrap
 	public static void Register(LuaState L)
 	{
 		L.BeginClass(typeof(UnityEngine.UI.Scrollbar), typeof(UnityEngine.UI.Selectable));
+		L.RegFunction("SetValueWithoutNotify", SetValueWithoutNotify);
 		L.RegFunction("Rebuild", Rebuild);
 		L.RegFunction("LayoutComplete", LayoutComplete);
 		L.RegFunction("GraphicUpdateComplete", GraphicUpdateComplete);
@@ -30,6 +31,23 @@ public class UnityEngine_UI_ScrollbarWrap
 		L.RegVar("numberOfSteps", get_numberOfSteps, set_numberOfSteps);
 		L.RegVar("onValueChanged", get_onValueChanged, set_onValueChanged);
 		L.EndClass();
+	}
+
+	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
+	static int SetValueWithoutNotify(IntPtr L)
+	{
+		try
+		{
+			ToLua.CheckArgsCount(L, 2);
+			UnityEngine.UI.Scrollbar obj = (UnityEngine.UI.Scrollbar)ToLua.CheckObject<UnityEngine.UI.Scrollbar>(L, 1);
+			float arg0 = (float)LuaDLL.luaL_checknumber(L, 2);
+			obj.SetValueWithoutNotify(arg0);
+			return 0;
+		}
+		catch (Exception e)
+		{
+			return LuaDLL.toluaL_exception(L, e);
+		}
 	}
 
 	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]

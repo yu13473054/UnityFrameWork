@@ -7,6 +7,10 @@ public class System_Collections_Generic_List_UnityEngine_Playables_PlayableAsset
 	public static void Register(LuaState L)
 	{
 		L.BeginClass(typeof(System.Collections.Generic.List<UnityEngine.Playables.PlayableAsset>), typeof(System.Object), "List_UnityEngine_Playables_PlayableAsset");
+		L.RegFunction(".geti", get_Item);
+		L.RegFunction("get_Item", get_Item);
+		L.RegFunction(".seti", set_Item);
+		L.RegFunction("set_Item", set_Item);
 		L.RegFunction("Add", Add);
 		L.RegFunction("AddRange", AddRange);
 		L.RegFunction("AsReadOnly", AsReadOnly);
@@ -36,10 +40,6 @@ public class System_Collections_Generic_List_UnityEngine_Playables_PlayableAsset
 		L.RegFunction("ToArray", ToArray);
 		L.RegFunction("TrimExcess", TrimExcess);
 		L.RegFunction("TrueForAll", TrueForAll);
-		L.RegFunction(".geti", get_Item);
-		L.RegFunction("get_Item", get_Item);
-		L.RegFunction(".seti", set_Item);
-		L.RegFunction("set_Item", set_Item);
 		L.RegFunction("New", _CreateSystem_Collections_Generic_List_UnityEngine_Playables_PlayableAsset);
 		L.RegVar("this", _this, null);
 		L.RegFunction("__tostring", ToLua.op_ToString);
@@ -132,6 +132,42 @@ public class System_Collections_Generic_List_UnityEngine_Playables_PlayableAsset
 			LuaDLL.lua_pushvalue(L, 1);
 			LuaDLL.tolua_bindthis(L, _get_this, _set_this);
 			return 1;
+		}
+		catch (Exception e)
+		{
+			return LuaDLL.toluaL_exception(L, e);
+		}
+	}
+
+	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
+	static int get_Item(IntPtr L)
+	{
+		try
+		{
+			ToLua.CheckArgsCount(L, 2);
+			System.Collections.Generic.List<UnityEngine.Playables.PlayableAsset> obj = (System.Collections.Generic.List<UnityEngine.Playables.PlayableAsset>)ToLua.CheckObject(L, 1, typeof(System.Collections.Generic.List<UnityEngine.Playables.PlayableAsset>));
+			int arg0 = (int)LuaDLL.luaL_checknumber(L, 2);
+			UnityEngine.Playables.PlayableAsset o = obj[arg0];
+			ToLua.Push(L, o);
+			return 1;
+		}
+		catch (Exception e)
+		{
+			return LuaDLL.toluaL_exception(L, e);
+		}
+	}
+
+	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
+	static int set_Item(IntPtr L)
+	{
+		try
+		{
+			ToLua.CheckArgsCount(L, 3);
+			System.Collections.Generic.List<UnityEngine.Playables.PlayableAsset> obj = (System.Collections.Generic.List<UnityEngine.Playables.PlayableAsset>)ToLua.CheckObject(L, 1, typeof(System.Collections.Generic.List<UnityEngine.Playables.PlayableAsset>));
+			int arg0 = (int)LuaDLL.luaL_checknumber(L, 2);
+			UnityEngine.Playables.PlayableAsset arg1 = (UnityEngine.Playables.PlayableAsset)ToLua.CheckObject<UnityEngine.Playables.PlayableAsset>(L, 3);
+			obj[arg0] = arg1;
+			return 0;
 		}
 		catch (Exception e)
 		{
@@ -770,17 +806,17 @@ public class System_Collections_Generic_List_UnityEngine_Playables_PlayableAsset
 				obj.Sort();
 				return 0;
 			}
-			else if (count == 2 && TypeChecker.CheckTypes<System.Comparison<UnityEngine.Playables.PlayableAsset>>(L, 2))
-			{
-				System.Collections.Generic.List<UnityEngine.Playables.PlayableAsset> obj = (System.Collections.Generic.List<UnityEngine.Playables.PlayableAsset>)ToLua.CheckObject(L, 1, typeof(System.Collections.Generic.List<UnityEngine.Playables.PlayableAsset>));
-				System.Comparison<UnityEngine.Playables.PlayableAsset> arg0 = (System.Comparison<UnityEngine.Playables.PlayableAsset>)ToLua.ToObject(L, 2);
-				obj.Sort(arg0);
-				return 0;
-			}
 			else if (count == 2 && TypeChecker.CheckTypes<System.Collections.Generic.IComparer<UnityEngine.Playables.PlayableAsset>>(L, 2))
 			{
 				System.Collections.Generic.List<UnityEngine.Playables.PlayableAsset> obj = (System.Collections.Generic.List<UnityEngine.Playables.PlayableAsset>)ToLua.CheckObject(L, 1, typeof(System.Collections.Generic.List<UnityEngine.Playables.PlayableAsset>));
 				System.Collections.Generic.IComparer<UnityEngine.Playables.PlayableAsset> arg0 = (System.Collections.Generic.IComparer<UnityEngine.Playables.PlayableAsset>)ToLua.ToObject(L, 2);
+				obj.Sort(arg0);
+				return 0;
+			}
+			else if (count == 2 && TypeChecker.CheckTypes<System.Comparison<UnityEngine.Playables.PlayableAsset>>(L, 2))
+			{
+				System.Collections.Generic.List<UnityEngine.Playables.PlayableAsset> obj = (System.Collections.Generic.List<UnityEngine.Playables.PlayableAsset>)ToLua.CheckObject(L, 1, typeof(System.Collections.Generic.List<UnityEngine.Playables.PlayableAsset>));
+				System.Comparison<UnityEngine.Playables.PlayableAsset> arg0 = (System.Comparison<UnityEngine.Playables.PlayableAsset>)ToLua.ToObject(L, 2);
 				obj.Sort(arg0);
 				return 0;
 			}
@@ -848,42 +884,6 @@ public class System_Collections_Generic_List_UnityEngine_Playables_PlayableAsset
 			bool o = obj.TrueForAll(arg0);
 			LuaDLL.lua_pushboolean(L, o);
 			return 1;
-		}
-		catch (Exception e)
-		{
-			return LuaDLL.toluaL_exception(L, e);
-		}
-	}
-
-	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
-	static int get_Item(IntPtr L)
-	{
-		try
-		{
-			ToLua.CheckArgsCount(L, 2);
-			System.Collections.Generic.List<UnityEngine.Playables.PlayableAsset> obj = (System.Collections.Generic.List<UnityEngine.Playables.PlayableAsset>)ToLua.CheckObject(L, 1, typeof(System.Collections.Generic.List<UnityEngine.Playables.PlayableAsset>));
-			int arg0 = (int)LuaDLL.luaL_checknumber(L, 2);
-			UnityEngine.Playables.PlayableAsset o = obj[arg0];
-			ToLua.Push(L, o);
-			return 1;
-		}
-		catch (Exception e)
-		{
-			return LuaDLL.toluaL_exception(L, e);
-		}
-	}
-
-	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
-	static int set_Item(IntPtr L)
-	{
-		try
-		{
-			ToLua.CheckArgsCount(L, 3);
-			System.Collections.Generic.List<UnityEngine.Playables.PlayableAsset> obj = (System.Collections.Generic.List<UnityEngine.Playables.PlayableAsset>)ToLua.CheckObject(L, 1, typeof(System.Collections.Generic.List<UnityEngine.Playables.PlayableAsset>));
-			int arg0 = (int)LuaDLL.luaL_checknumber(L, 2);
-			UnityEngine.Playables.PlayableAsset arg1 = (UnityEngine.Playables.PlayableAsset)ToLua.CheckObject<UnityEngine.Playables.PlayableAsset>(L, 3);
-			obj[arg0] = arg1;
-			return 0;
 		}
 		catch (Exception e)
 		{

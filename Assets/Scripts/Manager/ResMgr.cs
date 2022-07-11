@@ -47,16 +47,8 @@ public struct AssetInfo
     }
 }
 
-public class ResMgr : MonoBehaviour
+public class ResMgr : SingletonMono<ResMgr>
 {
-    #region 初始化
-    private static ResMgr _inst;
-    public static ResMgr Inst
-    {
-        get { return _inst; }
-    }
-    #endregion
-
     public static string[] ignoreArray = { };
 
     private AssetBundleManifest _rootManifest;
@@ -72,9 +64,9 @@ public class ResMgr : MonoBehaviour
     private List<AssetInfo> _preLoadAssets = new List<AssetInfo>();
     private List<string> _preLoadABs = new List<string>();
 
-    void Awake()
+    protected override void Awake()
     {
-        _inst = this;
+        base.Awake();
         DontDestroyOnLoad(gameObject);
     }
 
@@ -129,8 +121,9 @@ public class ResMgr : MonoBehaviour
     }
 
     /// 销毁资源
-    void OnDestroy()
+    protected override void OnDestroy()
     {
+        base.OnDestroy();
         foreach (var bundle in _bundleDic)
         {
             bundle.Value.ab.Unload(false);
@@ -139,7 +132,6 @@ public class ResMgr : MonoBehaviour
         _moduleDic.Clear();
         _refCountDic.Clear();
         Resources.UnloadUnusedAssets();
-        Debug.Log("<ResMgr> OnDestroy!");
     }
 
     /// 当使用者被销毁时，清除其引用

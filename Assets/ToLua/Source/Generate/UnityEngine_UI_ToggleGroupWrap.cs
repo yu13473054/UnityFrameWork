@@ -10,6 +10,7 @@ public class UnityEngine_UI_ToggleGroupWrap
 		L.RegFunction("NotifyToggleOn", NotifyToggleOn);
 		L.RegFunction("UnregisterToggle", UnregisterToggle);
 		L.RegFunction("RegisterToggle", RegisterToggle);
+		L.RegFunction("EnsureValidState", EnsureValidState);
 		L.RegFunction("AnyTogglesOn", AnyTogglesOn);
 		L.RegFunction("ActiveToggles", ActiveToggles);
 		L.RegFunction("SetAllTogglesOff", SetAllTogglesOff);
@@ -24,11 +25,27 @@ public class UnityEngine_UI_ToggleGroupWrap
 	{
 		try
 		{
-			ToLua.CheckArgsCount(L, 2);
-			UnityEngine.UI.ToggleGroup obj = (UnityEngine.UI.ToggleGroup)ToLua.CheckObject<UnityEngine.UI.ToggleGroup>(L, 1);
-			UnityEngine.UI.Toggle arg0 = (UnityEngine.UI.Toggle)ToLua.CheckObject<UnityEngine.UI.Toggle>(L, 2);
-			obj.NotifyToggleOn(arg0);
-			return 0;
+			int count = LuaDLL.lua_gettop(L);
+
+			if (count == 2)
+			{
+				UnityEngine.UI.ToggleGroup obj = (UnityEngine.UI.ToggleGroup)ToLua.CheckObject<UnityEngine.UI.ToggleGroup>(L, 1);
+				UnityEngine.UI.Toggle arg0 = (UnityEngine.UI.Toggle)ToLua.CheckObject<UnityEngine.UI.Toggle>(L, 2);
+				obj.NotifyToggleOn(arg0);
+				return 0;
+			}
+			else if (count == 3)
+			{
+				UnityEngine.UI.ToggleGroup obj = (UnityEngine.UI.ToggleGroup)ToLua.CheckObject<UnityEngine.UI.ToggleGroup>(L, 1);
+				UnityEngine.UI.Toggle arg0 = (UnityEngine.UI.Toggle)ToLua.CheckObject<UnityEngine.UI.Toggle>(L, 2);
+				bool arg1 = LuaDLL.luaL_checkboolean(L, 3);
+				obj.NotifyToggleOn(arg0, arg1);
+				return 0;
+			}
+			else
+			{
+				return LuaDLL.luaL_throw(L, "invalid arguments to method: UnityEngine.UI.ToggleGroup.NotifyToggleOn");
+			}
 		}
 		catch (Exception e)
 		{
@@ -62,6 +79,22 @@ public class UnityEngine_UI_ToggleGroupWrap
 			UnityEngine.UI.ToggleGroup obj = (UnityEngine.UI.ToggleGroup)ToLua.CheckObject<UnityEngine.UI.ToggleGroup>(L, 1);
 			UnityEngine.UI.Toggle arg0 = (UnityEngine.UI.Toggle)ToLua.CheckObject<UnityEngine.UI.Toggle>(L, 2);
 			obj.RegisterToggle(arg0);
+			return 0;
+		}
+		catch (Exception e)
+		{
+			return LuaDLL.toluaL_exception(L, e);
+		}
+	}
+
+	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
+	static int EnsureValidState(IntPtr L)
+	{
+		try
+		{
+			ToLua.CheckArgsCount(L, 1);
+			UnityEngine.UI.ToggleGroup obj = (UnityEngine.UI.ToggleGroup)ToLua.CheckObject<UnityEngine.UI.ToggleGroup>(L, 1);
+			obj.EnsureValidState();
 			return 0;
 		}
 		catch (Exception e)
@@ -109,10 +142,25 @@ public class UnityEngine_UI_ToggleGroupWrap
 	{
 		try
 		{
-			ToLua.CheckArgsCount(L, 1);
-			UnityEngine.UI.ToggleGroup obj = (UnityEngine.UI.ToggleGroup)ToLua.CheckObject<UnityEngine.UI.ToggleGroup>(L, 1);
-			obj.SetAllTogglesOff();
-			return 0;
+			int count = LuaDLL.lua_gettop(L);
+
+			if (count == 1)
+			{
+				UnityEngine.UI.ToggleGroup obj = (UnityEngine.UI.ToggleGroup)ToLua.CheckObject<UnityEngine.UI.ToggleGroup>(L, 1);
+				obj.SetAllTogglesOff();
+				return 0;
+			}
+			else if (count == 2)
+			{
+				UnityEngine.UI.ToggleGroup obj = (UnityEngine.UI.ToggleGroup)ToLua.CheckObject<UnityEngine.UI.ToggleGroup>(L, 1);
+				bool arg0 = LuaDLL.luaL_checkboolean(L, 2);
+				obj.SetAllTogglesOff(arg0);
+				return 0;
+			}
+			else
+			{
+				return LuaDLL.luaL_throw(L, "invalid arguments to method: UnityEngine.UI.ToggleGroup.SetAllTogglesOff");
+			}
 		}
 		catch (Exception e)
 		{

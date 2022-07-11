@@ -7,9 +7,9 @@ public class UnityEngine_RectOffsetWrap
 	public static void Register(LuaState L)
 	{
 		L.BeginClass(typeof(UnityEngine.RectOffset), typeof(System.Object));
+		L.RegFunction("ToString", ToString);
 		L.RegFunction("Add", Add);
 		L.RegFunction("Remove", Remove);
-		L.RegFunction("ToString", ToString);
 		L.RegFunction("New", _CreateUnityEngine_RectOffset);
 		L.RegFunction("__tostring", ToLua.op_ToString);
 		L.RegVar("left", get_left, set_left);
@@ -56,6 +56,23 @@ public class UnityEngine_RectOffsetWrap
 	}
 
 	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
+	static int ToString(IntPtr L)
+	{
+		try
+		{
+			ToLua.CheckArgsCount(L, 1);
+			UnityEngine.RectOffset obj = (UnityEngine.RectOffset)ToLua.CheckObject<UnityEngine.RectOffset>(L, 1);
+			string o = obj.ToString();
+			LuaDLL.lua_pushstring(L, o);
+			return 1;
+		}
+		catch (Exception e)
+		{
+			return LuaDLL.toluaL_exception(L, e);
+		}
+	}
+
+	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
 	static int Add(IntPtr L)
 	{
 		try
@@ -83,23 +100,6 @@ public class UnityEngine_RectOffsetWrap
 			UnityEngine.Rect arg0 = StackTraits<UnityEngine.Rect>.Check(L, 2);
 			UnityEngine.Rect o = obj.Remove(arg0);
 			ToLua.PushValue(L, o);
-			return 1;
-		}
-		catch (Exception e)
-		{
-			return LuaDLL.toluaL_exception(L, e);
-		}
-	}
-
-	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
-	static int ToString(IntPtr L)
-	{
-		try
-		{
-			ToLua.CheckArgsCount(L, 1);
-			UnityEngine.RectOffset obj = (UnityEngine.RectOffset)ToLua.CheckObject<UnityEngine.RectOffset>(L, 1);
-			string o = obj.ToString();
-			LuaDLL.lua_pushstring(L, o);
 			return 1;
 		}
 		catch (Exception e)

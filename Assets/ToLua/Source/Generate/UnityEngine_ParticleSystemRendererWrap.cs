@@ -9,16 +9,13 @@ public class UnityEngine_ParticleSystemRendererWrap
 		L.BeginClass(typeof(UnityEngine.ParticleSystemRenderer), typeof(UnityEngine.Renderer));
 		L.RegFunction("GetMeshes", GetMeshes);
 		L.RegFunction("SetMeshes", SetMeshes);
-		L.RegFunction("SetActiveVertexStreams", SetActiveVertexStreams);
-		L.RegFunction("GetActiveVertexStreams", GetActiveVertexStreams);
 		L.RegFunction("BakeMesh", BakeMesh);
 		L.RegFunction("BakeTrailsMesh", BakeTrailsMesh);
+		L.RegFunction("SetActiveVertexStreams", SetActiveVertexStreams);
+		L.RegFunction("GetActiveVertexStreams", GetActiveVertexStreams);
 		L.RegFunction("New", _CreateUnityEngine_ParticleSystemRenderer);
 		L.RegFunction("__eq", op_Equality);
 		L.RegFunction("__tostring", ToLua.op_ToString);
-		L.RegVar("mesh", get_mesh, set_mesh);
-		L.RegVar("meshCount", get_meshCount, null);
-		L.RegVar("activeVertexStreamsCount", get_activeVertexStreamsCount, null);
 		L.RegVar("alignment", get_alignment, set_alignment);
 		L.RegVar("renderMode", get_renderMode, set_renderMode);
 		L.RegVar("sortMode", get_sortMode, set_sortMode);
@@ -36,6 +33,10 @@ public class UnityEngine_ParticleSystemRendererWrap
 		L.RegVar("trailMaterial", get_trailMaterial, set_trailMaterial);
 		L.RegVar("enableGPUInstancing", get_enableGPUInstancing, set_enableGPUInstancing);
 		L.RegVar("allowRoll", get_allowRoll, set_allowRoll);
+		L.RegVar("mesh", get_mesh, set_mesh);
+		L.RegVar("meshCount", get_meshCount, null);
+		L.RegVar("activeVertexStreamsCount", get_activeVertexStreamsCount, null);
+		L.RegVar("supportsMeshInstancing", get_supportsMeshInstancing, null);
 		L.EndClass();
 	}
 
@@ -107,40 +108,6 @@ public class UnityEngine_ParticleSystemRendererWrap
 			{
 				return LuaDLL.luaL_throw(L, "invalid arguments to method: UnityEngine.ParticleSystemRenderer.SetMeshes");
 			}
-		}
-		catch (Exception e)
-		{
-			return LuaDLL.toluaL_exception(L, e);
-		}
-	}
-
-	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
-	static int SetActiveVertexStreams(IntPtr L)
-	{
-		try
-		{
-			ToLua.CheckArgsCount(L, 2);
-			UnityEngine.ParticleSystemRenderer obj = (UnityEngine.ParticleSystemRenderer)ToLua.CheckObject(L, 1, typeof(UnityEngine.ParticleSystemRenderer));
-			System.Collections.Generic.List<UnityEngine.ParticleSystemVertexStream> arg0 = (System.Collections.Generic.List<UnityEngine.ParticleSystemVertexStream>)ToLua.CheckObject(L, 2, typeof(System.Collections.Generic.List<UnityEngine.ParticleSystemVertexStream>));
-			obj.SetActiveVertexStreams(arg0);
-			return 0;
-		}
-		catch (Exception e)
-		{
-			return LuaDLL.toluaL_exception(L, e);
-		}
-	}
-
-	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
-	static int GetActiveVertexStreams(IntPtr L)
-	{
-		try
-		{
-			ToLua.CheckArgsCount(L, 2);
-			UnityEngine.ParticleSystemRenderer obj = (UnityEngine.ParticleSystemRenderer)ToLua.CheckObject(L, 1, typeof(UnityEngine.ParticleSystemRenderer));
-			System.Collections.Generic.List<UnityEngine.ParticleSystemVertexStream> arg0 = (System.Collections.Generic.List<UnityEngine.ParticleSystemVertexStream>)ToLua.CheckObject(L, 2, typeof(System.Collections.Generic.List<UnityEngine.ParticleSystemVertexStream>));
-			obj.GetActiveVertexStreams(arg0);
-			return 0;
 		}
 		catch (Exception e)
 		{
@@ -249,6 +216,40 @@ public class UnityEngine_ParticleSystemRendererWrap
 	}
 
 	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
+	static int SetActiveVertexStreams(IntPtr L)
+	{
+		try
+		{
+			ToLua.CheckArgsCount(L, 2);
+			UnityEngine.ParticleSystemRenderer obj = (UnityEngine.ParticleSystemRenderer)ToLua.CheckObject(L, 1, typeof(UnityEngine.ParticleSystemRenderer));
+			System.Collections.Generic.List<UnityEngine.ParticleSystemVertexStream> arg0 = (System.Collections.Generic.List<UnityEngine.ParticleSystemVertexStream>)ToLua.CheckObject(L, 2, typeof(System.Collections.Generic.List<UnityEngine.ParticleSystemVertexStream>));
+			obj.SetActiveVertexStreams(arg0);
+			return 0;
+		}
+		catch (Exception e)
+		{
+			return LuaDLL.toluaL_exception(L, e);
+		}
+	}
+
+	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
+	static int GetActiveVertexStreams(IntPtr L)
+	{
+		try
+		{
+			ToLua.CheckArgsCount(L, 2);
+			UnityEngine.ParticleSystemRenderer obj = (UnityEngine.ParticleSystemRenderer)ToLua.CheckObject(L, 1, typeof(UnityEngine.ParticleSystemRenderer));
+			System.Collections.Generic.List<UnityEngine.ParticleSystemVertexStream> arg0 = (System.Collections.Generic.List<UnityEngine.ParticleSystemVertexStream>)ToLua.CheckObject(L, 2, typeof(System.Collections.Generic.List<UnityEngine.ParticleSystemVertexStream>));
+			obj.GetActiveVertexStreams(arg0);
+			return 0;
+		}
+		catch (Exception e)
+		{
+			return LuaDLL.toluaL_exception(L, e);
+		}
+	}
+
+	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
 	static int op_Equality(IntPtr L)
 	{
 		try
@@ -263,63 +264,6 @@ public class UnityEngine_ParticleSystemRendererWrap
 		catch (Exception e)
 		{
 			return LuaDLL.toluaL_exception(L, e);
-		}
-	}
-
-	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
-	static int get_mesh(IntPtr L)
-	{
-		object o = null;
-
-		try
-		{
-			o = ToLua.ToObject(L, 1);
-			UnityEngine.ParticleSystemRenderer obj = (UnityEngine.ParticleSystemRenderer)o;
-			UnityEngine.Mesh ret = obj.mesh;
-			ToLua.PushSealed(L, ret);
-			return 1;
-		}
-		catch(Exception e)
-		{
-			return LuaDLL.toluaL_exception(L, e, o, "attempt to index mesh on a nil value");
-		}
-	}
-
-	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
-	static int get_meshCount(IntPtr L)
-	{
-		object o = null;
-
-		try
-		{
-			o = ToLua.ToObject(L, 1);
-			UnityEngine.ParticleSystemRenderer obj = (UnityEngine.ParticleSystemRenderer)o;
-			int ret = obj.meshCount;
-			LuaDLL.lua_pushinteger(L, ret);
-			return 1;
-		}
-		catch(Exception e)
-		{
-			return LuaDLL.toluaL_exception(L, e, o, "attempt to index meshCount on a nil value");
-		}
-	}
-
-	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
-	static int get_activeVertexStreamsCount(IntPtr L)
-	{
-		object o = null;
-
-		try
-		{
-			o = ToLua.ToObject(L, 1);
-			UnityEngine.ParticleSystemRenderer obj = (UnityEngine.ParticleSystemRenderer)o;
-			int ret = obj.activeVertexStreamsCount;
-			LuaDLL.lua_pushinteger(L, ret);
-			return 1;
-		}
-		catch(Exception e)
-		{
-			return LuaDLL.toluaL_exception(L, e, o, "attempt to index activeVertexStreamsCount on a nil value");
 		}
 	}
 
@@ -647,7 +591,7 @@ public class UnityEngine_ParticleSystemRendererWrap
 	}
 
 	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
-	static int set_mesh(IntPtr L)
+	static int get_mesh(IntPtr L)
 	{
 		object o = null;
 
@@ -655,13 +599,70 @@ public class UnityEngine_ParticleSystemRendererWrap
 		{
 			o = ToLua.ToObject(L, 1);
 			UnityEngine.ParticleSystemRenderer obj = (UnityEngine.ParticleSystemRenderer)o;
-			UnityEngine.Mesh arg0 = (UnityEngine.Mesh)ToLua.CheckObject(L, 2, typeof(UnityEngine.Mesh));
-			obj.mesh = arg0;
-			return 0;
+			UnityEngine.Mesh ret = obj.mesh;
+			ToLua.PushSealed(L, ret);
+			return 1;
 		}
 		catch(Exception e)
 		{
 			return LuaDLL.toluaL_exception(L, e, o, "attempt to index mesh on a nil value");
+		}
+	}
+
+	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
+	static int get_meshCount(IntPtr L)
+	{
+		object o = null;
+
+		try
+		{
+			o = ToLua.ToObject(L, 1);
+			UnityEngine.ParticleSystemRenderer obj = (UnityEngine.ParticleSystemRenderer)o;
+			int ret = obj.meshCount;
+			LuaDLL.lua_pushinteger(L, ret);
+			return 1;
+		}
+		catch(Exception e)
+		{
+			return LuaDLL.toluaL_exception(L, e, o, "attempt to index meshCount on a nil value");
+		}
+	}
+
+	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
+	static int get_activeVertexStreamsCount(IntPtr L)
+	{
+		object o = null;
+
+		try
+		{
+			o = ToLua.ToObject(L, 1);
+			UnityEngine.ParticleSystemRenderer obj = (UnityEngine.ParticleSystemRenderer)o;
+			int ret = obj.activeVertexStreamsCount;
+			LuaDLL.lua_pushinteger(L, ret);
+			return 1;
+		}
+		catch(Exception e)
+		{
+			return LuaDLL.toluaL_exception(L, e, o, "attempt to index activeVertexStreamsCount on a nil value");
+		}
+	}
+
+	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
+	static int get_supportsMeshInstancing(IntPtr L)
+	{
+		object o = null;
+
+		try
+		{
+			o = ToLua.ToObject(L, 1);
+			UnityEngine.ParticleSystemRenderer obj = (UnityEngine.ParticleSystemRenderer)o;
+			bool ret = obj.supportsMeshInstancing;
+			LuaDLL.lua_pushboolean(L, ret);
+			return 1;
+		}
+		catch(Exception e)
+		{
+			return LuaDLL.toluaL_exception(L, e, o, "attempt to index supportsMeshInstancing on a nil value");
 		}
 	}
 
@@ -985,6 +986,25 @@ public class UnityEngine_ParticleSystemRendererWrap
 		catch(Exception e)
 		{
 			return LuaDLL.toluaL_exception(L, e, o, "attempt to index allowRoll on a nil value");
+		}
+	}
+
+	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
+	static int set_mesh(IntPtr L)
+	{
+		object o = null;
+
+		try
+		{
+			o = ToLua.ToObject(L, 1);
+			UnityEngine.ParticleSystemRenderer obj = (UnityEngine.ParticleSystemRenderer)o;
+			UnityEngine.Mesh arg0 = (UnityEngine.Mesh)ToLua.CheckObject(L, 2, typeof(UnityEngine.Mesh));
+			obj.mesh = arg0;
+			return 0;
+		}
+		catch(Exception e)
+		{
+			return LuaDLL.toluaL_exception(L, e, o, "attempt to index mesh on a nil value");
 		}
 	}
 }

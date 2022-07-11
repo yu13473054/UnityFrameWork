@@ -4,7 +4,7 @@ using System.Collections;
 using System.Collections.Generic;
 using LuaInterface;
 
-// Õâ¸öÖ»ÄÜÒÀÀµLuaÏµÍ³Ö»ÄÜÔÚLuaÖ®ºóÆôÓÃ
+// è¿™ä¸ªåªèƒ½ä¾èµ–Luaç³»ç»Ÿåªèƒ½åœ¨Luaä¹‹åå¯ç”¨
 public struct MsgInfo
 {
     public int cid;
@@ -30,16 +30,8 @@ public class NetStatus
     public const int NeedStopConnect = 6;
 }
 
-public class NetworkMgr : MonoBehaviour
+public class NetworkMgr : SingletonMono<NetworkMgr>
 {
-    #region ³õÊ¼»¯
-    private static NetworkMgr _inst;
-    public static NetworkMgr Inst
-    {
-        get { return _inst; }
-    }
-    #endregion
-
     private SocketClient _socket;
     static readonly object _lockObject = new object();
     Queue<KeyValuePair<int, byte[]>> _events = new Queue<KeyValuePair<int, byte[]>>();
@@ -51,14 +43,15 @@ public class NetworkMgr : MonoBehaviour
     private Dictionary<string, string> _httpParamDic = new Dictionary<string, string>();
     [HideInInspector]
     public int netStatus = NetStatus.None;
-    public int cid { get; set; } //¿Í»§¶Ë·¢ËÍµÄĞòÁĞºÅ
-    public int sid { get; set; } //·şÎñÆ÷·¢ËÍµÄĞòÁĞºÅ
+    public int cid { get; set; } //å®¢æˆ·ç«¯å‘é€çš„åºåˆ—å·
+    public int sid { get; set; } //æœåŠ¡å™¨å‘é€çš„åºåˆ—å·
 
 
     public Dictionary<int, bool> ignoreMsgs;
-    void Awake()
+
+    protected override void Awake()
     {
-        _inst = this;
+        base.Awake();
         DontDestroyOnLoad(gameObject);
     }
 
@@ -72,7 +65,7 @@ public class NetworkMgr : MonoBehaviour
         _reConnect = LuaMgr.Inst.GetFunction("Network.OnReConnect");
     }
 
-    //ÉèÖÃºöÂÔÏûÏ¢ºÅ
+    //è®¾ç½®å¿½ç•¥æ¶ˆæ¯å·
     public void SetIgnoreMsg(string str)
     {
         if(ignoreMsgs == null)
@@ -107,7 +100,7 @@ public class NetworkMgr : MonoBehaviour
     }
 
     /// <summary>
-    /// ½»¸øCommand£¬ÕâÀï²»Ïë¹ØĞÄ·¢¸øË­¡£
+    /// äº¤ç»™Commandï¼Œè¿™é‡Œä¸æƒ³å…³å¿ƒå‘ç»™è°ã€‚
     /// </summary>
     void Update()
     {
@@ -117,7 +110,7 @@ public class NetworkMgr : MonoBehaviour
             {
                 KeyValuePair<int, byte[]> _event = _events.Dequeue();
 
-                // ÔÚ´Ë°ÑÏûÏ¢·Ö·¢¸øLua
+                // åœ¨æ­¤æŠŠæ¶ˆæ¯åˆ†å‘ç»™Lua
                 if( _event.Value == null )
                     _onSocket.Call<int>( _event.Key );
                 else
@@ -149,11 +142,11 @@ public class NetworkMgr : MonoBehaviour
             ReConnect();
         }
         else
-            _isforntBack = -1; //±ê¼ÇÒÑ¾­½øÈëºóÌ¨ÁË
+            _isforntBack = -1; //æ ‡è®°å·²ç»è¿›å…¥åå°äº†
     }
     void OnApplicationPause(bool pause)
     {
-        if (!pause)  //´ÓºóÌ¨ÇĞ»»»ØÀ´
+        if (!pause)  //ä»åå°åˆ‡æ¢å›æ¥
         {
             if (_isforntBack != -1) return;
             _isforntBack = -999;
@@ -162,15 +155,15 @@ public class NetworkMgr : MonoBehaviour
             ReConnect();
         }
         else
-            _isforntBack = -1; //±ê¼ÇÒÑ¾­½øÈëºóÌ¨ÁË
+            _isforntBack = -1; //æ ‡è®°å·²ç»è¿›å…¥åå°äº†
     }
     /// <summary>
-    /// ·¢ËÍÁ´½ÓÇëÇó
+    /// å‘é€é“¾æ¥è¯·æ±‚
     /// </summary>
     public void SendConnect( string host, string port )
     {
         _socket.ConnectServer( host, port );
-        StartCoroutine(ConnectTimeOut(host, port)); //ÉèÖÃ³¬Ê±Á¬½Ó
+        StartCoroutine(ConnectTimeOut(host, port)); //è®¾ç½®è¶…æ—¶è¿æ¥
     }
 
     private IEnumerator ConnectTimeOut(string host, string port)
@@ -185,55 +178,55 @@ public class NetworkMgr : MonoBehaviour
         if (netStatus == NetStatus.None || netStatus == NetStatus.OnReconnect || netStatus == NetStatus.WaitToDlgLogin)
             return;
         netStatus = NetStatus.OnReconnect;
-        _socket.Close();//ÈõÍøÖĞ£¬µ½¶ÏÏßÖØÁ¬ÁËÖ®ºó£¬Ö÷¶¯¶Ïsocket
-        _reConnect.Call(); //Í¨Öªlua²ã¶ÏÏßÖØÁ¬
+        _socket.Close();//å¼±ç½‘ä¸­ï¼Œåˆ°æ–­çº¿é‡è¿äº†ä¹‹åï¼Œä¸»åŠ¨æ–­socket
+        _reConnect.Call(); //é€šçŸ¥luaå±‚æ–­çº¿é‡è¿
         SendConnect(GameMain.Inst.loginHost, GameMain.Inst.port);
     }
 
     /// <summary>
-    /// ·¢ËÍSOCKETÏûÏ¢
+    /// å‘é€SOCKETæ¶ˆæ¯
     /// </summary>
     public void Send( int msgID, LuaByteBuffer buffer)
     {
-        if (!IgnoreMsg(msgID)) //±»ºöÂÔµÄÏûÏ¢²»»º´æ£¬²¢²»ÀÛ¼Ócid
+        if (!IgnoreMsg(msgID)) //è¢«å¿½ç•¥çš„æ¶ˆæ¯ä¸ç¼“å­˜ï¼Œå¹¶ä¸ç´¯åŠ cid
         {
             cid++;
             CacheMsg(msgID, buffer.buffer);
         }
-        Debug.Log(string.Format("<NetworkMgr> ·¢ËÍĞ­Òé: {0}, cid = {1}", msgID, cid));
+        Debug.Log(string.Format("<NetworkMgr> å‘é€åè®®: {0}, cid = {1}", msgID, cid));
         _socket.WriteMessage( msgID, buffer.buffer, cid, sid);
     }
 
-    //»º´æÏûÏ¢
+    //ç¼“å­˜æ¶ˆæ¯
     private void CacheMsg(int msgID, byte[] bytes)
     {
         _msgList.Add(new MsgInfo(cid, msgID, bytes));
-        if (_msgList.Count > 50) //»º´æÏûÏ¢ÉÏÏŞÎª50
+        if (_msgList.Count > 50) //ç¼“å­˜æ¶ˆæ¯ä¸Šé™ä¸º50
         {
             _msgList.RemoveAt(0);
         }
     }
 
     /// <summary>
-    /// ·¢ËÍ»º´æµÄÏûÏ¢
+    /// å‘é€ç¼“å­˜çš„æ¶ˆæ¯
     /// </summary>
-    /// <param name="serCID">·şÎñÆ÷ÊÕµ½µÄ×îĞÂµÄcid</param>
+    /// <param name="serCID">æœåŠ¡å™¨æ”¶åˆ°çš„æœ€æ–°çš„cid</param>
     public void SendCache(int serCID)
     {
-        netStatus = NetStatus.Login; //¿ªÊ¼·¢ËÍ»º´æÏûÏ¢£¬ËµÃ÷×´Ì¬ÒÑ¾­×ª»»³ÉµÇÂ¼ÁË
-        Debug.Log(string.Format("<NetworkMgr> ·şÎñÆ÷¼ÇÂ¼cid = {0}", serCID));
+        netStatus = NetStatus.Login; //å¼€å§‹å‘é€ç¼“å­˜æ¶ˆæ¯ï¼Œè¯´æ˜çŠ¶æ€å·²ç»è½¬æ¢æˆç™»å½•äº†
+        Debug.Log(string.Format("<NetworkMgr> æœåŠ¡å™¨è®°å½•cid = {0}", serCID));
         for (int i = 0; i < _msgList.Count; i++)
         {
             MsgInfo info = _msgList[i];
             if (info.cid > serCID)
             {
-                Debug.Log(string.Format("<NetworkMgr> ÖØ·¢Ğ­Òé: {0}, ¿Í»§¶Ëcid = {1}", info.msgId, info.cid));
+                Debug.Log(string.Format("<NetworkMgr> é‡å‘åè®®: {0}, å®¢æˆ·ç«¯cid = {1}", info.msgId, info.cid));
                 _socket.WriteMessage(info.msgId, info.buffer, info.cid);
             }
         }
     }
 
-    //·şÎñÆ÷Ö÷¶¯µÇ³öÁË£¬Çå³ı»º´æ
+    //æœåŠ¡å™¨ä¸»åŠ¨ç™»å‡ºäº†ï¼Œæ¸…é™¤ç¼“å­˜
     public void OnServerLoignOut()
     {
         cid = 0;
@@ -245,9 +238,9 @@ public class NetworkMgr : MonoBehaviour
     //-----------------------HTTP-----------------------
     //--------------------------------------------------
     /// <summary>
-    /// HttpÇëÇóÊ±µÄ²ÎÊı£¬Ã¿¸öhttpµÚÒ»´ÎÌí¼ÓÊ±£¬isNew ĞèÒªÎªtrue
+    /// Httpè¯·æ±‚æ—¶çš„å‚æ•°ï¼Œæ¯ä¸ªhttpç¬¬ä¸€æ¬¡æ·»åŠ æ—¶ï¼ŒisNew éœ€è¦ä¸ºtrue
     /// </summary>
-    /// <param name="isNew"> ĞÂÆğÒ»¸öHttpÇëÇóÊ±£¬ĞèÒªÌí¼Ó²ÎÊıÊ±£¬µÚÒ»¸ö²ÎÊıĞèÒª´«Èëtrue£¬ÒÔ±£Ö¤Çå¿ÕÉÏÒ»¸öhttpµÄ²ÎÊıÁĞ±í </param>
+    /// <param name="isNew"> æ–°èµ·ä¸€ä¸ªHttpè¯·æ±‚æ—¶ï¼Œéœ€è¦æ·»åŠ å‚æ•°æ—¶ï¼Œç¬¬ä¸€ä¸ªå‚æ•°éœ€è¦ä¼ å…¥trueï¼Œä»¥ä¿è¯æ¸…ç©ºä¸Šä¸€ä¸ªhttpçš„å‚æ•°åˆ—è¡¨ </param>
     public void AddHttpParam(string key, string value, bool isNew = false)
     {
         if(isNew) _httpParamDic.Clear();
@@ -281,14 +274,14 @@ public class NetworkMgr : MonoBehaviour
     }
 
     /// <summary>
-    /// Îö¹¹º¯Êı
+    /// ææ„å‡½æ•°
     /// </summary>
-    void OnDestroy()
+    protected override void OnDestroy()
     {
+        base.OnDestroy();
         if( _socket != null )
             _socket.OnRemove();
         _events.Clear();
         _msgList.Clear();
-        Debug.Log("<NetworkMgr> OnDestroy");
     }
 }

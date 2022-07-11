@@ -8,42 +8,24 @@ using Object = UnityEngine.Object;
 /// <summary>
 /// 对象池管理器，分普通类对象池+资源游戏对象池
 /// </summary>
-public class PoolMgr
+public class PoolMgr : Singleton<PoolMgr>
 {
-    #region 初始化
-    private static PoolMgr _inst;
-    public static PoolMgr Inst
-    {
-        get
-        {
-            return _inst;
-        }
-    }
-    public static void Init()
-    {
-        if (_inst == null)
-        {
-            _inst = new PoolMgr();
-        }
-    }
-
-    public void OnDestory()
-    {
-        _defaultPoolRoot = null;
-        _objPools.Clear();
-        _inst = null;
-    }
-
-    #endregion
-
     private GameObject _defaultPoolRoot;//默认的GameObject缓存节点，需要外部指定
 
     private Dictionary<string, object> _objPools = new Dictionary<string, object>();
 
-    private PoolMgr()
+    public override void Init()
     {
+        base.Init();
         //查找默认的缓存节点
         _defaultPoolRoot = GameObject.Find("DefaultPoolRoot");
+    }
+
+    public override void OnDestroy()
+    {
+        base.OnDestroy();
+        _defaultPoolRoot = null;
+        _objPools.Clear();
     }
 
     #region GameObject

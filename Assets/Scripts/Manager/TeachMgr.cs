@@ -3,14 +3,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class TeachMgr : MonoBehaviour
+public class TeachMgr : SingletonMono<TeachMgr>
 {
-    private static TeachMgr _inst;
-    public static TeachMgr instance
-    {
-        get { return _inst; }
-    }
-
     //同步服务器状态定义
     private const int SYCN_NOT = 0;
     private const int SYCN_SELF = 1;
@@ -23,9 +17,9 @@ public class TeachMgr : MonoBehaviour
     private TeachStructParser _structParser; //正在进行的结构对象
     private int _stepNum;  //教程进行到的步数，从0开始
 
-    void Awake()
+    protected override void Awake()
     {
-        _inst = this;
+        base.Awake();
         _finishDic = new Dictionary<int, bool>();
     }
 

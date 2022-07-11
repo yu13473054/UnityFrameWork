@@ -6,18 +6,8 @@ using UnityEngine;
 /// 红点管理器，负责根据配置的Tag生成树结构。当红点数量有变化时，使用事件系统进行红点数量变化的通知。
 /// Tag可以为固定Tag，例如活动页；也可以为动态Tag，例如道具背包中的每个Item
 /// </summary>
-public class RedPointMgr
+public class RedPointMgr : Singleton<RedPointMgr>
 {
-    private static RedPointMgr _inst;
-    public static RedPointMgr Inst
-    {
-        get 
-        {
-            if (_inst == null) _inst = new RedPointMgr();
-            return _inst; 
-        }
-    }
-
     public Dictionary<int, RedPointNode> nodeDic { get; private set; }
 
     private int _index; //当前节点的最大索引

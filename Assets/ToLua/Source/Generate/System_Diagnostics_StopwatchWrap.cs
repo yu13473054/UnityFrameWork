@@ -12,6 +12,7 @@ public class System_Diagnostics_StopwatchWrap
 		L.RegFunction("Reset", Reset);
 		L.RegFunction("Start", Start);
 		L.RegFunction("Stop", Stop);
+		L.RegFunction("Restart", Restart);
 		L.RegFunction("New", _CreateSystem_Diagnostics_Stopwatch);
 		L.RegFunction("__tostring", ToLua.op_ToString);
 		L.RegVar("Frequency", get_Frequency, null);
@@ -119,6 +120,22 @@ public class System_Diagnostics_StopwatchWrap
 			ToLua.CheckArgsCount(L, 1);
 			System.Diagnostics.Stopwatch obj = (System.Diagnostics.Stopwatch)ToLua.CheckObject<System.Diagnostics.Stopwatch>(L, 1);
 			obj.Stop();
+			return 0;
+		}
+		catch (Exception e)
+		{
+			return LuaDLL.toluaL_exception(L, e);
+		}
+	}
+
+	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
+	static int Restart(IntPtr L)
+	{
+		try
+		{
+			ToLua.CheckArgsCount(L, 1);
+			System.Diagnostics.Stopwatch obj = (System.Diagnostics.Stopwatch)ToLua.CheckObject<System.Diagnostics.Stopwatch>(L, 1);
+			obj.Restart();
 			return 0;
 		}
 		catch (Exception e)

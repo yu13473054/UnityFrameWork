@@ -6,7 +6,7 @@ public class AudioMgrWrap
 {
 	public static void Register(LuaState L)
 	{
-		L.BeginClass(typeof(AudioMgr), typeof(UnityEngine.MonoBehaviour));
+		L.BeginClass(typeof(AudioMgr), typeof(SingletonMono<AudioMgr>));
 		L.RegFunction("OnInit", OnInit);
 		L.RegFunction("Play", Play);
 		L.RegFunction("Stop", Stop);
@@ -17,10 +17,8 @@ public class AudioMgrWrap
 		L.RegFunction("Mute", Mute);
 		L.RegFunction("__eq", op_Equality);
 		L.RegFunction("__tostring", ToLua.op_ToString);
-		L.RegVar("_inst", get__inst, set__inst);
 		L.RegVar("currBgId", get_currBgId, set_currBgId);
 		L.RegVar("currModule", get_currModule, set_currModule);
-		L.RegVar("Inst", get_Inst, null);
 		L.EndClass();
 	}
 
@@ -286,20 +284,6 @@ public class AudioMgrWrap
 	}
 
 	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
-	static int get__inst(IntPtr L)
-	{
-		try
-		{
-			ToLua.Push(L, AudioMgr._inst);
-			return 1;
-		}
-		catch (Exception e)
-		{
-			return LuaDLL.toluaL_exception(L, e);
-		}
-	}
-
-	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
 	static int get_currBgId(IntPtr L)
 	{
 		object o = null;
@@ -334,35 +318,6 @@ public class AudioMgrWrap
 		catch(Exception e)
 		{
 			return LuaDLL.toluaL_exception(L, e, o, "attempt to index currModule on a nil value");
-		}
-	}
-
-	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
-	static int get_Inst(IntPtr L)
-	{
-		try
-		{
-			ToLua.Push(L, AudioMgr.Inst);
-			return 1;
-		}
-		catch (Exception e)
-		{
-			return LuaDLL.toluaL_exception(L, e);
-		}
-	}
-
-	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
-	static int set__inst(IntPtr L)
-	{
-		try
-		{
-			AudioMgr arg0 = (AudioMgr)ToLua.CheckObject<AudioMgr>(L, 2);
-			AudioMgr._inst = arg0;
-			return 0;
-		}
-		catch (Exception e)
-		{
-			return LuaDLL.toluaL_exception(L, e);
 		}
 	}
 

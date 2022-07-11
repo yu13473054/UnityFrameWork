@@ -45,16 +45,16 @@ public class UnityEngine_ScriptableObjectWrap
 		{
 			int count = LuaDLL.lua_gettop(L);
 
-			if (count == 1 && TypeChecker.CheckTypes<System.Type>(L, 1))
+			if (count == 1 && TypeChecker.CheckTypes<string>(L, 1))
 			{
-				System.Type arg0 = (System.Type)ToLua.ToObject(L, 1);
+				string arg0 = ToLua.ToString(L, 1);
 				UnityEngine.ScriptableObject o = UnityEngine.ScriptableObject.CreateInstance(arg0);
 				ToLua.Push(L, o);
 				return 1;
 			}
-			else if (count == 1 && TypeChecker.CheckTypes<string>(L, 1))
+			else if (count == 1 && TypeChecker.CheckTypes<System.Type>(L, 1))
 			{
-				string arg0 = ToLua.ToString(L, 1);
+				System.Type arg0 = (System.Type)ToLua.ToObject(L, 1);
 				UnityEngine.ScriptableObject o = UnityEngine.ScriptableObject.CreateInstance(arg0);
 				ToLua.Push(L, o);
 				return 1;

@@ -133,19 +133,19 @@ public class UnityEngine_RectWrap
 		{
 			int count = LuaDLL.lua_gettop(L);
 
-			if (count == 2 && TypeChecker.CheckTypes<UnityEngine.Vector3>(L, 2))
+			if (count == 2 && TypeChecker.CheckTypes<UnityEngine.Vector2>(L, 2))
 			{
 				UnityEngine.Rect obj = (UnityEngine.Rect)ToLua.CheckObject(L, 1, typeof(UnityEngine.Rect));
-				UnityEngine.Vector3 arg0 = ToLua.ToVector3(L, 2);
+				UnityEngine.Vector2 arg0 = ToLua.ToVector2(L, 2);
 				bool o = obj.Contains(arg0);
 				LuaDLL.lua_pushboolean(L, o);
 				ToLua.SetBack(L, 1, obj);
 				return 1;
 			}
-			else if (count == 2 && TypeChecker.CheckTypes<UnityEngine.Vector2>(L, 2))
+			else if (count == 2 && TypeChecker.CheckTypes<UnityEngine.Vector3>(L, 2))
 			{
 				UnityEngine.Rect obj = (UnityEngine.Rect)ToLua.CheckObject(L, 1, typeof(UnityEngine.Rect));
-				UnityEngine.Vector2 arg0 = ToLua.ToVector2(L, 2);
+				UnityEngine.Vector3 arg0 = ToLua.ToVector3(L, 2);
 				bool o = obj.Contains(arg0);
 				LuaDLL.lua_pushboolean(L, o);
 				ToLua.SetBack(L, 1, obj);

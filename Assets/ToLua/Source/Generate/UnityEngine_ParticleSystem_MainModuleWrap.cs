@@ -49,9 +49,9 @@ public class UnityEngine_ParticleSystem_MainModuleWrap
 		L.RegVar("maxParticles", get_maxParticles, set_maxParticles);
 		L.RegVar("emitterVelocityMode", get_emitterVelocityMode, set_emitterVelocityMode);
 		L.RegVar("stopAction", get_stopAction, set_stopAction);
-		L.RegVar("cullingMode", get_cullingMode, set_cullingMode);
 		L.RegVar("ringBufferMode", get_ringBufferMode, set_ringBufferMode);
 		L.RegVar("ringBufferLoopRange", get_ringBufferLoopRange, set_ringBufferLoopRange);
+		L.RegVar("cullingMode", get_cullingMode, set_cullingMode);
 		L.EndClass();
 	}
 
@@ -824,25 +824,6 @@ public class UnityEngine_ParticleSystem_MainModuleWrap
 	}
 
 	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
-	static int get_cullingMode(IntPtr L)
-	{
-		object o = null;
-
-		try
-		{
-			o = ToLua.ToObject(L, 1);
-			UnityEngine.ParticleSystem.MainModule obj = (UnityEngine.ParticleSystem.MainModule)o;
-			UnityEngine.ParticleSystemCullingMode ret = obj.cullingMode;
-			ToLua.Push(L, ret);
-			return 1;
-		}
-		catch(Exception e)
-		{
-			return LuaDLL.toluaL_exception(L, e, o, "attempt to index cullingMode on a nil value");
-		}
-	}
-
-	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
 	static int get_ringBufferMode(IntPtr L)
 	{
 		object o = null;
@@ -877,6 +858,25 @@ public class UnityEngine_ParticleSystem_MainModuleWrap
 		catch(Exception e)
 		{
 			return LuaDLL.toluaL_exception(L, e, o, "attempt to index ringBufferLoopRange on a nil value");
+		}
+	}
+
+	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
+	static int get_cullingMode(IntPtr L)
+	{
+		object o = null;
+
+		try
+		{
+			o = ToLua.ToObject(L, 1);
+			UnityEngine.ParticleSystem.MainModule obj = (UnityEngine.ParticleSystem.MainModule)o;
+			UnityEngine.ParticleSystemCullingMode ret = obj.cullingMode;
+			ToLua.Push(L, ret);
+			return 1;
+		}
+		catch(Exception e)
+		{
+			return LuaDLL.toluaL_exception(L, e, o, "attempt to index cullingMode on a nil value");
 		}
 	}
 
@@ -1681,26 +1681,6 @@ public class UnityEngine_ParticleSystem_MainModuleWrap
 	}
 
 	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
-	static int set_cullingMode(IntPtr L)
-	{
-		object o = null;
-
-		try
-		{
-			o = ToLua.ToObject(L, 1);
-			UnityEngine.ParticleSystem.MainModule obj = (UnityEngine.ParticleSystem.MainModule)o;
-			UnityEngine.ParticleSystemCullingMode arg0 = (UnityEngine.ParticleSystemCullingMode)ToLua.CheckObject(L, 2, typeof(UnityEngine.ParticleSystemCullingMode));
-			obj.cullingMode = arg0;
-			ToLua.SetBack(L, 1, obj);
-			return 0;
-		}
-		catch(Exception e)
-		{
-			return LuaDLL.toluaL_exception(L, e, o, "attempt to index cullingMode on a nil value");
-		}
-	}
-
-	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
 	static int set_ringBufferMode(IntPtr L)
 	{
 		object o = null;
@@ -1737,6 +1717,26 @@ public class UnityEngine_ParticleSystem_MainModuleWrap
 		catch(Exception e)
 		{
 			return LuaDLL.toluaL_exception(L, e, o, "attempt to index ringBufferLoopRange on a nil value");
+		}
+	}
+
+	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
+	static int set_cullingMode(IntPtr L)
+	{
+		object o = null;
+
+		try
+		{
+			o = ToLua.ToObject(L, 1);
+			UnityEngine.ParticleSystem.MainModule obj = (UnityEngine.ParticleSystem.MainModule)o;
+			UnityEngine.ParticleSystemCullingMode arg0 = (UnityEngine.ParticleSystemCullingMode)ToLua.CheckObject(L, 2, typeof(UnityEngine.ParticleSystemCullingMode));
+			obj.cullingMode = arg0;
+			ToLua.SetBack(L, 1, obj);
+			return 0;
+		}
+		catch(Exception e)
+		{
+			return LuaDLL.toluaL_exception(L, e, o, "attempt to index cullingMode on a nil value");
 		}
 	}
 }

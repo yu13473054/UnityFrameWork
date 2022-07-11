@@ -6,12 +6,12 @@ public class UIMgrWrap
 {
 	public static void Register(LuaState L)
 	{
-		L.BeginClass(typeof(UIMgr), typeof(UnityEngine.MonoBehaviour));
+		L.BeginClass(typeof(UIMgr), typeof(SingletonMono<UIMgr>));
 		L.RegFunction("Open", Open);
+		L.RegFunction("Close", Close);
 		L.RegFunction("StackBackup", StackBackup);
 		L.RegFunction("RevertBackup", RevertBackup);
 		L.RegFunction("RevertTopUI", RevertTopUI);
-		L.RegFunction("Close", Close);
 		L.RegFunction("PopBackDlg", PopBackDlg);
 		L.RegFunction("World2ScreenPos", World2ScreenPos);
 		L.RegFunction("GetUIRoot", GetUIRoot);
@@ -20,7 +20,6 @@ public class UIMgrWrap
 		L.RegFunction("UnloadAllUI", UnloadAllUI);
 		L.RegFunction("__eq", op_Equality);
 		L.RegFunction("__tostring", ToLua.op_ToString);
-		L.RegVar("Inst", get_Inst, null);
 		L.EndClass();
 	}
 
@@ -35,6 +34,23 @@ public class UIMgrWrap
 			UISystem o = obj.Open(arg0);
 			ToLua.Push(L, o);
 			return 1;
+		}
+		catch (Exception e)
+		{
+			return LuaDLL.toluaL_exception(L, e);
+		}
+	}
+
+	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
+	static int Close(IntPtr L)
+	{
+		try
+		{
+			ToLua.CheckArgsCount(L, 2);
+			UIMgr obj = (UIMgr)ToLua.CheckObject<UIMgr>(L, 1);
+			UISystem arg0 = (UISystem)ToLua.CheckObject<UISystem>(L, 2);
+			obj.Close(arg0);
+			return 0;
 		}
 		catch (Exception e)
 		{
@@ -108,23 +124,6 @@ public class UIMgrWrap
 			ToLua.CheckArgsCount(L, 1);
 			UIMgr obj = (UIMgr)ToLua.CheckObject<UIMgr>(L, 1);
 			obj.RevertTopUI();
-			return 0;
-		}
-		catch (Exception e)
-		{
-			return LuaDLL.toluaL_exception(L, e);
-		}
-	}
-
-	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
-	static int Close(IntPtr L)
-	{
-		try
-		{
-			ToLua.CheckArgsCount(L, 2);
-			UIMgr obj = (UIMgr)ToLua.CheckObject<UIMgr>(L, 1);
-			UISystem arg0 = (UISystem)ToLua.CheckObject<UISystem>(L, 2);
-			obj.Close(arg0);
 			return 0;
 		}
 		catch (Exception e)
@@ -263,20 +262,6 @@ public class UIMgrWrap
 			UnityEngine.Object arg1 = (UnityEngine.Object)ToLua.ToObject(L, 2);
 			bool o = arg0 == arg1;
 			LuaDLL.lua_pushboolean(L, o);
-			return 1;
-		}
-		catch (Exception e)
-		{
-			return LuaDLL.toluaL_exception(L, e);
-		}
-	}
-
-	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
-	static int get_Inst(IntPtr L)
-	{
-		try
-		{
-			ToLua.Push(L, UIMgr.Inst);
 			return 1;
 		}
 		catch (Exception e)

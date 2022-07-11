@@ -3,16 +3,8 @@ using UnityEngine;
 using System.Collections.Generic;
 using LuaInterface;
 
-public class UIMgr : MonoBehaviour
+public class UIMgr : SingletonMono<UIMgr>
 {
-    #region 初始化
-    private static UIMgr _inst;
-    public static UIMgr Inst
-    {
-        get { return _inst; }
-    }
-    #endregion
-
     Transform _UIRoot;
     Camera _UICamera;
     //层
@@ -25,9 +17,9 @@ public class UIMgr : MonoBehaviour
     private Dictionary<string, UIStackInfo> _stackInfoDic;
     private int _uiCount = 0;
 
-    void Awake()
+    protected override void Awake()
     {
-        _inst = this;
+        base.Awake();
         DontDestroyOnLoad(gameObject);
 
         //初始化
@@ -488,11 +480,10 @@ public class UIMgr : MonoBehaviour
         _UIListByName.Clear();
     }
 
-    void OnDestroy()
+    protected override void OnDestroy()
     {
+        base.OnDestroy();
         UnloadAllUI();
-        _inst = null;
-        Debug.Log("<UIMgr> OnDestroy!");
     }
 }
 

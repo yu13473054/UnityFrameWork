@@ -51,7 +51,7 @@ public class Boot : MonoBehaviour
                     break;
             }
         }
-        PoolMgr.Init();
+        PoolMgr.Inst.Init();
         gameObject.AddComponent<ResMgr>();
         ResMgr.Inst.Init();
         gameObject.AddComponent<DatabaseMgr>();
@@ -107,7 +107,7 @@ public class Boot : MonoBehaviour
         if (AudioMgr.Inst != null) DestroyImmediate(AudioMgr.Inst);
         if (UIMgr.Inst != null) DestroyImmediate(UIMgr.Inst);
         if (ResMgr.Inst != null) DestroyImmediate(ResMgr.Inst);
-        if (PoolMgr.Inst != null) PoolMgr.Inst.OnDestory();
+        if (PoolMgr.Inst != null) PoolMgr.Inst.OnDestroy();
         if (NetworkMgr.Inst != null) DestroyImmediate(NetworkMgr.Inst);
         if (LuaMgr.Inst != null) DestroyImmediate(LuaMgr.Inst);
         Localization.isInited = false;

@@ -13,7 +13,6 @@ public static class LuaBinder
 		UnityEngine_TransformWrap.Register(L);
 		UnityEngine_RectTransformWrap.Register(L);
 		UnityEngine_MaterialWrap.Register(L);
-		UnityEngine_CameraWrap.Register(L);
 		UnityEngine_AudioSourceWrap.Register(L);
 		UnityEngine_LineRendererWrap.Register(L);
 		UnityEngine_BehaviourWrap.Register(L);
@@ -96,6 +95,9 @@ public static class LuaBinder
 		UIInputFieldWrap.Register(L);
 		UIRaycastWrap.Register(L);
 		UIPolygonRaycastWrap.Register(L);
+		SingletonMono_UIMgrWrap.Register(L);
+		SingletonMono_NetworkMgrWrap.Register(L);
+		SingletonMono_AudioMgrWrap.Register(L);
 		L.BeginModule("UnityEngine");
 		UnityEngine_TimeWrap.Register(L);
 		UnityEngine_KeyCodeWrap.Register(L);
@@ -131,9 +133,6 @@ public static class LuaBinder
 		L.BeginModule("RectTransform");
 		L.RegFunction("ReapplyDrivenProperties", UnityEngine_RectTransform_ReapplyDrivenProperties);
 		L.EndModule();
-		L.BeginModule("Camera");
-		L.RegFunction("CameraCallback", UnityEngine_Camera_CameraCallback);
-		L.EndModule();
 		L.BeginModule("Application");
 		L.RegFunction("AdvertisingIdentifierCallback", UnityEngine_Application_AdvertisingIdentifierCallback);
 		L.RegFunction("LowMemoryCallback", UnityEngine_Application_LowMemoryCallback);
@@ -154,6 +153,7 @@ public static class LuaBinder
 		L.RegFunction("Comparison_int", System_Comparison_int);
 		L.RegFunction("Func_int_int", System_Func_int_int);
 		L.RegFunction("Action_bool", System_Action_bool);
+		L.RegFunction("Action_string", System_Action_string);
 		L.RegFunction("Func_bool", System_Func_bool);
 		L.RegFunction("Action_UnityEngine_AsyncOperation", System_Action_UnityEngine_AsyncOperation);
 		L.RegFunction("Predicate_UnityEngine_GameObject", System_Predicate_UnityEngine_GameObject);
@@ -164,7 +164,6 @@ public static class LuaBinder
 		L.RegFunction("Action_UnityEngine_Playables_PlayableAsset", System_Action_UnityEngine_Playables_PlayableAsset);
 		L.RegFunction("Comparison_UnityEngine_Playables_PlayableAsset", System_Comparison_UnityEngine_Playables_PlayableAsset);
 		L.RegFunction("Predicate_string", System_Predicate_string);
-		L.RegFunction("Action_string", System_Action_string);
 		L.RegFunction("Comparison_string", System_Comparison_string);
 		L.RegFunction("Action_float", System_Action_float);
 		L.EndModule();
@@ -179,7 +178,7 @@ public static class LuaBinder
 		L.AddPreLoad("UnityEngine.Animation", LuaOpen_UnityEngine_Animation, typeof(UnityEngine.Animation));
 		L.AddPreLoad("UnityEngine.AnimationClip", LuaOpen_UnityEngine_AnimationClip, typeof(UnityEngine.AnimationClip));
 		L.AddPreLoad("UnityEngine.AnimationState", LuaOpen_UnityEngine_AnimationState, typeof(UnityEngine.AnimationState));
-		L.AddPreLoad("UnityEngine.BlendWeights", LuaOpen_UnityEngine_BlendWeights, typeof(UnityEngine.BlendWeights));
+		L.AddPreLoad("UnityEngine.SkinWeights", LuaOpen_UnityEngine_SkinWeights, typeof(UnityEngine.SkinWeights));
 		L.AddPreLoad("UnityEngine.RenderTexture", LuaOpen_UnityEngine_RenderTexture, typeof(UnityEngine.RenderTexture));
 		L.AddPreLoad("UnityEngine.Rigidbody", LuaOpen_UnityEngine_Rigidbody, typeof(UnityEngine.Rigidbody));
 		L.EndPreLoad();
@@ -257,33 +256,6 @@ public static class LuaBinder
 			{
 				LuaTable self = ToLua.CheckLuaTable(L, 2);
 				Delegate arg1 = DelegateTraits<UnityEngine.RectTransform.ReapplyDrivenProperties>.Create(func, self);
-				ToLua.Push(L, arg1);
-			}
-			return 1;
-		}
-		catch(Exception e)
-		{
-			return LuaDLL.toluaL_exception(L, e);
-		}
-	}
-
-	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
-	static int UnityEngine_Camera_CameraCallback(IntPtr L)
-	{
-		try
-		{
-			int count = LuaDLL.lua_gettop(L);
-			LuaFunction func = ToLua.CheckLuaFunction(L, 1);
-
-			if (count == 1)
-			{
-				Delegate arg1 = DelegateTraits<UnityEngine.Camera.CameraCallback>.Create(func);
-				ToLua.Push(L, arg1);
-			}
-			else
-			{
-				LuaTable self = ToLua.CheckLuaTable(L, 2);
-				Delegate arg1 = DelegateTraits<UnityEngine.Camera.CameraCallback>.Create(func, self);
 				ToLua.Push(L, arg1);
 			}
 			return 1;
@@ -619,6 +591,33 @@ public static class LuaBinder
 	}
 
 	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
+	static int System_Action_string(IntPtr L)
+	{
+		try
+		{
+			int count = LuaDLL.lua_gettop(L);
+			LuaFunction func = ToLua.CheckLuaFunction(L, 1);
+
+			if (count == 1)
+			{
+				Delegate arg1 = DelegateTraits<System.Action<string>>.Create(func);
+				ToLua.Push(L, arg1);
+			}
+			else
+			{
+				LuaTable self = ToLua.CheckLuaTable(L, 2);
+				Delegate arg1 = DelegateTraits<System.Action<string>>.Create(func, self);
+				ToLua.Push(L, arg1);
+			}
+			return 1;
+		}
+		catch(Exception e)
+		{
+			return LuaDLL.toluaL_exception(L, e);
+		}
+	}
+
+	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
 	static int System_Func_bool(IntPtr L)
 	{
 		try
@@ -889,33 +888,6 @@ public static class LuaBinder
 	}
 
 	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
-	static int System_Action_string(IntPtr L)
-	{
-		try
-		{
-			int count = LuaDLL.lua_gettop(L);
-			LuaFunction func = ToLua.CheckLuaFunction(L, 1);
-
-			if (count == 1)
-			{
-				Delegate arg1 = DelegateTraits<System.Action<string>>.Create(func);
-				ToLua.Push(L, arg1);
-			}
-			else
-			{
-				LuaTable self = ToLua.CheckLuaTable(L, 2);
-				Delegate arg1 = DelegateTraits<System.Action<string>>.Create(func, self);
-				ToLua.Push(L, arg1);
-			}
-			return 1;
-		}
-		catch(Exception e)
-		{
-			return LuaDLL.toluaL_exception(L, e);
-		}
-	}
-
-	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
 	static int System_Comparison_string(IntPtr L)
 	{
 		try
@@ -1132,14 +1104,14 @@ public static class LuaBinder
 	}
 
 	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
-	static int LuaOpen_UnityEngine_BlendWeights(IntPtr L)
+	static int LuaOpen_UnityEngine_SkinWeights(IntPtr L)
 	{
 		try
 		{
 			LuaState state = LuaState.Get(L);
 			state.BeginPreModule("");
-			UnityEngine_BlendWeightsWrap.Register(state);
-			int reference = state.GetMetaReference(typeof(UnityEngine.BlendWeights));
+			UnityEngine_SkinWeightsWrap.Register(state);
+			int reference = state.GetMetaReference(typeof(UnityEngine.SkinWeights));
 			state.EndPreModule(L, reference);
 			return 1;
 		}

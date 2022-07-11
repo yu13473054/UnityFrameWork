@@ -345,7 +345,7 @@ public class Builder : IPostprocessBuildWithReport
     static void PackageAndroid()
     {
         EditorUserBuildSettings.androidBuildSubtarget = MobileTextureSubtarget.ETC2; //ÉèÖÃÍ¼Æ¬Ñ¹ËõÄ£Ê½
-        EditorUserBuildSettings.androidBuildSystem = AndroidBuildSystem.Internal;
+        EditorUserBuildSettings.androidBuildSystem = AndroidBuildSystem.Gradle;
     }
 
 

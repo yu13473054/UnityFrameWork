@@ -58,18 +58,18 @@ public class UnityEngine_AnimatorOverrideControllerWrap
 		{
 			int count = LuaDLL.lua_gettop(L);
 
-			if (count == 2 && TypeChecker.CheckTypes<UnityEngine.AnimationClip>(L, 2))
+			if (count == 2 && TypeChecker.CheckTypes<string>(L, 2))
 			{
 				UnityEngine.AnimatorOverrideController obj = (UnityEngine.AnimatorOverrideController)ToLua.CheckObject<UnityEngine.AnimatorOverrideController>(L, 1);
-				UnityEngine.AnimationClip arg0 = (UnityEngine.AnimationClip)ToLua.ToObject(L, 2);
+				string arg0 = ToLua.ToString(L, 2);
 				UnityEngine.AnimationClip o = obj[arg0];
 				ToLua.PushSealed(L, o);
 				return 1;
 			}
-			else if (count == 2 && TypeChecker.CheckTypes<string>(L, 2))
+			else if (count == 2 && TypeChecker.CheckTypes<UnityEngine.AnimationClip>(L, 2))
 			{
 				UnityEngine.AnimatorOverrideController obj = (UnityEngine.AnimatorOverrideController)ToLua.CheckObject<UnityEngine.AnimatorOverrideController>(L, 1);
-				string arg0 = ToLua.ToString(L, 2);
+				UnityEngine.AnimationClip arg0 = (UnityEngine.AnimationClip)ToLua.ToObject(L, 2);
 				UnityEngine.AnimationClip o = obj[arg0];
 				ToLua.PushSealed(L, o);
 				return 1;
@@ -92,18 +92,18 @@ public class UnityEngine_AnimatorOverrideControllerWrap
 		{
 			int count = LuaDLL.lua_gettop(L);
 
-			if (count == 3 && TypeChecker.CheckTypes<UnityEngine.AnimationClip, UnityEngine.AnimationClip>(L, 2))
+			if (count == 3 && TypeChecker.CheckTypes<string, UnityEngine.AnimationClip>(L, 2))
 			{
 				UnityEngine.AnimatorOverrideController obj = (UnityEngine.AnimatorOverrideController)ToLua.CheckObject<UnityEngine.AnimatorOverrideController>(L, 1);
-				UnityEngine.AnimationClip arg0 = (UnityEngine.AnimationClip)ToLua.ToObject(L, 2);
+				string arg0 = ToLua.ToString(L, 2);
 				UnityEngine.AnimationClip arg1 = (UnityEngine.AnimationClip)ToLua.ToObject(L, 3);
 				obj[arg0] = arg1;
 				return 0;
 			}
-			else if (count == 3 && TypeChecker.CheckTypes<string, UnityEngine.AnimationClip>(L, 2))
+			else if (count == 3 && TypeChecker.CheckTypes<UnityEngine.AnimationClip, UnityEngine.AnimationClip>(L, 2))
 			{
 				UnityEngine.AnimatorOverrideController obj = (UnityEngine.AnimatorOverrideController)ToLua.CheckObject<UnityEngine.AnimatorOverrideController>(L, 1);
-				string arg0 = ToLua.ToString(L, 2);
+				UnityEngine.AnimationClip arg0 = (UnityEngine.AnimationClip)ToLua.ToObject(L, 2);
 				UnityEngine.AnimationClip arg1 = (UnityEngine.AnimationClip)ToLua.ToObject(L, 3);
 				obj[arg0] = arg1;
 				return 0;
@@ -141,18 +141,18 @@ public class UnityEngine_AnimatorOverrideControllerWrap
 		{
 			int count = LuaDLL.lua_gettop(L);
 
-			if (count == 2 && TypeChecker.CheckTypes<UnityEngine.AnimationClip>(L, 2))
+			if (count == 2 && TypeChecker.CheckTypes<string>(L, 2))
 			{
 				UnityEngine.AnimatorOverrideController obj = (UnityEngine.AnimatorOverrideController)ToLua.CheckObject<UnityEngine.AnimatorOverrideController>(L, 1);
-				UnityEngine.AnimationClip arg0 = (UnityEngine.AnimationClip)ToLua.ToObject(L, 2);
+				string arg0 = ToLua.ToString(L, 2);
 				UnityEngine.AnimationClip o = obj[arg0];
 				ToLua.PushSealed(L, o);
 				return 1;
 			}
-			else if (count == 2 && TypeChecker.CheckTypes<string>(L, 2))
+			else if (count == 2 && TypeChecker.CheckTypes<UnityEngine.AnimationClip>(L, 2))
 			{
 				UnityEngine.AnimatorOverrideController obj = (UnityEngine.AnimatorOverrideController)ToLua.CheckObject<UnityEngine.AnimatorOverrideController>(L, 1);
-				string arg0 = ToLua.ToString(L, 2);
+				UnityEngine.AnimationClip arg0 = (UnityEngine.AnimationClip)ToLua.ToObject(L, 2);
 				UnityEngine.AnimationClip o = obj[arg0];
 				ToLua.PushSealed(L, o);
 				return 1;
@@ -175,18 +175,18 @@ public class UnityEngine_AnimatorOverrideControllerWrap
 		{
 			int count = LuaDLL.lua_gettop(L);
 
-			if (count == 3 && TypeChecker.CheckTypes<UnityEngine.AnimationClip, UnityEngine.AnimationClip>(L, 2))
+			if (count == 3 && TypeChecker.CheckTypes<string, UnityEngine.AnimationClip>(L, 2))
 			{
 				UnityEngine.AnimatorOverrideController obj = (UnityEngine.AnimatorOverrideController)ToLua.CheckObject<UnityEngine.AnimatorOverrideController>(L, 1);
-				UnityEngine.AnimationClip arg0 = (UnityEngine.AnimationClip)ToLua.ToObject(L, 2);
+				string arg0 = ToLua.ToString(L, 2);
 				UnityEngine.AnimationClip arg1 = (UnityEngine.AnimationClip)ToLua.ToObject(L, 3);
 				obj[arg0] = arg1;
 				return 0;
 			}
-			else if (count == 3 && TypeChecker.CheckTypes<string, UnityEngine.AnimationClip>(L, 2))
+			else if (count == 3 && TypeChecker.CheckTypes<UnityEngine.AnimationClip, UnityEngine.AnimationClip>(L, 2))
 			{
 				UnityEngine.AnimatorOverrideController obj = (UnityEngine.AnimatorOverrideController)ToLua.CheckObject<UnityEngine.AnimatorOverrideController>(L, 1);
-				string arg0 = ToLua.ToString(L, 2);
+				UnityEngine.AnimationClip arg0 = (UnityEngine.AnimationClip)ToLua.ToObject(L, 2);
 				UnityEngine.AnimationClip arg1 = (UnityEngine.AnimationClip)ToLua.ToObject(L, 3);
 				obj[arg0] = arg1;
 				return 0;

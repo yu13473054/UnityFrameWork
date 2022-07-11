@@ -1,21 +1,8 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class FightMgr
+public class FightMgr : Singleton<FightMgr>
 {
-    private static FightMgr _inst;
-    public static FightMgr Inst
-    {
-        get
-        {
-            if(_inst == null)
-            {
-                _inst = new FightMgr();
-            }
-            return _inst;
-        }
-    }
-
     //初始化函数
     public void Init()
     {

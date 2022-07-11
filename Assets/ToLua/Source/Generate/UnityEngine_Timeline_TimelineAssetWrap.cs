@@ -13,6 +13,7 @@ public class UnityEngine_Timeline_TimelineAssetWrap
 		L.RegFunction("GetOutputTracks", GetOutputTracks);
 		L.RegFunction("CreatePlayable", CreatePlayable);
 		L.RegFunction("GatherProperties", GatherProperties);
+		L.RegFunction("CreateMarkerTrack", CreateMarkerTrack);
 		L.RegFunction("CreateTrack", CreateTrack);
 		L.RegFunction("DeleteClip", DeleteClip);
 		L.RegFunction("DeleteTrack", DeleteTrack);
@@ -27,6 +28,7 @@ public class UnityEngine_Timeline_TimelineAssetWrap
 		L.RegVar("clipCaps", get_clipCaps, null);
 		L.RegVar("outputTrackCount", get_outputTrackCount, null);
 		L.RegVar("rootTrackCount", get_rootTrackCount, null);
+		L.RegVar("markerTrack", get_markerTrack, null);
 		L.EndClass();
 	}
 
@@ -153,6 +155,22 @@ public class UnityEngine_Timeline_TimelineAssetWrap
 			UnityEngine.Playables.PlayableDirector arg0 = (UnityEngine.Playables.PlayableDirector)ToLua.CheckObject<UnityEngine.Playables.PlayableDirector>(L, 2);
 			UnityEngine.Timeline.IPropertyCollector arg1 = (UnityEngine.Timeline.IPropertyCollector)ToLua.CheckObject<UnityEngine.Timeline.IPropertyCollector>(L, 3);
 			obj.GatherProperties(arg0, arg1);
+			return 0;
+		}
+		catch (Exception e)
+		{
+			return LuaDLL.toluaL_exception(L, e);
+		}
+	}
+
+	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
+	static int CreateMarkerTrack(IntPtr L)
+	{
+		try
+		{
+			ToLua.CheckArgsCount(L, 1);
+			UnityEngine.Timeline.TimelineAsset obj = (UnityEngine.Timeline.TimelineAsset)ToLua.CheckObject<UnityEngine.Timeline.TimelineAsset>(L, 1);
+			obj.CreateMarkerTrack();
 			return 0;
 		}
 		catch (Exception e)
@@ -384,6 +402,25 @@ public class UnityEngine_Timeline_TimelineAssetWrap
 		catch(Exception e)
 		{
 			return LuaDLL.toluaL_exception(L, e, o, "attempt to index rootTrackCount on a nil value");
+		}
+	}
+
+	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
+	static int get_markerTrack(IntPtr L)
+	{
+		object o = null;
+
+		try
+		{
+			o = ToLua.ToObject(L, 1);
+			UnityEngine.Timeline.TimelineAsset obj = (UnityEngine.Timeline.TimelineAsset)o;
+			UnityEngine.Timeline.MarkerTrack ret = obj.markerTrack;
+			ToLua.Push(L, ret);
+			return 1;
+		}
+		catch(Exception e)
+		{
+			return LuaDLL.toluaL_exception(L, e, o, "attempt to index markerTrack on a nil value");
 		}
 	}
 

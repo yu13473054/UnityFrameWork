@@ -66,12 +66,29 @@ public class UnityEngine_PolygonCollider2DWrap
 	{
 		try
 		{
-			ToLua.CheckArgsCount(L, 2);
-			UnityEngine.PolygonCollider2D obj = (UnityEngine.PolygonCollider2D)ToLua.CheckObject(L, 1, typeof(UnityEngine.PolygonCollider2D));
-			int arg0 = (int)LuaDLL.luaL_checknumber(L, 2);
-			UnityEngine.Vector2[] o = obj.GetPath(arg0);
-			ToLua.Push(L, o);
-			return 1;
+			int count = LuaDLL.lua_gettop(L);
+
+			if (count == 2)
+			{
+				UnityEngine.PolygonCollider2D obj = (UnityEngine.PolygonCollider2D)ToLua.CheckObject(L, 1, typeof(UnityEngine.PolygonCollider2D));
+				int arg0 = (int)LuaDLL.luaL_checknumber(L, 2);
+				UnityEngine.Vector2[] o = obj.GetPath(arg0);
+				ToLua.Push(L, o);
+				return 1;
+			}
+			else if (count == 3)
+			{
+				UnityEngine.PolygonCollider2D obj = (UnityEngine.PolygonCollider2D)ToLua.CheckObject(L, 1, typeof(UnityEngine.PolygonCollider2D));
+				int arg0 = (int)LuaDLL.luaL_checknumber(L, 2);
+				System.Collections.Generic.List<UnityEngine.Vector2> arg1 = (System.Collections.Generic.List<UnityEngine.Vector2>)ToLua.CheckObject(L, 3, typeof(System.Collections.Generic.List<UnityEngine.Vector2>));
+				int o = obj.GetPath(arg0, arg1);
+				LuaDLL.lua_pushinteger(L, o);
+				return 1;
+			}
+			else
+			{
+				return LuaDLL.luaL_throw(L, "invalid arguments to method: UnityEngine.PolygonCollider2D.GetPath");
+			}
 		}
 		catch (Exception e)
 		{
@@ -84,12 +101,28 @@ public class UnityEngine_PolygonCollider2DWrap
 	{
 		try
 		{
-			ToLua.CheckArgsCount(L, 3);
-			UnityEngine.PolygonCollider2D obj = (UnityEngine.PolygonCollider2D)ToLua.CheckObject(L, 1, typeof(UnityEngine.PolygonCollider2D));
-			int arg0 = (int)LuaDLL.luaL_checknumber(L, 2);
-			UnityEngine.Vector2[] arg1 = ToLua.CheckStructArray<UnityEngine.Vector2>(L, 3);
-			obj.SetPath(arg0, arg1);
-			return 0;
+			int count = LuaDLL.lua_gettop(L);
+
+			if (count == 3 && TypeChecker.CheckTypes<UnityEngine.Vector2[]>(L, 3))
+			{
+				UnityEngine.PolygonCollider2D obj = (UnityEngine.PolygonCollider2D)ToLua.CheckObject(L, 1, typeof(UnityEngine.PolygonCollider2D));
+				int arg0 = (int)LuaDLL.luaL_checknumber(L, 2);
+				UnityEngine.Vector2[] arg1 = ToLua.ToStructArray<UnityEngine.Vector2>(L, 3);
+				obj.SetPath(arg0, arg1);
+				return 0;
+			}
+			else if (count == 3 && TypeChecker.CheckTypes<System.Collections.Generic.List<UnityEngine.Vector2>>(L, 3))
+			{
+				UnityEngine.PolygonCollider2D obj = (UnityEngine.PolygonCollider2D)ToLua.CheckObject(L, 1, typeof(UnityEngine.PolygonCollider2D));
+				int arg0 = (int)LuaDLL.luaL_checknumber(L, 2);
+				System.Collections.Generic.List<UnityEngine.Vector2> arg1 = (System.Collections.Generic.List<UnityEngine.Vector2>)ToLua.ToObject(L, 3);
+				obj.SetPath(arg0, arg1);
+				return 0;
+			}
+			else
+			{
+				return LuaDLL.luaL_throw(L, "invalid arguments to method: UnityEngine.PolygonCollider2D.SetPath");
+			}
 		}
 		catch (Exception e)
 		{

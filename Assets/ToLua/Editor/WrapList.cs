@@ -79,7 +79,7 @@ public static class WrapList
         _GT(typeof(RectTransform)).SetNameSpace(null),
         _GT(typeof(Material)).SetNameSpace(null),
         _GT(typeof(Rigidbody)).SetNameSpace(null),
-        _GT(typeof(Camera)).SetNameSpace(null),
+        // _GT(typeof(Camera)).SetNameSpace(null),
         _GT(typeof(AudioSource)).SetNameSpace(null),
         _GT(typeof(LineRenderer)).SetNameSpace(null),
         //_GT(typeof(TrailRenderer))
@@ -132,7 +132,7 @@ public static class WrapList
         _GT(typeof(WrapMode)).SetNameSpace(null),
 
         _GT(typeof(RenderSettings)).SetNameSpace(null),                                                   
-        _GT(typeof(BlendWeights)).SetNameSpace(null),           
+        _GT(typeof(SkinWeights)).SetNameSpace(null),           
         _GT(typeof(RenderTexture)).SetNameSpace(null),
         _GT(typeof(Resources)).SetNameSpace(null),
         _GT(typeof(Sprite)).SetNameSpace(null),
@@ -226,7 +226,7 @@ public static class WrapList
         typeof(Animation),
         typeof(AnimationClip),
         typeof(AnimationState),
-        typeof(BlendWeights),
+        typeof(SkinWeights),
         typeof(RenderTexture),
         typeof(Rigidbody),
 

@@ -8,22 +8,22 @@ public class TimerElement
     /// 0:CD Timer  1:Frame Timer
     /// </summary>
     public int type = -1;
-    public object key;//×¢²ákey
+    public object key;//æ³¨å†Œkey
     public bool isTimeScale = true;
-    public int loopTimes;//µ±Ç°ÒÑ¾­Ñ­»·´ÎÊı
-    public int loopCountLimit = 1; //Ñ­»·´ÎÊıÉÏÏŞ
-    public float life = -1; //ÉúÃüÖÜÆÚ
+    public int loopTimes;//å½“å‰å·²ç»å¾ªç¯æ¬¡æ•°
+    public int loopCountLimit = 1; //å¾ªç¯æ¬¡æ•°ä¸Šé™
+    public float life = -1; //ç”Ÿå‘½å‘¨æœŸ
     public TimerEleCallBack callback;
     public TimerEleCallBack endCB;
 
-    //Ê±¼ä¼ÆÊ±Æ÷¶ÀÓĞ²ÎÊı
-    public float duration;// Ê±¼ä¼ä¸ô
-    public float totalExecuteTime;//Ö´ĞĞ×ÜÊ±³¤
+    //æ—¶é—´è®¡æ—¶å™¨ç‹¬æœ‰å‚æ•°
+    public float duration;// æ—¶é—´é—´éš”
+    public float totalExecuteTime;//æ‰§è¡Œæ€»æ—¶é•¿
 
     public bool isFinish { get; private set; }
     private float _currTime;
 
-    //Ö´ĞĞ¼ÆÊ±Æ÷
+    //æ‰§è¡Œè®¡æ—¶å™¨
     public void Execute()
     {
         float deltaTime = isTimeScale ? Time.deltaTime : Time.unscaledDeltaTime;
@@ -40,11 +40,11 @@ public class TimerElement
         }
         else if (type == 1)// frame Timer
         {
-            loopTimes++;//¼ÇÂ¼Ö´ĞĞÁË¶àÉÙÖ¡
+            loopTimes++;//è®°å½•æ‰§è¡Œäº†å¤šå°‘å¸§
             callback(this);
         }
 
-        if (loopCountLimit > 0 && loopTimes == loopCountLimit)//´ïµ½ÁËÖ¸¶¨µÄÑ­»·´ÎÊı
+        if (loopCountLimit > 0 && loopTimes == loopCountLimit)//è¾¾åˆ°äº†æŒ‡å®šçš„å¾ªç¯æ¬¡æ•°
         {
             isFinish = true;
             if(endCB != null)
@@ -77,25 +77,14 @@ public class TimerElement
 }
 public delegate void TimerEleCallBack(TimerElement element);
 
-public class TimerMgr : MonoBehaviour
+public class TimerMgr : SingletonMono<TimerMgr>
 {
-    #region ³õÊ¼»¯
-    private static TimerMgr _inst;
-    public static TimerMgr Inst
-    {
-        get
-        {
-            return _inst;
-        }
-    }
-    #endregion
-
     private List<TimerElement> _timerList;
     private Stack<TimerElement> _elementPool;
 
-    void Awake()
+    protected override void Awake()
     {
-        _inst = this;
+        base.Awake();
         DontDestroyOnLoad(gameObject);
 
         _timerList = new List<TimerElement>();
@@ -117,16 +106,16 @@ public class TimerMgr : MonoBehaviour
     }
 
     /// <summary>
-    /// Ã¿¸ô¶à³¤Ê±¼äÖ´ĞĞÒ»´Î
+    /// æ¯éš”å¤šé•¿æ—¶é—´æ‰§è¡Œä¸€æ¬¡
     /// </summary>
-    /// <param name="key">×¢²ákey</param>
-    /// <param name="duration">¼ä¸ôÊ±¼ä</param>
-    /// <param name="callBack">ÊÂ¼ş»Øµ÷</param>
-    /// <param name="isTimeScale">ÊÇ·ñÊÜTimeScaleÓ°Ïì</param>
-    /// <param name="loopCount">Ñ­»·´ÎÊı£¬Ğ¡ÓÚ0ÎªÎŞÏŞÑ­»·</param>
-    /// <param name="life">ÉúÃüÖÜÆÚ£¬Èç¹ûÍ¬Ê±Ö¸¶¨loopCount£¬Ë­ÏÈµ½Ö´ĞĞfinish</param>
-    /// <param name="endCB">½áÊø»Øµ÷</param>
-    /// <param name="immRun">Á¢¼´Ö´ĞĞ</param>
+    /// <param name="key">æ³¨å†Œkey</param>
+    /// <param name="duration">é—´éš”æ—¶é—´</param>
+    /// <param name="callBack">äº‹ä»¶å›è°ƒ</param>
+    /// <param name="isTimeScale">æ˜¯å¦å—TimeScaleå½±å“</param>
+    /// <param name="loopCount">å¾ªç¯æ¬¡æ•°ï¼Œå°äº0ä¸ºæ— é™å¾ªç¯</param>
+    /// <param name="life">ç”Ÿå‘½å‘¨æœŸï¼Œå¦‚æœåŒæ—¶æŒ‡å®šloopCountï¼Œè°å…ˆåˆ°æ‰§è¡Œfinish</param>
+    /// <param name="endCB">ç»“æŸå›è°ƒ</param>
+    /// <param name="immRun">ç«‹å³æ‰§è¡Œ</param>
     public void RegisterCDTimer(object key, float duration, TimerEleCallBack callBack, bool isTimeScale = true, bool immRun = false,
         int loopCount = 1, float life = -1, TimerEleCallBack endCB = null)
     {
@@ -154,7 +143,7 @@ public class TimerMgr : MonoBehaviour
     }
 
     /// <summary>
-    /// Ã¿Ö¡Ö´ĞĞ»Øµ÷º¯Êı
+    /// æ¯å¸§æ‰§è¡Œå›è°ƒå‡½æ•°
     /// </summary>
     public object RegisterFrameTimer(TimerEleCallBack callBack, int loopCount = -1, bool isTimeScale = true, bool immRun = false,
         float life = -1, TimerEleCallBack endCB = null)
@@ -180,7 +169,7 @@ public class TimerMgr : MonoBehaviour
     }
 
     /// <summary>
-    /// ÒÆ³ıÊÂ¼ş
+    /// ç§»é™¤äº‹ä»¶
     /// </summary>
     /// <param name="key"></param>
     public void RemoveTimer(object key)
@@ -202,7 +191,7 @@ public class TimerMgr : MonoBehaviour
     }
 
     /// <summary>
-    /// µÃµ½Ò»¸ö¿É¸´ÓÃµÄ¶ÔÏó
+    /// å¾—åˆ°ä¸€ä¸ªå¯å¤ç”¨çš„å¯¹è±¡
     /// </summary>
     /// <returns></returns>
     private TimerElement GetFreeElement()
@@ -233,16 +222,14 @@ public class TimerMgr : MonoBehaviour
     }
 
 
-    void OnDestroy()
+    protected override void OnDestroy()
     {
+        base.OnDestroy();
         for (int i = 0; i < _timerList.Count; i++)
         {
             _timerList[i].callback = null;
         }
         _timerList.Clear();
         _elementPool.Clear();
-
-        Debug.Log("<TimerMgr> OnDestroy");
     }
-
 }

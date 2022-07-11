@@ -5,25 +5,16 @@ using System.Collections.Generic;
 
 public delegate void LoadTableDelegate(Dictionary<string, Dictionary<string, object>> dic);
 
-public class DatabaseMgr : MonoBehaviour
+public class DatabaseMgr : SingletonMono<DatabaseMgr>
 {
-    #region 初始化
-    private static DatabaseMgr _inst;
-    public static DatabaseMgr Inst
-    {
-        get { return _inst; }
-    }
-
-    #endregion
-
     private Dictionary<string, Dictionary<string, object>> _cacheData;//事先缓存的数据
     private Dictionary<string, Dictionary<string, object>> _tmpData;//随用随取的数据
 
     public LoadTableDelegate _cacheDelegate;
 
-    void Awake()
+    protected override void Awake()
     {
-        _inst = this;
+        base.Awake();
         DontDestroyOnLoad(gameObject);
 
         _cacheData = new Dictionary<string, Dictionary<string, object>>();
@@ -79,11 +70,9 @@ public class DatabaseMgr : MonoBehaviour
         _tmpData.Clear();
     }
 
-    void OnDestroy()
+    protected override void OnDestroy()
     {
-        //            ab = null;
+        base.OnDestroy();
         ClearAllData();
-
-        Debug.Log("<DatabaseMgr> OnDestroy");
     }
 }

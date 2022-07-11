@@ -14,6 +14,8 @@ public class UnityEngine_UI_HorizontalOrVerticalLayoutGroupWrap
 		L.RegVar("childForceExpandHeight", get_childForceExpandHeight, set_childForceExpandHeight);
 		L.RegVar("childControlWidth", get_childControlWidth, set_childControlWidth);
 		L.RegVar("childControlHeight", get_childControlHeight, set_childControlHeight);
+		L.RegVar("childScaleWidth", get_childScaleWidth, set_childScaleWidth);
+		L.RegVar("childScaleHeight", get_childScaleHeight, set_childScaleHeight);
 		L.EndClass();
 	}
 
@@ -131,6 +133,44 @@ public class UnityEngine_UI_HorizontalOrVerticalLayoutGroupWrap
 	}
 
 	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
+	static int get_childScaleWidth(IntPtr L)
+	{
+		object o = null;
+
+		try
+		{
+			o = ToLua.ToObject(L, 1);
+			UnityEngine.UI.HorizontalOrVerticalLayoutGroup obj = (UnityEngine.UI.HorizontalOrVerticalLayoutGroup)o;
+			bool ret = obj.childScaleWidth;
+			LuaDLL.lua_pushboolean(L, ret);
+			return 1;
+		}
+		catch(Exception e)
+		{
+			return LuaDLL.toluaL_exception(L, e, o, "attempt to index childScaleWidth on a nil value");
+		}
+	}
+
+	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
+	static int get_childScaleHeight(IntPtr L)
+	{
+		object o = null;
+
+		try
+		{
+			o = ToLua.ToObject(L, 1);
+			UnityEngine.UI.HorizontalOrVerticalLayoutGroup obj = (UnityEngine.UI.HorizontalOrVerticalLayoutGroup)o;
+			bool ret = obj.childScaleHeight;
+			LuaDLL.lua_pushboolean(L, ret);
+			return 1;
+		}
+		catch(Exception e)
+		{
+			return LuaDLL.toluaL_exception(L, e, o, "attempt to index childScaleHeight on a nil value");
+		}
+	}
+
+	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
 	static int set_spacing(IntPtr L)
 	{
 		object o = null;
@@ -222,6 +262,44 @@ public class UnityEngine_UI_HorizontalOrVerticalLayoutGroupWrap
 		catch(Exception e)
 		{
 			return LuaDLL.toluaL_exception(L, e, o, "attempt to index childControlHeight on a nil value");
+		}
+	}
+
+	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
+	static int set_childScaleWidth(IntPtr L)
+	{
+		object o = null;
+
+		try
+		{
+			o = ToLua.ToObject(L, 1);
+			UnityEngine.UI.HorizontalOrVerticalLayoutGroup obj = (UnityEngine.UI.HorizontalOrVerticalLayoutGroup)o;
+			bool arg0 = LuaDLL.luaL_checkboolean(L, 2);
+			obj.childScaleWidth = arg0;
+			return 0;
+		}
+		catch(Exception e)
+		{
+			return LuaDLL.toluaL_exception(L, e, o, "attempt to index childScaleWidth on a nil value");
+		}
+	}
+
+	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
+	static int set_childScaleHeight(IntPtr L)
+	{
+		object o = null;
+
+		try
+		{
+			o = ToLua.ToObject(L, 1);
+			UnityEngine.UI.HorizontalOrVerticalLayoutGroup obj = (UnityEngine.UI.HorizontalOrVerticalLayoutGroup)o;
+			bool arg0 = LuaDLL.luaL_checkboolean(L, 2);
+			obj.childScaleHeight = arg0;
+			return 0;
+		}
+		catch(Exception e)
+		{
+			return LuaDLL.toluaL_exception(L, e, o, "attempt to index childScaleHeight on a nil value");
 		}
 	}
 }

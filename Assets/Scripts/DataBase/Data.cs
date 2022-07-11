@@ -1,18 +1,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Data 
+public class Data : Singleton<Data>
 {
-    private static Data _inst;
-    public static Data Inst
-    {
-        get
-        {
-            if (_inst == null) _inst = new Data();
-            return _inst;
-        }
-    }
-
     private int[] ToIntArray(string content)
     {
         if (string.IsNullOrEmpty(content)) return new int[0];

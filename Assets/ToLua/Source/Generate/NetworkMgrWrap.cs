@@ -6,7 +6,7 @@ public class NetworkMgrWrap
 {
 	public static void Register(LuaState L)
 	{
-		L.BeginClass(typeof(NetworkMgr), typeof(UnityEngine.MonoBehaviour));
+		L.BeginClass(typeof(NetworkMgr), typeof(SingletonMono<NetworkMgr>));
 		L.RegFunction("SetIgnoreMsg", SetIgnoreMsg);
 		L.RegFunction("IgnoreMsg", IgnoreMsg);
 		L.RegFunction("AddEvent", AddEvent);
@@ -23,7 +23,6 @@ public class NetworkMgrWrap
 		L.RegFunction("__tostring", ToLua.op_ToString);
 		L.RegVar("netStatus", get_netStatus, set_netStatus);
 		L.RegVar("ignoreMsgs", get_ignoreMsgs, set_ignoreMsgs);
-		L.RegVar("Inst", get_Inst, null);
 		L.RegVar("cid", get_cid, set_cid);
 		L.RegVar("sid", get_sid, set_sid);
 		L.EndClass();
@@ -314,20 +313,6 @@ public class NetworkMgrWrap
 		catch(Exception e)
 		{
 			return LuaDLL.toluaL_exception(L, e, o, "attempt to index ignoreMsgs on a nil value");
-		}
-	}
-
-	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
-	static int get_Inst(IntPtr L)
-	{
-		try
-		{
-			ToLua.Push(L, NetworkMgr.Inst);
-			return 1;
-		}
-		catch (Exception e)
-		{
-			return LuaDLL.toluaL_exception(L, e);
 		}
 	}
 
