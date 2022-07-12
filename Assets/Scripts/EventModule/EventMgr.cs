@@ -5,23 +5,13 @@ using System.Collections.Generic;
 public class EventMgr : Singleton<EventMgr>
 {
     //按照模块分发
-    private EventDispatcher<string> _commonEvt = new EventDispatcher<string>();
-    public EventDispatcher<string> CommonEvt
-    {
-        get { return _commonEvt; }
-    }
+    public EventDispatcher<EventID> CommonEvt { get; } = new EventDispatcher<EventID>();
+
     //网络模块
-    private EventDispatcher<int> _networkEvt = new EventDispatcher<int>();
-    public EventDispatcher<int> NetworkEvt
-    {
-        get { return _networkEvt; }
-    }
+    public EventDispatcher<int> NetworkEvt { get; } = new EventDispatcher<int>();
+
     //红点
-    private EventDispatcher<int> _redPointEvt = new EventDispatcher<int>();
-    public EventDispatcher<int> RedPointEvt
-    {
-        get { return _redPointEvt; }
-    }
+    public EventDispatcher<int> RedPointEvt { get; } = new EventDispatcher<int>();
 }
 
 

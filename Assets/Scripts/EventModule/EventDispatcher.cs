@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class EventDispatcher<K>
 {
-    private Dictionary<K, Delegate> _dicEvents = new Dictionary<K, Delegate>();
+    private readonly Dictionary<K, Delegate> _dicEvents = new Dictionary<K, Delegate>();
 
     void Add(K eventId, Delegate listener)
     {
@@ -59,10 +59,14 @@ public class EventDispatcher<K>
 
     public void TriggerEvent(K eventId)
     {
-        Delegate del = null;
-        if (_dicEvents.TryGetValue(eventId, out del))
+        if (!_dicEvents.TryGetValue(eventId, out var del)) return;
+        if (del is Action action)
         {
-            del.DynamicInvoke();
+            action.Invoke();
+        }
+        else
+        {
+            Debug.LogError($"<Event> 参数不匹配！eventId = {eventId}");
         }
     }
 
@@ -81,10 +85,14 @@ public class EventDispatcher<K>
 
     public void TriggerEvent<T>(K eventId, T p)
     {
-        Delegate del = null;
-        if (_dicEvents.TryGetValue(eventId, out del))
+        if (!_dicEvents.TryGetValue(eventId, out var del)) return;
+        if (del is Action<T> action)
         {
-            del.DynamicInvoke(p);
+            action.Invoke(p);
+        }
+        else
+        {
+            Debug.LogError($"<Event> 参数不匹配！eventId = {eventId}，param1 = {del.Method.GetParameters()[0].ParameterType}");
         }
     }
     #endregion
@@ -102,10 +110,17 @@ public class EventDispatcher<K>
 
     public void TriggerEvent<T0, T1>(K eventId, T0 p0, T1 p1)
     {
-        Delegate del = null;
-        if (_dicEvents.TryGetValue(eventId, out del))
+        if (!_dicEvents.TryGetValue(eventId, out var del)) return;
+        if (del is Action<T0, T1> action)
         {
-            del.DynamicInvoke(p0, p1);
+            action.Invoke(p0, p1);
+        }
+        else
+        {
+            var parameterInfos = del.Method.GetParameters();
+            Debug.LogError(
+                $"<Event> 参数不匹配！eventId = {eventId}，param1 = {parameterInfos[0].ParameterType}," +
+                $" param2 = {parameterInfos[1].ParameterType}");
         }
     }
     #endregion
@@ -123,10 +138,17 @@ public class EventDispatcher<K>
 
     public void TriggerEvent<T0, T1, T2>(K eventId, T0 p0, T1 p1, T2 p2)
     {
-        Delegate del = null;
-        if (_dicEvents.TryGetValue(eventId, out del))
+        if (!_dicEvents.TryGetValue(eventId, out var del)) return;
+        if (del is Action<T0, T1, T2> action)
         {
-            del.DynamicInvoke(p0, p1, p2);
+            action.Invoke(p0, p1, p2);
+        }
+        else
+        {
+            var parameterInfos = del.Method.GetParameters();
+            Debug.LogError(
+                $"<Event> 参数不匹配！eventId = {eventId}，param1 = {parameterInfos[0].ParameterType}," +
+                $" param2 = {parameterInfos[1].ParameterType},  param3 = {parameterInfos[2].ParameterType}");
         }
     }
     #endregion
@@ -144,12 +166,48 @@ public class EventDispatcher<K>
 
     public void TriggerEvent<T0, T1, T2, T3>(K eventId, T0 p0, T1 p1, T2 p2, T3 p3)
     {
-        Delegate del = null;
-        if (_dicEvents.TryGetValue(eventId, out del))
+        if (!_dicEvents.TryGetValue(eventId, out var del)) return;
+        if (del is Action<T0, T1, T2, T3> action)
         {
-            del.DynamicInvoke(p0, p1, p2, p3);
+            action.Invoke(p0, p1, p2, p3);
+        }
+        else
+        {
+            var parameterInfos = del.Method.GetParameters();
+            Debug.LogError(
+                $"<Event> 参数不匹配！eventId = {eventId}，param1 = {parameterInfos[0].ParameterType}," +
+                $" param2 = {parameterInfos[1].ParameterType},  param3 = {parameterInfos[2].ParameterType}," +
+                $" param4 = {parameterInfos[3].ParameterType}");
         }
     }
     #endregion
+    
+    #region five params
+    public void AddEventListener<T0, T1, T2, T3, T4>(K eventId, Action<T0, T1, T2, T3, T4> listener)
+    {
+        Add(eventId, listener);
+    }
 
+    public void RemoveEventListener<T0, T1, T2, T3, T4>(K eventId, Action<T0, T1, T2, T3, T4> listener)
+    {
+        Remove(eventId, listener);
+    }
+
+    public void TriggerEvent<T0, T1, T2, T3, T4>(K eventId, T0 p0, T1 p1, T2 p2, T3 p3, T4 p4)
+    {
+        if (!_dicEvents.TryGetValue(eventId, out var del)) return;
+        if (del is Action<T0, T1, T2, T3, T4> action)
+        {
+            action.Invoke(p0, p1, p2, p3, p4);
+        }
+        else
+        {
+            var parameterInfos = del.Method.GetParameters();
+            Debug.LogError(
+                $"<Event> 参数不匹配！eventId = {eventId}，param1 = {parameterInfos[0].ParameterType}," +
+                $" param2 = {parameterInfos[1].ParameterType}, param3 = {parameterInfos[2].ParameterType}," +
+                $" param4 = {parameterInfos[3].ParameterType}, param5 = {parameterInfos[4].ParameterType}");
+        }
+    }
+    #endregion
 }
