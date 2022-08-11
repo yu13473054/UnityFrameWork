@@ -1,9 +1,9 @@
 ManifestFileVersion: 0
-CRC: 750602500
+CRC: 2390486692
 Hashes:
   AssetFileHash:
     serializedVersion: 2
-    Hash: 933733aaf92a3e3b461e41d5e24cd3cd
+    Hash: 41d4eed974b147b367e68328b795bcb0
   TypeTreeHash:
     serializedVersion: 2
     Hash: 5ad585dd02dfb5016c0dad519eab8f49
@@ -11,7 +11,9 @@ HashAppended: 0
 ClassTypes:
 - Class: 49
   Script: {instanceID: 0}
+SerializeReferenceClassIdentifiers: []
 Assets:
+- Assets/Lua/32/ToLua/events.lua.bytes
 - Assets/Lua/32/ToLua/cjson/util.lua.bytes
 - Assets/Lua/32/ToLua/jit/dis_mips64el.lua.bytes
 - Assets/Lua/32/ToLua/socket/url.lua.bytes
@@ -64,7 +66,6 @@ Assets:
 - Assets/Lua/32/ToLua/misc/utf8.lua.bytes
 - Assets/Lua/32/ToLua/System/coroutine.lua.bytes
 - Assets/Lua/32/ToLua/event.lua.bytes
-- Assets/Lua/32/ToLua/events.lua.bytes
 - Assets/Lua/32/ToLua/socket/mbox.lua.bytes
 - Assets/Lua/32/ToLua/jit/p.lua.bytes
 - Assets/Lua/32/ToLua/jit/dis_ppc.lua.bytes

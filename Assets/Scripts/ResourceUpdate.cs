@@ -78,7 +78,7 @@ public class ResourceUpdate : MonoBehaviour
         // 拿远端版本
         UnityWebRequest request = UnityWebRequest.Get(GameMain.Inst.updateHost + GameMain.Inst.platformName + "/version.txt");
         yield return request;
-        if (request.error != null)
+        if (!request.isDone || request.error != null)
         {
             Debug.LogError("<ResourceUpdate> 无法获取远端资源版本：" + request.error);
             yield break;

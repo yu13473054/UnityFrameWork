@@ -43,7 +43,7 @@ public class FullScreen : MonoBehaviour
 #if UNITY_EDITOR
         _rootTrans = Application.isPlaying && UIMgr.Inst ? (RectTransform)UIMgr.Inst.GetUIRoot() : GameObject.Find("UIRoot").transform as RectTransform;
 #else
-        _rootTrans = (RectTransform)UIMgr.Inst.GetCanvas().transform;
+        _rootTrans = (RectTransform) UIMgr.Inst.GetUIRoot();
 #endif
         Adjust();
     }

@@ -1,12 +1,12 @@
 ManifestFileVersion: 0
-CRC: 1412429940
+CRC: 1550222817
 Hashes:
   AssetFileHash:
     serializedVersion: 2
-    Hash: 10d165744534ed1f72ca497ca184ab4e
+    Hash: afca6bef542e1ce61c6493c55360b2a7
   TypeTreeHash:
     serializedVersion: 2
-    Hash: b5a4dc01937663d5929f8c52fd3f2c67
+    Hash: 838c8657bc25d107bf73580fa0dab309
 HashAppended: 0
 ClassTypes:
 - Class: 1
@@ -27,6 +27,7 @@ ClassTypes:
   Script: {instanceID: 0}
 - Class: 224
   Script: {instanceID: 0}
+SerializeReferenceClassIdentifiers: []
 Assets:
 - Assets/Res/Prefab/UI/DlgWait.prefab
 Dependencies: []

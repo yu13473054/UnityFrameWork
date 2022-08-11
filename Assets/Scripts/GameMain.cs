@@ -112,14 +112,17 @@ public class GameMain : MonoBehaviour
 
     public void InitWithConfig()
     {
-        ConfigHandler config = ConfigHandler.Open(CommonUtils.GetABPath("config.txt"));
+        string filePath = $"{localABPath}config.txt";
+        if(!File.Exists(filePath))
+            filePath = $"{Application.streamingAssetsPath}/config.txt";
+        
+        ConfigHandler config = ConfigHandler.Open(filePath);
         //是否配置多语言
         string str = config.ReadValue("lngType", "");
         if (!string.IsNullOrEmpty(str))
         {
             _lngType = (LngType)int.Parse(str);
         }
-        Debug.Log(_lngType);
         //音效上限
         str = config.ReadValue("AudioLimit", "");
         if (!string.IsNullOrEmpty(str))

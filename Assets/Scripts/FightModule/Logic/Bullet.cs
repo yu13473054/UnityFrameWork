@@ -18,7 +18,7 @@ public class Bullet
         if(_bulletParser.life < 0)
         {
             Debug.LogError("<Bullet> 子弹的生命周期不能小于0，请检查！Sn = " + sn);
-            PoolMgr.Inst.DespawnObj(this);
+            FightMgr.Inst.bulletPool.Despawn(this);
             return;
         }
         TimerMgr.Inst.RegisterFrameTimer(Update, -1, true, true, _bulletParser.life, LifeEnd);
@@ -62,7 +62,7 @@ public class Bullet
     public void BulletValid()
     {
         if (_isDie) return;
-        PoolMgr.Inst.DespawnObj(this);//回收子弹对象
+        FightMgr.Inst.bulletPool.Despawn(this);
         _isDie = true; //穿透弹需要另外处理：比如碰撞后，沿该方向继续发射一个子弹
 
         //选择目标
@@ -98,7 +98,7 @@ public class Bullet
     {
         for (int i = 0; i < _bulletParser.effectList.Length; i++)
         {
-            BulletEffect effect = PoolMgr.Inst.SpawnObj<BulletEffect>();
+            BulletEffect effect = FightMgr.Inst.bePool.Spawn();
             effect.Init(_bulletParser.effectList[i], _skill.activeUnit, target);
         }
     }

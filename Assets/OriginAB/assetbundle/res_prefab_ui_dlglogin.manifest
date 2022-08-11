@@ -1,12 +1,12 @@
 ManifestFileVersion: 0
-CRC: 4042485794
+CRC: 3368400609
 Hashes:
   AssetFileHash:
     serializedVersion: 2
-    Hash: 37e13195545e2e8548b7807e88369320
+    Hash: 1891741be449384e6a0bff1420fbda5c
   TypeTreeHash:
     serializedVersion: 2
-    Hash: f47e1cedc69755fba59f33f3c9ad2273
+    Hash: cae420fdcde199cb85ddbc2235a91a9e
 HashAppended: 0
 ClassTypes:
 - Class: 1
@@ -43,8 +43,9 @@ ClassTypes:
   Script: {instanceID: 0}
 - Class: 224
   Script: {instanceID: 0}
+SerializeReferenceClassIdentifiers: []
 Assets:
 - Assets/Res/Prefab/UI/DlgLogin.prefab
 Dependencies:
-- F:/Projects/UnityFrameWork/Assets/OriginAB/assetbundle/res_sprites_ui_loginbg
-- F:/Projects/UnityFrameWork/Assets/OriginAB/assetbundle/res_ui_dlglogin
+- E:/Projects/UnityFrameWork/Assets/OriginAB/assetbundle/res_sprites_ui_loginbg
+- E:/Projects/UnityFrameWork/Assets/OriginAB/assetbundle/res_ui_dlglogin

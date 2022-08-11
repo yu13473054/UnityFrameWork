@@ -35,7 +35,7 @@ public class Skill
 
         for (int i = 0; i < skillParser.launcherList.Length; i++)
         {
-            BulletLauncher launcher = PoolMgr.Inst.SpawnObj<BulletLauncher>();
+            BulletLauncher launcher = FightMgr.Inst.blPool.Spawn();
             launcher.Init(this, skillParser.launcherList[i]);
         }
     }

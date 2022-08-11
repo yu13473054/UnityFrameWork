@@ -6,16 +6,14 @@ using Object = UnityEngine.Object;
 
 public class GameObjectPool<T> where T : Component
 {
-    private Transform _poolRoot;
     private GameObject _prefab;
 
     private List<T> _spawnList = new List<T>();
     private Stack<T> _cacheStack = new Stack<T>();
 
-    public GameObjectPool(GameObject go, GameObject poolRoot, bool isInstantiate = false) 
+    public GameObjectPool(GameObject go, bool isInstantiate = false) 
     {
         _prefab = go;
-        _poolRoot = poolRoot.transform;
 
         //如果go已经实例化了，需要保存
         if (isInstantiate)
@@ -82,6 +80,6 @@ public class GameObjectPool<T> where T : Component
     {
         t.gameObject.SetActive(false);
         _cacheStack.Push(t);
-        t.transform.SetParent(_poolRoot, false);
+        t.transform.SetParent(UIMgr.Inst.poolRoot, false);
     }
 }

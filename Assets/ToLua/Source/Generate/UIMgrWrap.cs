@@ -20,6 +20,7 @@ public class UIMgrWrap
 		L.RegFunction("UnloadAllUI", UnloadAllUI);
 		L.RegFunction("__eq", op_Equality);
 		L.RegFunction("__tostring", ToLua.op_ToString);
+		L.RegVar("poolRoot", get_poolRoot, null);
 		L.EndClass();
 	}
 
@@ -267,6 +268,25 @@ public class UIMgrWrap
 		catch (Exception e)
 		{
 			return LuaDLL.toluaL_exception(L, e);
+		}
+	}
+
+	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
+	static int get_poolRoot(IntPtr L)
+	{
+		object o = null;
+
+		try
+		{
+			o = ToLua.ToObject(L, 1);
+			UIMgr obj = (UIMgr)o;
+			UnityEngine.Transform ret = obj.poolRoot;
+			ToLua.Push(L, ret);
+			return 1;
+		}
+		catch(Exception e)
+		{
+			return LuaDLL.toluaL_exception(L, e, o, "attempt to index poolRoot on a nil value");
 		}
 	}
 }

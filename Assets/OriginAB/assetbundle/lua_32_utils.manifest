@@ -1,9 +1,9 @@
 ManifestFileVersion: 0
-CRC: 3818954231
+CRC: 3382288945
 Hashes:
   AssetFileHash:
     serializedVersion: 2
-    Hash: 4d938d8e562d0476999588af6d5a824e
+    Hash: e1e4e0ec729c2babf18c3b381c706ab7
   TypeTreeHash:
     serializedVersion: 2
     Hash: 5ad585dd02dfb5016c0dad519eab8f49
@@ -11,6 +11,7 @@ HashAppended: 0
 ClassTypes:
 - Class: 49
   Script: {instanceID: 0}
+SerializeReferenceClassIdentifiers: []
 Assets:
 - Assets/Lua/32/utils/ObjectPool.lua.bytes
 - Assets/Lua/32/utils/UIHelper.lua.bytes

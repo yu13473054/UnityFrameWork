@@ -1,9 +1,9 @@
 ManifestFileVersion: 0
-CRC: 24617430
+CRC: 2099251092
 Hashes:
   AssetFileHash:
     serializedVersion: 2
-    Hash: ba9701717bb97b69cf402ec2c80321df
+    Hash: dbb74624969f7945c201318c2741ece7
   TypeTreeHash:
     serializedVersion: 2
     Hash: bfb87d18134d160e3a907b7674713721
@@ -11,6 +11,7 @@ HashAppended: 0
 ClassTypes:
 - Class: 687078895
   Script: {instanceID: 0}
+SerializeReferenceClassIdentifiers: []
 Assets:
 - Assets/Res/UI/Common/Bottom/Common_Bottom_Atlas.spriteatlas
 Dependencies: []

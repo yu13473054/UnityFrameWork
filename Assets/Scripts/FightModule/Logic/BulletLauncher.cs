@@ -30,7 +30,7 @@ public class BulletLauncher
         int type = _skill.skillParser.type;
         for(int i = 0; i< _launcherParser.num; i++)
         {
-            Bullet bullet = PoolMgr.Inst.SpawnObj<Bullet>();
+            Bullet bullet = FightMgr.Inst.bulletPool.Spawn();
             if (type == 1) //指向性技能：直接将产生的子弹放在目标位置
             {
                 bullet.Init(_launcherParser.bulletSn, _skill.targetUnit.pos, _skill);
@@ -47,6 +47,6 @@ public class BulletLauncher
     private void LifeEnd(TimerElement element)
     {
         //回收Launcher对象。注：计时器对象不需要回收，当生命周期达到后，TimerMgr会自己回收
-        PoolMgr.Inst.DespawnObj(this);
+        FightMgr.Inst.blPool.Despawn(this);
     }
 }

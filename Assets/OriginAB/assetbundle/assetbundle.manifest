@@ -1,19 +1,66 @@
 ManifestFileVersion: 0
-CRC: 2939727984
+CRC: 4162452158
 AssetBundleManifest:
   AssetBundleInfos:
     Info_0:
-      Name: lua_32_logic
+      Name: res_char_10001
       Dependencies: {}
     Info_1:
-      Name: lua_32_module
+      Name: res_char_10002
       Dependencies: {}
     Info_2:
-      Name: lua_32_tolua
-      Dependencies: {}
+      Name: res_material_ui
+      Dependencies:
+        Dependency_0: res_shader
     Info_3:
-      Name: lua_32_ui
+      Name: res_sprites_ui_loginbg
       Dependencies: {}
     Info_4:
+      Name: res_ui_dlglogin
+      Dependencies: {}
+    Info_5:
+      Name: localization_cn_data_excel
+      Dependencies: {}
+    Info_6:
+      Name: localization_cn_data_txt
+      Dependencies: {}
+    Info_7:
+      Name: data
+      Dependencies: {}
+    Info_8:
+      Name: lua_32_logic
+      Dependencies: {}
+    Info_9:
+      Name: lua_32_module
+      Dependencies: {}
+    Info_10:
+      Name: lua_32_tolua
+      Dependencies: {}
+    Info_11:
+      Name: lua_32_ui
+      Dependencies: {}
+    Info_12:
       Name: lua_32_utils
+      Dependencies: {}
+    Info_13:
+      Name: res_shader
+      Dependencies: {}
+    Info_14:
+      Name: res_ui_common_bottom
+      Dependencies: {}
+    Info_15:
+      Name: res_ui_common_front
+      Dependencies: {}
+    Info_16:
+      Name: res_prefab_ui_dlglogin
+      Dependencies:
+        Dependency_0: res_sprites_ui_loginbg
+        Dependency_1: res_ui_dlglogin
+    Info_17:
+      Name: res_prefab_ui_dlgmain
+      Dependencies:
+        Dependency_0: res_sprites_ui_loginbg
+        Dependency_1: res_ui_dlglogin
+    Info_18:
+      Name: res_prefab_ui_dlgwait
       Dependencies: {}

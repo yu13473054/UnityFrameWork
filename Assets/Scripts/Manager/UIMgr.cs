@@ -7,6 +7,12 @@ public class UIMgr : SingletonMono<UIMgr>
 {
     Transform _UIRoot;
     Camera _UICamera;
+
+    public Transform poolRoot
+    {
+        private set;
+        get;
+    }
     //层
     private Dictionary<int, Transform> _layers;
     // 名字查找
@@ -16,6 +22,8 @@ public class UIMgr : SingletonMono<UIMgr>
     private List<string> _backup;
     private Dictionary<string, UIStackInfo> _stackInfoDic;
     private int _uiCount = 0;
+
+    private ObjectPool<UIStackInfo> _stackInfoPool;
 
     protected override void Awake()
     {
@@ -39,6 +47,8 @@ public class UIMgr : SingletonMono<UIMgr>
         _UIRoot = uiRoot.transform;
         DontDestroyOnLoad(uiRoot);  //防止销毁
 
+        poolRoot = GameObject.Find("DefaultPoolRoot").transform;
+
         Transform uicamera = _UIRoot.Find("UICamera");
         if (uicamera == null)
         {
@@ -61,7 +71,7 @@ public class UIMgr : SingletonMono<UIMgr>
         }
 
         //创建对象池
-        PoolMgr.Inst.CreateObjPool<UIStackInfo>(null, (obj) =>
+        _stackInfoPool = new ObjectPool<UIStackInfo>(null, (obj) =>
         {
             obj.indexStack.Clear();
             obj.halfDicByIndex.Clear();
@@ -129,7 +139,7 @@ public class UIMgr : SingletonMono<UIMgr>
                 _uiStack.Push(uiSystem.uiName);
                 if (!_stackInfoDic.ContainsKey(uiSystem.uiName))
                 {
-                    stackInfo = PoolMgr.Inst.SpawnObj<UIStackInfo>();
+                    stackInfo = _stackInfoPool.Spawn();
                     _stackInfoDic.Add(uiSystem.uiName, stackInfo);
                 }
                 break;
@@ -211,7 +221,7 @@ public class UIMgr : SingletonMono<UIMgr>
         UIStackInfo stackInfo;
         if (!_stackInfoDic.TryGetValue(uiSystem.uiName, out stackInfo))
         {
-            stackInfo = PoolMgr.Inst.SpawnObj<UIStackInfo>();
+            stackInfo = _stackInfoPool.Spawn();
             _stackInfoDic.Add(uiSystem.uiName, stackInfo);
         }
         stackInfo.PushIndex(uiSystem.stackIndex);
@@ -371,7 +381,7 @@ public class UIMgr : SingletonMono<UIMgr>
         UIStackInfo info;
         if(_stackInfoDic.TryGetValue(uiName, out info) && info.indexStack.Count == 0) //没有缓存的数据了
         {
-            PoolMgr.Inst.DespawnObj(info);
+            _stackInfoPool.Despawn(info);
             _stackInfoDic.Remove(uiName);
         }
     }

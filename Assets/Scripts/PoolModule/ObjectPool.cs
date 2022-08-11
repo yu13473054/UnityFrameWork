@@ -38,7 +38,7 @@ public class ObjectPool<T> where T : class,new()
         bool isExist = _spawnList.Remove(element);
         if (!isExist)
         {
-            Debug.LogError("<GameObjectPool> »ØÊÕÒ»¸öÎ´±»Ê¹ÓÃµÄ¶ÔÏó£¬Çë¼ì²éÆäÀ´Ô´£¡");
+            Debug.LogError("<GameObjectPool> å›æ”¶ä¸€ä¸ªæœªè¢«ä½¿ç”¨çš„å¯¹è±¡ï¼Œè¯·æ£€æŸ¥å…¶æ¥æºï¼");
             return;
         }
         _cacheStack.Push(element);

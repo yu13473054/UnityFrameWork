@@ -1,12 +1,12 @@
 ManifestFileVersion: 0
-CRC: 2461931115
+CRC: 3602684583
 Hashes:
   AssetFileHash:
     serializedVersion: 2
-    Hash: a8841af40ff6a0d7f4254a67d8cae683
+    Hash: 0617e21f6a8ac33533f783f43ace6859
   TypeTreeHash:
     serializedVersion: 2
-    Hash: 8f81471f4cfc7bf93c7fa752ebb4eb40
+    Hash: c4d5dee85f6c263eb0adbea350984ae1
 HashAppended: 0
 ClassTypes:
 - Class: 28
@@ -15,6 +15,7 @@ ClassTypes:
   Script: {instanceID: 0}
 - Class: 687078895
   Script: {instanceID: 0}
+SerializeReferenceClassIdentifiers: []
 Assets:
 - Assets/Res/UI/DlgLogin/DlgLogin_Atlas.spriteatlas
 - Assets/Res/UI/DlgLogin/Cm_Ft_BtnBg_dynamic.png

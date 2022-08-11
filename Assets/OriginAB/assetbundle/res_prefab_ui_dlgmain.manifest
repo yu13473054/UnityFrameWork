@@ -1,0 +1,53 @@
+ManifestFileVersion: 0
+CRC: 2905341699
+Hashes:
+  AssetFileHash:
+    serializedVersion: 2
+    Hash: 6299423bed971a171204da2c378df65d
+  TypeTreeHash:
+    serializedVersion: 2
+    Hash: ac662a0ac4102204037ed6ee602b1260
+HashAppended: 0
+ClassTypes:
+- Class: 1
+  Script: {instanceID: 0}
+- Class: 21
+  Script: {instanceID: 0}
+- Class: 28
+  Script: {instanceID: 0}
+- Class: 48
+  Script: {instanceID: 0}
+- Class: 114
+  Script: {fileID: 11500000, guid: fa47575157c1f3242bc99585da10e259, type: 3}
+- Class: 114
+  Script: {fileID: 11500000, guid: fa790c32a54893b4fb677ca6a5f5870e, type: 3}
+- Class: 114
+  Script: {fileID: 11500000, guid: 5ece73e25a2d9ea4c828830ea76e93d7, type: 3}
+- Class: 114
+  Script: {fileID: 11500000, guid: 0c2c2975ba5772648bbab4690e809639, type: 3}
+- Class: 114
+  Script: {fileID: 11500000, guid: b3c348d5ef459844789d90e0809cc953, type: 3}
+- Class: 114
+  Script: {fileID: 11500000, guid: e53148987bc9c7040bca0ae51b34c9ab, type: 3}
+- Class: 114
+  Script: {fileID: 11500000, guid: 178f231cfaf004ee28191e086558b4c3, type: 3}
+- Class: 114
+  Script: {fileID: 11500000, guid: a01f690db6397944cbffe1eef52490e7, type: 3}
+- Class: 114
+  Script: {fileID: 11500000, guid: 73d4b30ef9dcc410a8cb9b4ada40068e, type: 3}
+- Class: 115
+  Script: {instanceID: 0}
+- Class: 128
+  Script: {instanceID: 0}
+- Class: 213
+  Script: {instanceID: 0}
+- Class: 222
+  Script: {instanceID: 0}
+- Class: 224
+  Script: {instanceID: 0}
+SerializeReferenceClassIdentifiers: []
+Assets:
+- Assets/Res/Prefab/UI/DlgMain.prefab
+Dependencies:
+- E:/Projects/UnityFrameWork/Assets/OriginAB/assetbundle/res_sprites_ui_loginbg
+- E:/Projects/UnityFrameWork/Assets/OriginAB/assetbundle/res_ui_dlglogin

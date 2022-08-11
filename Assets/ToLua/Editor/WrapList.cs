@@ -103,8 +103,8 @@ public static class WrapList
         _GT(typeof(CameraClearFlags)).SetNameSpace(null),
         _GT(typeof(AudioClip)).SetNameSpace(null),        
         _GT(typeof(AssetBundle)).SetNameSpace(null),
-        _GT(typeof(ParticleSystemRenderer)).SetNameSpace(null),
-        _GT(typeof(ParticleSystem.MainModule)).SetNameSpace(null),
+        // _GT(typeof(ParticleSystemRenderer)).SetNameSpace(null),
+        // _GT(typeof(ParticleSystem.MainModule)).SetNameSpace(null),
         _GT(typeof(AsyncOperation)).SetBaseType(typeof(System.Object)).SetNameSpace(null),        
         _GT(typeof(LightType)).SetNameSpace(null),
         _GT(typeof(SleepTimeout)).SetNameSpace(null),
@@ -115,7 +115,6 @@ public static class WrapList
         _GT(typeof(KeyCode)),
         _GT(typeof(SkinnedMeshRenderer)).SetNameSpace(null),
         _GT(typeof(Space)).SetNameSpace(null),
-        _GT(typeof(MeshRenderer)).SetNameSpace(null),
         _GT(typeof(BoxCollider)).SetNameSpace(null),
         _GT(typeof(MeshCollider)).SetNameSpace(null),
         _GT(typeof(SphereCollider)).SetNameSpace(null),        
@@ -217,7 +216,6 @@ public static class WrapList
 
     public static List<Type> dynamicList = new List<Type>()
     {
-        typeof(MeshRenderer),
         typeof(BoxCollider),
         typeof(MeshCollider),
         typeof(SphereCollider),

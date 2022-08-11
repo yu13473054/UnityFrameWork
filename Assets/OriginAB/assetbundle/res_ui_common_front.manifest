@@ -1,9 +1,9 @@
 ManifestFileVersion: 0
-CRC: 3726324467
+CRC: 3297760978
 Hashes:
   AssetFileHash:
     serializedVersion: 2
-    Hash: 380545543b9374dc9faa890273d55948
+    Hash: 398a0acf39a82f9c297c7628cc5dfd71
   TypeTreeHash:
     serializedVersion: 2
     Hash: bfb87d18134d160e3a907b7674713721
@@ -11,6 +11,7 @@ HashAppended: 0
 ClassTypes:
 - Class: 687078895
   Script: {instanceID: 0}
+SerializeReferenceClassIdentifiers: []
 Assets:
 - Assets/Res/UI/Common/Front/Common_Front_Atlas.spriteatlas
 Dependencies: []

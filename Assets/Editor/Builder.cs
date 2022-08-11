@@ -46,7 +46,7 @@ public class Builder : IPostprocessBuildWithReport
     };
 
 
-    [MenuItem("打包/资源出包(打包+上传)", false, 1)]
+    [MenuItem("打包/资源出包(打包+上传)", false, 100)]
     static void Build_Upload()
     {
         Build_NotUpload();
