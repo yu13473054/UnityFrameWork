@@ -1,2 +1,0 @@
-Resource_Version=4
-Force_Version=1.0
