@@ -167,8 +167,10 @@ public class OutlineEx : BaseMeshEffect
         pVertex.position = pos;
         // 扩大UV
         var uv = pVertex.uv0;
-        uv += pUVX / pTriangleX.magnitude * posXOffset * (Vector2.Dot(pTriangleX, Vector2.right) > 0 ? 1 : -1);
-        uv += pUVY / pTriangleY.magnitude * posYOffset * (Vector2.Dot(pTriangleY, Vector2.up) > 0 ? 1 : -1);
+        var xOffset = pUVX / pTriangleX.magnitude * posXOffset * (Vector2.Dot(pTriangleX, Vector2.right) > 0 ? 1 : -1);
+        uv += new Vector4(xOffset.x, xOffset.y);
+        var yOffset = pUVY / pTriangleY.magnitude * posYOffset * (Vector2.Dot(pTriangleY, Vector2.up) > 0 ? 1 : -1);
+        uv += new Vector4(yOffset.x, yOffset.y);
         pVertex.uv0 = uv;
         // 原始UV框
         pVertex.tangent = pUVOrigin;

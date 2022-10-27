@@ -13,6 +13,7 @@ public class UnityEngine_UI_ToggleGroupWrap
 		L.RegFunction("EnsureValidState", EnsureValidState);
 		L.RegFunction("AnyTogglesOn", AnyTogglesOn);
 		L.RegFunction("ActiveToggles", ActiveToggles);
+		L.RegFunction("GetFirstActiveToggle", GetFirstActiveToggle);
 		L.RegFunction("SetAllTogglesOff", SetAllTogglesOff);
 		L.RegFunction("__eq", op_Equality);
 		L.RegFunction("__tostring", ToLua.op_ToString);
@@ -129,6 +130,23 @@ public class UnityEngine_UI_ToggleGroupWrap
 			UnityEngine.UI.ToggleGroup obj = (UnityEngine.UI.ToggleGroup)ToLua.CheckObject<UnityEngine.UI.ToggleGroup>(L, 1);
 			System.Collections.Generic.IEnumerable<UnityEngine.UI.Toggle> o = obj.ActiveToggles();
 			ToLua.PushObject(L, o);
+			return 1;
+		}
+		catch (Exception e)
+		{
+			return LuaDLL.toluaL_exception(L, e);
+		}
+	}
+
+	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
+	static int GetFirstActiveToggle(IntPtr L)
+	{
+		try
+		{
+			ToLua.CheckArgsCount(L, 1);
+			UnityEngine.UI.ToggleGroup obj = (UnityEngine.UI.ToggleGroup)ToLua.CheckObject<UnityEngine.UI.ToggleGroup>(L, 1);
+			UnityEngine.UI.Toggle o = obj.GetFirstActiveToggle();
+			ToLua.Push(L, o);
 			return 1;
 		}
 		catch (Exception e)

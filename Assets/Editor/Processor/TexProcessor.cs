@@ -102,11 +102,11 @@ public class TexProcessor : AssetPostprocessor
         settings.maxTextureSize = importer.maxTextureSize;
         if (importer.DoesSourceTextureHaveAlpha())
         {
-            settings.format = TextureImporterFormat.ASTC_RGBA_6x6;
+            settings.format = TextureImporterFormat.ASTC_6x6;
         }
         else
         {
-            settings.format = TextureImporterFormat.ASTC_RGB_6x6;
+            settings.format = TextureImporterFormat.ASTC_6x6;
         }
         importer.SetPlatformTextureSettings(settings);
     }
@@ -182,7 +182,7 @@ public class TexProcessor : AssetPostprocessor
                     platformSettings.overridden = true;
                     if ( platformSettings.maxTextureSize > 2048 )
                         platformSettings.maxTextureSize = 2048;
-                    platformSettings.format = TextureImporterFormat.ASTC_RGBA_6x6;
+                    platformSettings.format = TextureImporterFormat.ASTC_6x6;
                     atlas.SetPlatformSettings(platformSettings);
 
                     atlas.Remove(atlas.GetPackables());

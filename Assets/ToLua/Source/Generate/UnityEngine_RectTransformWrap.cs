@@ -24,6 +24,7 @@ public class UnityEngine_RectTransformWrap
 		L.RegVar("anchoredPosition3D", get_anchoredPosition3D, set_anchoredPosition3D);
 		L.RegVar("offsetMin", get_offsetMin, set_offsetMin);
 		L.RegVar("offsetMax", get_offsetMax, set_offsetMax);
+		L.RegVar("drivenByObject", get_drivenByObject, null);
 		L.RegVar("reapplyDrivenProperties", get_reapplyDrivenProperties, set_reapplyDrivenProperties);
 		L.RegFunction("ReapplyDrivenProperties", UnityEngine_RectTransform_ReapplyDrivenProperties);
 		L.EndClass();
@@ -358,6 +359,25 @@ public class UnityEngine_RectTransformWrap
 		catch(Exception e)
 		{
 			return LuaDLL.toluaL_exception(L, e, o, "attempt to index offsetMax on a nil value");
+		}
+	}
+
+	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
+	static int get_drivenByObject(IntPtr L)
+	{
+		object o = null;
+
+		try
+		{
+			o = ToLua.ToObject(L, 1);
+			UnityEngine.RectTransform obj = (UnityEngine.RectTransform)o;
+			UnityEngine.Object ret = obj.drivenByObject;
+			ToLua.Push(L, ret);
+			return 1;
+		}
+		catch(Exception e)
+		{
+			return LuaDLL.toluaL_exception(L, e, o, "attempt to index drivenByObject on a nil value");
 		}
 	}
 

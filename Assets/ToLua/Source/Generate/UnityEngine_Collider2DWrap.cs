@@ -9,6 +9,7 @@ public class UnityEngine_Collider2DWrap
 		L.BeginClass(typeof(UnityEngine.Collider2D), typeof(UnityEngine.Behaviour));
 		L.RegFunction("CreateMesh", CreateMesh);
 		L.RegFunction("GetShapeHash", GetShapeHash);
+		L.RegFunction("GetShapes", GetShapes);
 		L.RegFunction("IsTouching", IsTouching);
 		L.RegFunction("IsTouchingLayers", IsTouchingLayers);
 		L.RegFunction("OverlapPoint", OverlapPoint);
@@ -30,6 +31,7 @@ public class UnityEngine_Collider2DWrap
 		L.RegVar("attachedRigidbody", get_attachedRigidbody, null);
 		L.RegVar("shapeCount", get_shapeCount, null);
 		L.RegVar("bounds", get_bounds, null);
+		L.RegVar("errorState", get_errorState, null);
 		L.RegVar("sharedMaterial", get_sharedMaterial, set_sharedMaterial);
 		L.RegVar("friction", get_friction, null);
 		L.RegVar("bounciness", get_bounciness, null);
@@ -89,6 +91,51 @@ public class UnityEngine_Collider2DWrap
 			uint o = obj.GetShapeHash();
 			LuaDLL.lua_pushnumber(L, o);
 			return 1;
+		}
+		catch (Exception e)
+		{
+			return LuaDLL.toluaL_exception(L, e);
+		}
+	}
+
+	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
+	static int GetShapes(IntPtr L)
+	{
+		try
+		{
+			int count = LuaDLL.lua_gettop(L);
+
+			if (count == 2)
+			{
+				UnityEngine.Collider2D obj = (UnityEngine.Collider2D)ToLua.CheckObject<UnityEngine.Collider2D>(L, 1);
+				UnityEngine.PhysicsShapeGroup2D arg0 = (UnityEngine.PhysicsShapeGroup2D)ToLua.CheckObject<UnityEngine.PhysicsShapeGroup2D>(L, 2);
+				int o = obj.GetShapes(arg0);
+				LuaDLL.lua_pushinteger(L, o);
+				return 1;
+			}
+			else if (count == 3)
+			{
+				UnityEngine.Collider2D obj = (UnityEngine.Collider2D)ToLua.CheckObject<UnityEngine.Collider2D>(L, 1);
+				UnityEngine.PhysicsShapeGroup2D arg0 = (UnityEngine.PhysicsShapeGroup2D)ToLua.CheckObject<UnityEngine.PhysicsShapeGroup2D>(L, 2);
+				int arg1 = (int)LuaDLL.luaL_checknumber(L, 3);
+				int o = obj.GetShapes(arg0, arg1);
+				LuaDLL.lua_pushinteger(L, o);
+				return 1;
+			}
+			else if (count == 4)
+			{
+				UnityEngine.Collider2D obj = (UnityEngine.Collider2D)ToLua.CheckObject<UnityEngine.Collider2D>(L, 1);
+				UnityEngine.PhysicsShapeGroup2D arg0 = (UnityEngine.PhysicsShapeGroup2D)ToLua.CheckObject<UnityEngine.PhysicsShapeGroup2D>(L, 2);
+				int arg1 = (int)LuaDLL.luaL_checknumber(L, 3);
+				int arg2 = (int)LuaDLL.luaL_checknumber(L, 4);
+				int o = obj.GetShapes(arg0, arg1, arg2);
+				LuaDLL.lua_pushinteger(L, o);
+				return 1;
+			}
+			else
+			{
+				return LuaDLL.luaL_throw(L, "invalid arguments to method: UnityEngine.Collider2D.GetShapes");
+			}
 		}
 		catch (Exception e)
 		{
@@ -763,6 +810,25 @@ public class UnityEngine_Collider2DWrap
 		catch(Exception e)
 		{
 			return LuaDLL.toluaL_exception(L, e, o, "attempt to index bounds on a nil value");
+		}
+	}
+
+	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
+	static int get_errorState(IntPtr L)
+	{
+		object o = null;
+
+		try
+		{
+			o = ToLua.ToObject(L, 1);
+			UnityEngine.Collider2D obj = (UnityEngine.Collider2D)o;
+			UnityEngine.ColliderErrorState2D ret = obj.errorState;
+			ToLua.Push(L, ret);
+			return 1;
+		}
+		catch(Exception e)
+		{
+			return LuaDLL.toluaL_exception(L, e, o, "attempt to index errorState on a nil value");
 		}
 	}
 

@@ -7,6 +7,8 @@ public class UnityEngine_SpriteRendererWrap
 	public static void Register(LuaState L)
 	{
 		L.BeginClass(typeof(UnityEngine.SpriteRenderer), typeof(UnityEngine.Renderer));
+		L.RegFunction("RegisterSpriteChangeCallback", RegisterSpriteChangeCallback);
+		L.RegFunction("UnregisterSpriteChangeCallback", UnregisterSpriteChangeCallback);
 		L.RegFunction("New", _CreateUnityEngine_SpriteRenderer);
 		L.RegFunction("__eq", op_Equality);
 		L.RegFunction("__tostring", ToLua.op_ToString);
@@ -40,6 +42,40 @@ public class UnityEngine_SpriteRendererWrap
 			{
 				return LuaDLL.luaL_throw(L, "invalid arguments to ctor method: UnityEngine.SpriteRenderer.New");
 			}
+		}
+		catch (Exception e)
+		{
+			return LuaDLL.toluaL_exception(L, e);
+		}
+	}
+
+	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
+	static int RegisterSpriteChangeCallback(IntPtr L)
+	{
+		try
+		{
+			ToLua.CheckArgsCount(L, 2);
+			UnityEngine.SpriteRenderer obj = (UnityEngine.SpriteRenderer)ToLua.CheckObject(L, 1, typeof(UnityEngine.SpriteRenderer));
+			UnityEngine.Events.UnityAction<UnityEngine.SpriteRenderer> arg0 = (UnityEngine.Events.UnityAction<UnityEngine.SpriteRenderer>)ToLua.CheckDelegate<UnityEngine.Events.UnityAction<UnityEngine.SpriteRenderer>>(L, 2);
+			obj.RegisterSpriteChangeCallback(arg0);
+			return 0;
+		}
+		catch (Exception e)
+		{
+			return LuaDLL.toluaL_exception(L, e);
+		}
+	}
+
+	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
+	static int UnregisterSpriteChangeCallback(IntPtr L)
+	{
+		try
+		{
+			ToLua.CheckArgsCount(L, 2);
+			UnityEngine.SpriteRenderer obj = (UnityEngine.SpriteRenderer)ToLua.CheckObject(L, 1, typeof(UnityEngine.SpriteRenderer));
+			UnityEngine.Events.UnityAction<UnityEngine.SpriteRenderer> arg0 = (UnityEngine.Events.UnityAction<UnityEngine.SpriteRenderer>)ToLua.CheckDelegate<UnityEngine.Events.UnityAction<UnityEngine.SpriteRenderer>>(L, 2);
+			obj.UnregisterSpriteChangeCallback(arg0);
+			return 0;
 		}
 		catch (Exception e)
 		{

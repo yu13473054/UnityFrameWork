@@ -60,11 +60,36 @@ public class UnityEngine_RectOffsetWrap
 	{
 		try
 		{
-			ToLua.CheckArgsCount(L, 1);
-			UnityEngine.RectOffset obj = (UnityEngine.RectOffset)ToLua.CheckObject<UnityEngine.RectOffset>(L, 1);
-			string o = obj.ToString();
-			LuaDLL.lua_pushstring(L, o);
-			return 1;
+			int count = LuaDLL.lua_gettop(L);
+
+			if (count == 1)
+			{
+				UnityEngine.RectOffset obj = (UnityEngine.RectOffset)ToLua.CheckObject<UnityEngine.RectOffset>(L, 1);
+				string o = obj.ToString();
+				LuaDLL.lua_pushstring(L, o);
+				return 1;
+			}
+			else if (count == 2)
+			{
+				UnityEngine.RectOffset obj = (UnityEngine.RectOffset)ToLua.CheckObject<UnityEngine.RectOffset>(L, 1);
+				string arg0 = ToLua.CheckString(L, 2);
+				string o = obj.ToString(arg0);
+				LuaDLL.lua_pushstring(L, o);
+				return 1;
+			}
+			else if (count == 3)
+			{
+				UnityEngine.RectOffset obj = (UnityEngine.RectOffset)ToLua.CheckObject<UnityEngine.RectOffset>(L, 1);
+				string arg0 = ToLua.CheckString(L, 2);
+				System.IFormatProvider arg1 = (System.IFormatProvider)ToLua.CheckObject<System.IFormatProvider>(L, 3);
+				string o = obj.ToString(arg0, arg1);
+				LuaDLL.lua_pushstring(L, o);
+				return 1;
+			}
+			else
+			{
+				return LuaDLL.luaL_throw(L, "invalid arguments to method: UnityEngine.RectOffset.ToString");
+			}
 		}
 		catch (Exception e)
 		{

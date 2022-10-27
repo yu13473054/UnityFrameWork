@@ -16,6 +16,7 @@ public class UnityEngine_UI_HorizontalOrVerticalLayoutGroupWrap
 		L.RegVar("childControlHeight", get_childControlHeight, set_childControlHeight);
 		L.RegVar("childScaleWidth", get_childScaleWidth, set_childScaleWidth);
 		L.RegVar("childScaleHeight", get_childScaleHeight, set_childScaleHeight);
+		L.RegVar("reverseArrangement", get_reverseArrangement, set_reverseArrangement);
 		L.EndClass();
 	}
 
@@ -171,6 +172,25 @@ public class UnityEngine_UI_HorizontalOrVerticalLayoutGroupWrap
 	}
 
 	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
+	static int get_reverseArrangement(IntPtr L)
+	{
+		object o = null;
+
+		try
+		{
+			o = ToLua.ToObject(L, 1);
+			UnityEngine.UI.HorizontalOrVerticalLayoutGroup obj = (UnityEngine.UI.HorizontalOrVerticalLayoutGroup)o;
+			bool ret = obj.reverseArrangement;
+			LuaDLL.lua_pushboolean(L, ret);
+			return 1;
+		}
+		catch(Exception e)
+		{
+			return LuaDLL.toluaL_exception(L, e, o, "attempt to index reverseArrangement on a nil value");
+		}
+	}
+
+	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
 	static int set_spacing(IntPtr L)
 	{
 		object o = null;
@@ -300,6 +320,25 @@ public class UnityEngine_UI_HorizontalOrVerticalLayoutGroupWrap
 		catch(Exception e)
 		{
 			return LuaDLL.toluaL_exception(L, e, o, "attempt to index childScaleHeight on a nil value");
+		}
+	}
+
+	[MonoPInvokeCallbackAttribute(typeof(LuaCSFunction))]
+	static int set_reverseArrangement(IntPtr L)
+	{
+		object o = null;
+
+		try
+		{
+			o = ToLua.ToObject(L, 1);
+			UnityEngine.UI.HorizontalOrVerticalLayoutGroup obj = (UnityEngine.UI.HorizontalOrVerticalLayoutGroup)o;
+			bool arg0 = LuaDLL.luaL_checkboolean(L, 2);
+			obj.reverseArrangement = arg0;
+			return 0;
+		}
+		catch(Exception e)
+		{
+			return LuaDLL.toluaL_exception(L, e, o, "attempt to index reverseArrangement on a nil value");
 		}
 	}
 }

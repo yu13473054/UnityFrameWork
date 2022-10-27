@@ -167,12 +167,36 @@ public class UnityEngine_LineRendererWrap
 	{
 		try
 		{
-			ToLua.CheckArgsCount(L, 2);
-			UnityEngine.LineRenderer obj = (UnityEngine.LineRenderer)ToLua.CheckObject(L, 1, typeof(UnityEngine.LineRenderer));
-			UnityEngine.Vector3[] arg0 = ToLua.CheckStructArray<UnityEngine.Vector3>(L, 2);
-			int o = obj.GetPositions(arg0);
-			LuaDLL.lua_pushinteger(L, o);
-			return 1;
+			int count = LuaDLL.lua_gettop(L);
+
+			if (count == 2 && TypeChecker.CheckTypes<UnityEngine.Vector3[]>(L, 2))
+			{
+				UnityEngine.LineRenderer obj = (UnityEngine.LineRenderer)ToLua.CheckObject(L, 1, typeof(UnityEngine.LineRenderer));
+				UnityEngine.Vector3[] arg0 = ToLua.ToStructArray<UnityEngine.Vector3>(L, 2);
+				int o = obj.GetPositions(arg0);
+				LuaDLL.lua_pushinteger(L, o);
+				return 1;
+			}
+			else if (count == 2 && TypeChecker.CheckTypes<Unity.Collections.NativeArray<UnityEngine.Vector3>>(L, 2))
+			{
+				UnityEngine.LineRenderer obj = (UnityEngine.LineRenderer)ToLua.CheckObject(L, 1, typeof(UnityEngine.LineRenderer));
+				Unity.Collections.NativeArray<UnityEngine.Vector3> arg0 = StackTraits<Unity.Collections.NativeArray<UnityEngine.Vector3>>.To(L, 2);
+				int o = obj.GetPositions(arg0);
+				LuaDLL.lua_pushinteger(L, o);
+				return 1;
+			}
+			else if (count == 2 && TypeChecker.CheckTypes<Unity.Collections.NativeSlice<UnityEngine.Vector3>>(L, 2))
+			{
+				UnityEngine.LineRenderer obj = (UnityEngine.LineRenderer)ToLua.CheckObject(L, 1, typeof(UnityEngine.LineRenderer));
+				Unity.Collections.NativeSlice<UnityEngine.Vector3> arg0 = StackTraits<Unity.Collections.NativeSlice<UnityEngine.Vector3>>.To(L, 2);
+				int o = obj.GetPositions(arg0);
+				LuaDLL.lua_pushinteger(L, o);
+				return 1;
+			}
+			else
+			{
+				return LuaDLL.luaL_throw(L, "invalid arguments to method: UnityEngine.LineRenderer.GetPositions");
+			}
 		}
 		catch (Exception e)
 		{
@@ -185,11 +209,33 @@ public class UnityEngine_LineRendererWrap
 	{
 		try
 		{
-			ToLua.CheckArgsCount(L, 2);
-			UnityEngine.LineRenderer obj = (UnityEngine.LineRenderer)ToLua.CheckObject(L, 1, typeof(UnityEngine.LineRenderer));
-			UnityEngine.Vector3[] arg0 = ToLua.CheckStructArray<UnityEngine.Vector3>(L, 2);
-			obj.SetPositions(arg0);
-			return 0;
+			int count = LuaDLL.lua_gettop(L);
+
+			if (count == 2 && TypeChecker.CheckTypes<UnityEngine.Vector3[]>(L, 2))
+			{
+				UnityEngine.LineRenderer obj = (UnityEngine.LineRenderer)ToLua.CheckObject(L, 1, typeof(UnityEngine.LineRenderer));
+				UnityEngine.Vector3[] arg0 = ToLua.ToStructArray<UnityEngine.Vector3>(L, 2);
+				obj.SetPositions(arg0);
+				return 0;
+			}
+			else if (count == 2 && TypeChecker.CheckTypes<Unity.Collections.NativeArray<UnityEngine.Vector3>>(L, 2))
+			{
+				UnityEngine.LineRenderer obj = (UnityEngine.LineRenderer)ToLua.CheckObject(L, 1, typeof(UnityEngine.LineRenderer));
+				Unity.Collections.NativeArray<UnityEngine.Vector3> arg0 = StackTraits<Unity.Collections.NativeArray<UnityEngine.Vector3>>.To(L, 2);
+				obj.SetPositions(arg0);
+				return 0;
+			}
+			else if (count == 2 && TypeChecker.CheckTypes<Unity.Collections.NativeSlice<UnityEngine.Vector3>>(L, 2))
+			{
+				UnityEngine.LineRenderer obj = (UnityEngine.LineRenderer)ToLua.CheckObject(L, 1, typeof(UnityEngine.LineRenderer));
+				Unity.Collections.NativeSlice<UnityEngine.Vector3> arg0 = StackTraits<Unity.Collections.NativeSlice<UnityEngine.Vector3>>.To(L, 2);
+				obj.SetPositions(arg0);
+				return 0;
+			}
+			else
+			{
+				return LuaDLL.luaL_throw(L, "invalid arguments to method: UnityEngine.LineRenderer.SetPositions");
+			}
 		}
 		catch (Exception e)
 		{
